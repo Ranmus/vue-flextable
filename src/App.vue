@@ -1,28 +1,35 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <hello></hello>
+    <h1>{{ title }}</h1>
+    <flextable></flextable>
   </div>
 </template>
 
+<style lang="sass">
+  html, body
+    margin: 0
+    padding: 0
+    height: 100%
+
+  body
+    font-family: Helvetica, Arial, sans-serif
+    display: flex
+    align-items: center
+    justify-content: center
+</style>
+
 <script>
-import Hello from './components/Hello';
+import Flextable from './components/Flextable';
 
 export default {
   name: 'app',
+  data() {
+    return {
+      title: 'Flextable application example',
+    };
+  },
   components: {
-    Hello,
+    Flextable,
   },
 };
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
