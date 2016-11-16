@@ -1,5 +1,6 @@
 <template lang="pug">
-  .flextable {{message }}
+  .flextable
+    flexspinner
 </template>
 
 <style lang="sass">
@@ -9,11 +10,16 @@
 </style>
 
 <script>
+  import Flexspinner from './Flexspinner';
+
   export default {
     data() {
       return {
         message: 'Flextable container',
       };
+    },
+    components: {
+      Flexspinner,
     },
   };
 </script>

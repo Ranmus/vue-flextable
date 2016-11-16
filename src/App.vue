@@ -1,7 +1,9 @@
 <template lang="pug">
   #app
     h1 {{ title }}
-    flextable
+    flextable(
+      data-url="./static/data.json"
+    )
 </template>
 
 <style lang="sass">
