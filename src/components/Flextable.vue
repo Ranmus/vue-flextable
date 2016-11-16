@@ -1,7 +1,5 @@
-<template>
-  <div class="flextable">
-    {{ message }}
-  </div>
+<template lang="pug">
+  .flextable {{message }}
 </template>
 
 <style lang="sass">
@@ -16,8 +14,6 @@
       return {
         message: 'Flextable container',
       };
-    },
-    mounted() {
     },
   };
 </script>
