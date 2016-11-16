@@ -1,8 +1,9 @@
-<template>
-  <div id="app">
-    <h1>{{ title }}</h1>
-    <flextable></flextable>
-  </div>
+<template lang="pug">
+  #app
+    h1 {{ title }}
+    flextable(
+      data-url="./static/data.json"
+    )
 </template>
 
 <style lang="sass">
@@ -19,17 +20,17 @@
 </style>
 
 <script>
-import Flextable from './components/Flextable';
+  import Flextable from './components/Flextable';
 
-export default {
-  name: 'app',
-  data() {
-    return {
-      title: 'Flextable application example',
-    };
-  },
-  components: {
-    Flextable,
-  },
-};
+  export default {
+    name: 'app',
+    data() {
+      return {
+        title: 'Flextable application example',
+      };
+    },
+    components: {
+      Flextable,
+    },
+  };
 </script>
