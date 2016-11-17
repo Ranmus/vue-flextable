@@ -1,6 +1,15 @@
 # vue-flextable
 
-> Flexible table vue component
+> Flexible table vue component - data tables based on flexbox
+
+## Roadmap
+1. Responsible flexbox based table
+2. Two modes for managing data - client and server side
+3. Custom data rendering functions
+4. Pagination
+5. Ordering
+6. Filters
+7. Optional accordion mode
 
 ## Build Setup
 
