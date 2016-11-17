@@ -33,6 +33,8 @@
 
   .flextable-cell
     width: 100%
+    overflow: hidden
+    padding: 20px
 
   .loader
     border: 1px solid greenyellow
@@ -45,6 +47,7 @@
   import Flexspinner from './Flexspinner';
 
   export default {
+    props: ['url'],
     data() {
       return {
         message: 'Flextable container',
@@ -53,6 +56,7 @@
           current: [],
         },
         loading: true,
+        resource: null,
       };
     },
     components: {
@@ -60,9 +64,9 @@
     },
 
     mounted() {
-      const resource = this.$resource('./static/data.json');
+      this.resource = this.$resource(this.url);
 
-      resource.get().then((response) => {
+      this.resource.get().then((response) => {
         this.rows = response.data;
         this.loading = false;
       });
