@@ -3,8 +3,8 @@
 </template>
 
 <style lang="sass">
-  $size: 100px
-  $weight: 12px
+  $size: 64px
+  $weight: 10px
   $radius: 50%
   $color: #2196F3
   $alpha: 0.2
