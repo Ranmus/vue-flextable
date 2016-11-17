@@ -1,6 +1,6 @@
 .DS_Store
 .idea
-/nbproject
+/nbproject/*
 node_modules/
 dist/
 npm-debug.log
