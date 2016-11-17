@@ -6,21 +6,27 @@
 </template>
 
 <style lang="sass">
-  $source-color: white
-  $source-bgColor: blue
+  @import '~roboto-npm-webfont/style.css'
+
   body
-    font-family: Helvetica, Arial, sans-serif
+    color: #757575
+    background: #fafafa
+    padding: 20px 10% 20px 10%
+    font:
+      family: Roboto, Helvetica, Arial sans-serif
+      size: 13px
 
   a.source
     margin-bottom: 10px
     padding: 10px
     display: inline-block
     text-decoration: none
-    color: $source-color
-    background-color: $source-bgColor
+    color: white
+    background-color: blue
 </style>
 
 <script>
+  // Import flextable
   import Flextable from './components/Flextable';
 
   export default {

@@ -5809,6 +5809,10 @@ ripemd160@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/ripemd160/-/ripemd160-0.2.0.tgz#2bf198bde167cacfa51c0a928e84b68bbe171fce"
 
+roboto-npm-webfont@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/roboto-npm-webfont/-/roboto-npm-webfont-0.0.2.tgz#5184ace6d3b70714734d62c66beb96ad48ffc461"
+
 run-async@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/run-async/-/run-async-0.1.0.tgz#c8ad4a5e110661e402a7d21b530e009f25f8e389"
