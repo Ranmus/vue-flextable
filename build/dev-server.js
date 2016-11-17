@@ -1,4 +1,5 @@
 require('./check-versions')()
+var restServer = require('./rest-server')
 var config = require('../config')
 if (!process.env.NODE_ENV) process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
 var path = require('path')
@@ -66,6 +67,9 @@ module.exports = app.listen(port, function (err) {
   }
   var uri = 'http://localhost:' + port
   console.log('Listening at ' + uri + '\n')
+
+  // run mocked rest server with auto generated data based on json schema, see config/json.data.schema.js
+  restServer.run()
 
   // when env is testing, don't need open it
   if (process.env.NODE_ENV !== 'testing') {

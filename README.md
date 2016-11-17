@@ -10,6 +10,7 @@
 5. Ordering
 6. Filters
 7. Optional accordion mode
+8. Event emitters
 
 ## Build Setup
 
