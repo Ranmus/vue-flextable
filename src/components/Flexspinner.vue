@@ -28,7 +28,7 @@
       transform: rotate(450deg)
 </style>
 
-<script>
+<script lang="babel">
   export default {
     data() {
       return {
