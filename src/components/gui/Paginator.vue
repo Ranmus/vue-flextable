@@ -1,16 +1,25 @@
 <template lang="pug">
-  span.flextable-paginator Page {{ page }} of {{ pages }}
-    button(v-show="page > 1" @click="nextPage") &lt;
-    button(v-show="page < pages" @click="prevPage") &gt;
+  span.flextable-paginator Page {{ value }} of {{ pages }}
+    button(:disabled="isFirst" @click="first").flextable-paginator-button
+      slot(name="first") | &lt;
+    button(:disabled="isFirst" @click="prev").flextable-paginator-button
+      slot(name="prev") &lt;
+    button(:disabled="isLast" @click="next").flextable-paginator-button
+      slot(name="next") &gt;
+    button(:disabled="isLast" @click="last").flextable-paginator-button
+      slot(name="last") &gt; |
 </template>
 
-<style>
+<style lang="sass">
+.flextable-paginator-button
+  display: inline-block
+  cursor: pointer
 </style>
 
 <script lang="babel">
 export default {
   props: {
-    page: {
+    value: {
       type: Number,
       required: false,
       default: 1,
@@ -21,24 +30,36 @@ export default {
     },
     size: {
       type: Number,
-      required: true,
+      required: false,
+      default: 10,
     },
   },
   computed: {
+    isFirst() {
+      return this.value <= 1;
+    },
+    isLast() {
+      return this.value >= this.pages;
+    },
     pages() {
       return Math.floor(this.total / this.size);
     },
   },
   methods: {
-    nextPage() {
-      this.setPage(this.page + 1);
+    first() {
+      this.setPage(1);
     },
-    prevPage() {
-      this.setPage(this.page - 1);
+    next() {
+      this.setPage(Math.min(this.pages, this.value + 1));
+    },
+    prev() {
+      this.setPage(Math.max(1, this.value - 1));
+    },
+    last() {
+      this.setPage(this.pages);
     },
     setPage(page) {
-      // todo: fix this
-      this.page = page;
+      this.$emit('input', Math.min(Math.max(1, page), this.pages));
     },
   },
 };

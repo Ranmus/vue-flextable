@@ -1,15 +1,13 @@
 <template lang="pug">
 .flextable
   .loader(v-if="loading")
-    flexspinner
+    spinner
   .flextable-table(v-else="loading")
-    .flextable-row.header
-      .flextable-cell(v-for="cell in rows[0]") header
-    .flextable-row(v-for="row in rows")
-      .flextable-cell(v-for="cell in row") {{ cell }}
+    grid(v-if="rows.length > 0", :rows="rows")
   .flextable-footer
-    flextable-paginator(v-if="pagination", :total="data.length", :size="limit")
-    flextable-select(v-model.number="limit", :options="limits")
+    template(v-if="pagination") Rows per page:
+      selector(v-model.number="limit", :options="limits")
+      paginator(v-model.number="page", :total="data.length", :size="limit")
 </template>
 
 <style lang="sass">
@@ -23,29 +21,6 @@
   @include shadow
   background: #fff
 
-.flextable-table
-  display: flex
-  flex-direction: column
-  border:
-    collapse: collapse
-  .flextable-row
-    display: flex
-    width: auto
-    &:not(:last-child)
-      border:
-        bottom: 1px solid #c7c7c7
-    flex:
-      direction: row
-      wrap: nowrap
-    .flextable-cell
-      width: 100%
-      overflow: hidden
-      padding: 20px
-
-.header
-  font:
-    weight: bold
-
 .loader
   display: flex
   justify-content: center
@@ -54,15 +29,17 @@
 </style>
 
 <script lang="babel">
-import FlextableSelect from './gui/Select';
-import FlextablePaginator from './gui/Paginator';
-import Flexspinner from './Flexspinner';
+import Grid from './gui/grid/Grid';
+import Selector from './gui/Selector';
+import Paginator from './gui/Paginator';
+import Spinner from './gui/Spinner';
 
 export default {
   components: {
-    FlextableSelect,
-    FlextablePaginator,
-    Flexspinner,
+    Grid,
+    Selector,
+    Paginator,
+    Spinner,
   },
   props: {
     config: {
@@ -82,6 +59,11 @@ export default {
       page: 1,
     };
   },
+  watch: {
+    limit() {
+      this.page = 1;
+    },
+  },
   computed: {
     rows() {
       const { data, pagination, page, limit } = this;
@@ -92,10 +74,6 @@ export default {
       }
 
       return this.data;
-    },
-    pages() {
-      const { data, limit } = this;
-      return Math.ceil(data.length / limit);
     },
   },
   created() {
@@ -123,12 +101,6 @@ export default {
     },
     setData(data) {
       this.data = data.data;
-    },
-    limitChanged(e) {
-      this.limit = Number(e.target.value);
-    },
-    setPage(page) {
-      this.page = Math.min(Math.max(1, page), this.pages);
     },
   },
 };
