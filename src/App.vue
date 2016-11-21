@@ -1,6 +1,6 @@
 <template lang="pug">
   #app
-    h1 {{ title }}
+    h1 Flextable application example
     a(:href="config.data.url").source Mocked REST server
     flextable(:config="config",:test="tester")
 </template>
@@ -24,7 +24,6 @@
     name: 'app',
     data() {
       return {
-        title: 'Flextable application example',
         config,
       };
     },
