@@ -1,15 +1,34 @@
 <template lang="pug">
 .flextable
-  h1
-    slot
+  ft-header
+    template(v-if="this.$slots.title" slot="title")
+      slot(name="title")
+
   .loader(v-if="loading")
     spinner
+
   .flextable-table(v-else="loading")
-    grid(v-if="rows.length > 0", :rows="rows", :columns="columns", :device="device", :config="config")
-  .flextable-footer
-    template(v-if="pagination") Rows per page:
-      selector(v-model.number="limit", :options="limits")
-      paginator(v-model.number="page", :total="data.length", :size="limit")
+    grid(
+      v-if="rows.length > 0",
+      :rows="rows",
+      :columns="columns",
+      :device="device",
+      :config="config"
+      )
+  ft-footer
+    ftPageSize(
+      slot="pageSize",
+      :limit="limit",
+      :limits="limits",
+      @setLimit="limit = Number($event)"
+      )
+    ft-paginator(
+      slot="paginator",
+      :page="page",
+      :total="data.length",
+      :size="limit",
+      @setPage="page = $event"
+      )
 </template>
 
 <style lang="sass">
@@ -29,18 +48,22 @@
 </style>
 
 <script lang="babel">
-import Grid from './gui/grid/Grid';
-import Selector from './gui/Selector';
-import Paginator from './gui/Paginator';
-import Spinner from './gui/Spinner';
+import ftHeader from './header/Header';
+import ftFooter from './footer/Footer';
+import ftPageSize from './footer/PageSize';
+import ftPaginator from './footer/Paginator';
+import Grid from './grid/Grid';
+import Spinner from './ui/Spinner';
 
 const isMobile = require('ismobilejs');
 
 export default {
   components: {
+    ftHeader,
+    ftFooter,
+    ftPageSize,
+    ftPaginator,
     Grid,
-    Selector,
-    Paginator,
     Spinner,
   },
   props: {
@@ -57,7 +80,7 @@ export default {
       loading: true,
       pagination: false,
       limit: 10,
-      limits: [10, 20, 30, 50, 100],
+      limits: [5, 10, 20, 30, 50, 100],
       page: 1,
       columns: null,
     };

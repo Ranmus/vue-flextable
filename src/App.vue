@@ -1,10 +1,50 @@
 <template lang="pug">
   #app
-    h1 Flextable application example
-    a(:href="config.data.url").source Mocked REST server
-    flextable(:config="config",:test="tester")
-      slot Table title
+    .header
+      h1 Flextable example
+        a(:href="config.data.url").source  + random data rest server
+
+    .example
+      // Usage example
+      flextable(:config="config",:test="tester")
+        template(slot="title") Users
+        //- // Set custom title
+        //- h1(slot="title") Users
+        //- // Set rows per page text
+        //- template(slot="rowsPerPage") Rows per Page:
+        //- // Set pages of text
+        //- template(slot="pageOf" scope="pages")  Page {{ pages.current }} of {{ pages.total }}
+        //- // Set paginator buttons texts
+        //- template(slot="prev") Previous
+        //- template(slot="next") Next
+        //- template(slot="first") First
+        //- template(slot="last") Last
 </template>
+
+<style lang="sass">
+//@import '~roboto-npm-webfont/style.css'
+body
+  color: #757575
+  background: #fafafa
+  padding: 0
+  margin: 0
+  font:
+    family: Roboto, Helvetica, Arial, sans-serif
+    size: 13px
+
+.header
+  color: white
+  position: relative
+  padding: 10px 10% 10px 10%
+  background: #305
+  .source
+    color: rgba(white, 0.5)
+    margin-bottom: 10px
+    text-decoration: none
+
+.example
+  margin: 50px 10% 50px 10%
+</style>
 
 <script lang="babel">
   // Import flextable
@@ -15,9 +55,12 @@
       url: 'http://localhost:8090/users',
       side: 'client',
     },
+    heading: {
+      // title: 'Users (Title set via config)',
+    },
     pagination: {
       enabled: true,
-      limit: 10,
+      limit: 5,
     },
     wrap: {
       phone: false,
@@ -68,27 +111,3 @@
     },
   };
 </script>
-
-<style lang="sass">
-  @import '~roboto-npm-webfont/style.css'
-
-  @mixin button
-    display: inline-block
-    color: white
-    padding: 10px
-    text-decoration: none
-    background: blue
-    cursor: pointer
-
-  body
-    color: #757575
-    background: #fafafa
-    padding: 20px 10% 20px 10%
-    font:
-      family: Roboto, Helvetica, Arial sans-serif
-      size: 13px
-
-  a.source
-    @include button()
-    margin-bottom: 10px
-</style>
