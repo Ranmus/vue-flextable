@@ -1,9 +1,11 @@
 <template lang="pug">
 .flextable
+  h1
+    slot
   .loader(v-if="loading")
     spinner
   .flextable-table(v-else="loading")
-    grid(v-if="rows.length > 0", :rows="rows", :columns="columns")
+    grid(v-if="rows.length > 0", :rows="rows", :columns="columns", :device="device", :config="config")
   .flextable-footer
     template(v-if="pagination") Rows per page:
       selector(v-model.number="limit", :options="limits")
@@ -15,12 +17,10 @@
   box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12)
 @mixin border
   border: 1px solid rgba(0,0,0,.12)
-
 .flextable
   @include border
   @include shadow
   background: #fff
-
 .loader
   display: flex
   justify-content: center
@@ -33,6 +33,8 @@ import Grid from './gui/grid/Grid';
 import Selector from './gui/Selector';
 import Paginator from './gui/Paginator';
 import Spinner from './gui/Spinner';
+
+const isMobile = require('ismobilejs');
 
 export default {
   components: {
@@ -75,6 +77,16 @@ export default {
       }
 
       return this.data;
+    },
+    device() {
+      if (isMobile.phone) {
+        return 'phone';
+      }
+      if (isMobile.tablet) {
+        return 'tablet';
+      }
+
+      return 'desktop';
     },
   },
   created() {

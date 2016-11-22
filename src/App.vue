@@ -3,6 +3,7 @@
     h1 Flextable application example
     a(:href="config.data.url").source Mocked REST server
     flextable(:config="config",:test="tester")
+      slot Table title
 </template>
 
 <script lang="babel">
@@ -17,6 +18,11 @@
     pagination: {
       enabled: true,
       limit: 10,
+    },
+    wrap: {
+      phone: false,
+      tablet: false,
+      desktop: false,
     },
     columns: {
       id: {
@@ -39,6 +45,12 @@
         name: 'Avatar',
         align: 'center',
         render: value => `<img src="${value}" width="32" height="32"/>`,
+        show: true,
+      },
+      options: {
+        name: 'Options',
+        align: 'right',
+        render: (value, data) => `<button>${data.id}</button>`,
         show: true,
       },
     },

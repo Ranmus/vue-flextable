@@ -1,12 +1,12 @@
 <template lang="pug">
   span.flextable-paginator Page {{ value }} of {{ pages }}
-    button(:disabled="isFirst" @click="first").flextable-paginator-button
+    button(:disabled="isFirst", @click="first").flextable-paginator-button
       slot(name="first") | &lt;
-    button(:disabled="isFirst" @click="prev").flextable-paginator-button
+    button(:disabled="isFirst", @click="prev").flextable-paginator-button
       slot(name="prev") &lt;
-    button(:disabled="isLast" @click="next").flextable-paginator-button
+    button(:disabled="isLast", @click="next").flextable-paginator-button
       slot(name="next") &gt;
-    button(:disabled="isLast" @click="last").flextable-paginator-button
+    button(:disabled="isLast", @click="last").flextable-paginator-button
       slot(name="last") &gt; |
 </template>
 

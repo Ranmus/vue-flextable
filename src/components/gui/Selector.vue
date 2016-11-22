@@ -1,7 +1,7 @@
 <template lang="pug">
-  select(@change="updateValue($event.target.value)").flextable-select
-    template(v-for="option in options")
-      option(:value="option",:selected="option == value") {{ option }}
+select(@change="updateValue($event.target.value)").flextable-select
+  template(v-for="option in options")
+    option(:value="option",:selected="option == value") {{ option }}
 </template>
 
 <script lang="babel">

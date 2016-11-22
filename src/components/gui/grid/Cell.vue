@@ -10,14 +10,14 @@
   padding: 16px
   display: flex
   align-items: center
-  .flextable-cell-container
-    width: 100%
-  .flextable-cell-left
-    text-align: left
-  .flextable-cell-center
-    text-align: center
-  .flextable-cell-right
-    text-align: right
+.flextable-cell-container
+  width: 100%
+.flextable-cell-left
+  text-align: left
+.flextable-cell-center
+  text-align: center
+.flextable-cell-right
+  text-align: right
 </style>
 
 <script lang="babel">
