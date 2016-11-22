@@ -3,7 +3,7 @@
   .loader(v-if="loading")
     spinner
   .flextable-table(v-else="loading")
-    grid(v-if="rows.length > 0", :rows="rows")
+    grid(v-if="rows.length > 0", :rows="rows", :columns="columns")
   .flextable-footer
     template(v-if="pagination") Rows per page:
       selector(v-model.number="limit", :options="limits")
@@ -57,6 +57,7 @@ export default {
       limit: 10,
       limits: [10, 20, 30, 50, 100],
       page: 1,
+      columns: null,
     };
   },
   watch: {
@@ -77,7 +78,7 @@ export default {
     },
   },
   created() {
-    const { pagination } = this.config;
+    const { pagination, columns } = this.config;
 
     if (pagination) {
       if (pagination.enabled) {
@@ -86,6 +87,10 @@ export default {
       if (pagination.limit) {
         this.limit = pagination.limit;
       }
+    }
+
+    if (columns) {
+      this.columns = columns;
     }
   },
   mounted() {

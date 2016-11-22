@@ -1,6 +1,6 @@
 <template lang="pug">
 .flextable-row
-  cell(v-for="cell in row", :value="cell")
+  cell(v-for="value, key in row", :value="render(key)")
 </template>
 
 <style lang="sass">
@@ -34,6 +34,19 @@ export default {
     row: {
       type: Object,
       required: true,
+    },
+    columns: {
+      type: Object,
+      required: true,
+    },
+  },
+  methods: {
+    render(key) {
+      if (this.columns[key].render) {
+        return this.columns[key].render(this.row[key], this.row);
+      }
+
+      return this.row[key];
     },
   },
 };

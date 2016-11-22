@@ -1,6 +1,6 @@
 <template lang="pug">
 .flextable-row.flextable-heading
-  .flextable-cell(v-for="name in names") {{ name }}
+  .flextable-cell(v-for="value, key in columns") {{ value.name }}
 </template>
 
 <style lang="sass">
@@ -12,16 +12,9 @@
 <script lang="babel">
 export default {
   props: {
-    row: {
+    columns: {
       type: Object,
       required: true,
-    },
-  },
-  computed: {
-    names() {
-      const names = Reflect.ownKeys(this.row);
-      names.pop();
-      return names;
     },
   },
 };

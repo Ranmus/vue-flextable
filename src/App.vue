@@ -18,6 +18,27 @@
       enabled: true,
       limit: 10,
     },
+    columns: {
+      id: {
+        name: 'id',
+      },
+      firstName: {
+        name: 'First name',
+      },
+      lastName: {
+        name: 'Last name',
+      },
+      email: {
+        name: 'E-mail',
+      },
+      phone: {
+        name: 'Phone',
+      },
+      avatar: {
+        name: 'Avatar',
+        render: value => `<img src="${value}" />`,
+      },
+    },
   };
 
   export default {

@@ -1,6 +1,6 @@
 <template lang="pug">
 .flextable-cell
-  span {{ value }}
+  span(v-html="value")
 </template>
 
 <style lang="sass">

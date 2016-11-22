@@ -1,7 +1,7 @@
 <template lang="pug">
 .flextable-grid
-  heading(:row="first")
-  row(v-for="row in rows", :row="row")
+  heading(:columns="columns")
+  row(v-for="row in rows", :row="row", :columns="columns")
 </template>
 
 <style lang="sass">
@@ -26,10 +26,9 @@ export default {
       type: Array,
       required: false,
     },
-  },
-  computed: {
-    first() {
-      return this.rows[0];
+    columns: {
+      type: Object,
+      required: true,
     },
   },
 };
