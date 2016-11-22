@@ -8,8 +8,6 @@
   .flextable-grid
     display: flex
     flex-direction: column
-    border:
-      collapse: collapse
 </style>
 
 <script lang="babel">

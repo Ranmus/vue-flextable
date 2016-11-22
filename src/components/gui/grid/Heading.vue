@@ -1,6 +1,7 @@
 <template lang="pug">
 .flextable-row.flextable-heading
-  .flextable-cell(v-for="value, key in columns") {{ value.name }}
+  template(v-for="value, key in columns")
+    cell(v-if="value.show !== false", :value="value.name", :align="value.align")
 </template>
 
 <style lang="sass">
@@ -10,11 +11,21 @@
 </style>
 
 <script lang="babel">
+import Cell from './Cell';
+
 export default {
+  components: {
+    Cell,
+  },
   props: {
     columns: {
       type: Object,
       required: true,
+    },
+  },
+  computed: {
+    alignClass() {
+      return `flextable-cell-${(this.align || 'left')}`;
     },
   },
 };

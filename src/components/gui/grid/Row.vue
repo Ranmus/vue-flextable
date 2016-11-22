@@ -1,6 +1,7 @@
 <template lang="pug">
 .flextable-row
-  cell(v-for="value, key in row", :value="render(key)")
+  template(v-for="value, key in row")
+    cell(v-if="columns[key].show !== false", :value="render(key)", :align="columns[key].align")
 </template>
 
 <style lang="sass">
@@ -8,8 +9,7 @@
   display: flex
   width: auto
   &:not(:last-child)
-    border:
-      bottom: 1px solid #c7c7c7
+    border-bottom: 1px solid #c7c7c7
   flex:
     direction: row
     wrap: no-wrap
@@ -45,7 +45,6 @@ export default {
       if (this.columns[key].render) {
         return this.columns[key].render(this.row[key], this.row);
       }
-
       return this.row[key];
     },
   },

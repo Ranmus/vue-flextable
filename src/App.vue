@@ -20,7 +20,8 @@
     },
     columns: {
       id: {
-        name: 'id',
+        name: 'Id',
+        align: 'right',
       },
       firstName: {
         name: 'First name',
@@ -36,7 +37,9 @@
       },
       avatar: {
         name: 'Avatar',
-        render: value => `<img src="${value}" />`,
+        align: 'center',
+        render: value => `<img src="${value}" width="32" height="32"/>`,
+        show: true,
       },
     },
   };
