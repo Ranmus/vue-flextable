@@ -13,7 +13,7 @@
 </style>
 
 <script lang="babel">
-import ftSelector from '../ui/Selector';
+import ftSelector from '../reusable/Selector';
 
 export default {
   components: {

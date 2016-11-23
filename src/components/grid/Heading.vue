@@ -1,20 +1,20 @@
 <template lang="pug">
-.flextable-row.flextable-heading(:class="wrapClass")
+.ft-row.ft-heading(:class="wrapClass")
   template(v-for="value, key in columns")
-    cell(v-if="value.show !== false", :value="value.name", :align="value.align")
+    ft-cell(v-if="value.show !== false", :value="value.name", :align="value.align")
 </template>
 
 <style lang="sass">
-.flextable-heading
+.ft-heading
   font-weight: bold
 </style>
 
 <script lang="babel">
-import Cell from './Cell';
+import ftCell from './Cell';
 
 export default {
   components: {
-    Cell,
+    ftCell,
   },
   props: {
     columns: {
@@ -28,10 +28,10 @@ export default {
   },
   computed: {
     alignClass() {
-      return `flextable-cell-${(this.align || 'left')}`;
+      return `ft-cell-${(this.align || 'left')}`;
     },
     wrapClass() {
-      return `flextable-row-${this.wrap ? 'wrap' : 'nowrap'}`;
+      return `ft-row-${this.wrap ? 'wrap' : 'nowrap'}`;
     },
   },
 };

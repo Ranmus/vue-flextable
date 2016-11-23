@@ -1,5 +1,5 @@
 <template lang="pug">
-  .flexspinner
+  .ft-spinner
 </template>
 
 <style lang="sass">
@@ -10,10 +10,10 @@ $color: #2196F3
 $alpha: 0.2
 $speed: 1s
 
-.flexspinner
+.ft-spinner
   width: $size
   height: $size
-  animation: flexspinner $speed infinite linear
+  animation: ft-spinner $speed infinite linear
   border:
     right: $weight solid $color
     bottom: $weight solid rgba($color, $alpha)
@@ -21,7 +21,7 @@ $speed: 1s
     top: $weight solid rgba($color, $alpha)
     radius: $radius
 
-@keyframes flexspinner
+@keyframes ft-spinner
   0%
     transform: rotate(90deg)
   100%

@@ -1,5 +1,5 @@
 <template lang="pug">
-select(@change="updateValue($event.target.value)").flextable-select
+select(@change="updateValue($event.target.value)").ft-select
   template(v-for="option in options")
     option(:value="option",:selected="option == value") {{ option }}
 </template>

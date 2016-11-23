@@ -5,10 +5,10 @@
       slot(name="title")
 
   .loader(v-if="loading")
-    spinner
+    ft-loader
 
   .flextable-table(v-else="loading")
-    grid(
+    ft-grid(
       v-if="rows.length > 0",
       :rows="rows",
       :columns="columns",
@@ -48,23 +48,29 @@
 </style>
 
 <script lang="babel">
+import Vue from 'vue';
 import ftHeader from './header/Header';
 import ftFooter from './footer/Footer';
+import ftLoader from './loader/Loader';
 import ftPageSize from './footer/PageSize';
 import ftPaginator from './footer/Paginator';
-import Grid from './grid/Grid';
-import Spinner from './ui/Spinner';
+import ftGrid from './grid/Grid';
 
+const isMobile = require('ismobilejs');
+
+if (Vue.prototype.$bus === undefined) {
+  console.log('brak busa');
+}
 const isMobile = require('ismobilejs');
 
 export default {
   components: {
     ftHeader,
     ftFooter,
+    ftLoader,
     ftPageSize,
     ftPaginator,
-    Grid,
-    Spinner,
+    ftGrid,
   },
   props: {
     config: {

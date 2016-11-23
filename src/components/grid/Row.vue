@@ -1,32 +1,35 @@
 <template lang="pug">
-.flextable-row(:class="wrapClass")
+.ft-row(:class="wrapClass")
   template(v-for="value, key in columns")
-    cell(v-if="columns[key].show !== false", :value="render(key)", :align="columns[key].align")
+    ft-cell(v-if="columns[key].show !== false", :value="render(key)", :align="columns[key].align")
 </template>
 
 <style lang="sass">
-.flextable-row
+.ft-row
   display: flex
   width: auto
   border-bottom: 1px solid #c7c7c7
-.flextable-row:last-child
+.ft-row:last-child
   border-bottom: 0px
   flex:
     direction: row
-.flextable-row-wrap
+.ft-row-wrap
   flex:
     wrap: wrap
-.flextable-row-nowrap
+.ft-row-nowrap
   flex:
     wrap: no-wrap
 </style>
 
 <script lang="babel">
-import Cell from './Cell';
+import ftCell from './Cell';
 
 export default {
   components: {
-    Cell,
+    ftCell,
+  },
+  store: {
+    mq: 'mq',
   },
   props: {
     row: {
@@ -44,7 +47,7 @@ export default {
   },
   computed: {
     wrapClass() {
-      return `flextable-row-${this.wrap ? 'wrap' : 'nowrap'}`;
+      return `ft-row-${this.wrap ? 'wrap' : 'nowrap'}`;
     },
   },
   methods: {

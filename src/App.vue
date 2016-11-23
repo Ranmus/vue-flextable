@@ -8,17 +8,15 @@
       // Usage example
       flextable(:config="config",:test="tester")
         template(slot="title") Users
-        //- // Set custom title
-        //- h1(slot="title") Users
-        //- // Set rows per page text
-        //- template(slot="rowsPerPage") Rows per Page:
-        //- // Set pages of text
-        //- template(slot="pageOf" scope="pages")  Page {{ pages.current }} of {{ pages.total }}
-        //- // Set paginator buttons texts
-        //- template(slot="prev") Previous
-        //- template(slot="next") Next
-        //- template(slot="first") First
-        //- template(slot="last") Last
+        div(slot="row-phone-small" scope="props")
+        div(slot="row-phone-medium" scope="props")
+        div(slot="row-phone-large" scope="props")
+        div(slot="row-tablet-small" scope="props")
+        div(slot="row-tablet-medium" scope="props")
+        div(slot="row-tablet-large" scope="props")
+        div(slot="row-desktop-small" scope="props")
+        div(slot="row-desktop-medium" scope="props")
+        div(slot="row-desktop-large" scope="props")
 </template>
 
 <style lang="sass">
@@ -54,6 +52,9 @@ body
     data: {
       url: 'http://localhost:8090/users',
       side: 'client',
+      store: {
+        zzz: 'sss',
+      },
     },
     heading: {
       // title: 'Users (Title set via config)',
@@ -63,8 +64,8 @@ body
       limit: 5,
     },
     wrap: {
-      phone: false,
-      tablet: false,
+      phone: true,
+      tablet: true,
       desktop: false,
     },
     columns: {

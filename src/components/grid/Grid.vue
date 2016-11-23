@@ -1,23 +1,24 @@
 <template lang="pug">
-.flextable-grid
-  heading(:columns="columns", :wrap="wrap")
-  row(v-for="row in rows", :row="row", :columns="columns", :wrap="wrap")
+.ft-grid
+  ft-heading(:columns="columns", :wrap="wrap")
+  ft-row(v-for="row in rows", :row="row", :columns="columns", :wrap="wrap")
 </template>
 
 <style lang="sass">
-.flextable-grid
+.ft-grid
   display: flex
   flex-direction: column
 </style>
 
 <script lang="babel">
-import Heading from './Heading';
-import Row from './Row';
+import MQFacade from 'media-query-facade';
+import ftHeading from './Heading';
+import ftRow from './Row';
 
 export default {
   components: {
-    Heading,
-    Row,
+    ftHeading,
+    ftRow,
   },
   props: {
     rows: {
@@ -37,6 +38,11 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      mq: new MQFacade(),
+    };
   },
   computed: {
     wrap() {

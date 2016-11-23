@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "ismobilejs": "^0.4.0",
+    "media-query-facade": "^1.0.33",
     "roboto-npm-webfont": "0.0.2",
     "vue": "^2.1.0",
     "vue-resource": "^1.0.3",
