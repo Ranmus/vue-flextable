@@ -1,45 +1,34 @@
 <template lang="pug">
-.flextable
-  .loader(v-if="loading")
-    spinner
-  .flextable-table(v-else="loading")
-    grid(v-if="rows.length > 0", :rows="rows")
-  .flextable-footer
-    template(v-if="pagination") Rows per page:
-      selector(v-model.number="limit", :options="limits")
-      paginator(v-model.number="page", :total="data.length", :size="limit")
+.flextable(:class=`[store.mobileClass, store.deviceClass, store.sizeClass]`)
+  ft-header
+    template(v-if="this.$slots.title" slot="title")
+      slot(name="title")
+
+  ft-loader(v-if="store.loading")
+  ft-grid(v-else="store.loading", :store="store")
+  ft-footer(:store="store")
 </template>
 
 <style lang="sass">
-@mixin shadow
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12)
-@mixin border
-  border: 1px solid rgba(0,0,0,.12)
-
-.flextable
-  @include border
-  @include shadow
-  background: #fff
-
-.loader
-  display: flex
-  justify-content: center
-  align-items: center
-  padding: 50px
+@import ~assets/flextable.sass
 </style>
 
 <script lang="babel">
-import Grid from './gui/grid/Grid';
-import Selector from './gui/Selector';
-import Paginator from './gui/Paginator';
-import Spinner from './gui/Spinner';
+import axios from 'axios';
+import ftHeader from './header/Header';
+import ftFooter from './footer/Footer';
+import ftLoader from './loader/Loader';
+import ftGrid from './grid/Grid';
+
+const isMobile = require('ismobilejs');
+const MQFacade = require('media-query-facade');
 
 export default {
   components: {
-    Grid,
-    Selector,
-    Paginator,
-    Spinner,
+    ftHeader,
+    ftFooter,
+    ftLoader,
+    ftGrid,
   },
   props: {
     config: {
@@ -49,14 +38,8 @@ export default {
   },
   data() {
     return {
-      message: 'Flextable container',
-      resource: null,
-      data: [],
-      loading: true,
-      pagination: false,
-      limit: 10,
-      limits: [10, 20, 30, 50, 100],
-      page: 1,
+      store: {},
+      mqf: null,
     };
   },
   watch: {
@@ -66,41 +49,145 @@ export default {
   },
   computed: {
     rows() {
-      const { data, pagination, page, limit } = this;
+      const { pagination, page, limit } = this.store;
       const offset = (page - 1) * limit;
 
       if (pagination) {
-        return data.slice(offset, offset + limit);
+        return this.store.data.slice(offset, offset + limit);
       }
 
       return this.data;
     },
+    device() {
+      if (isMobile.phone) {
+        return 'phone';
+      }
+      if (isMobile.tablet) {
+        return 'tablet';
+      }
+
+      return 'desktop';
+    },
   },
   created() {
-    const { pagination } = this.config;
+    const { pagination, columns, data, wrap } = this.config;
+    const store = {
+      url: null,
+      debug: true,
+      pagination: true,
+      limit: 10,
+      limits: [1, 5, 10, 20, 30, 50, 100],
+      columns: {},
+      wrap: {},
+      data: [],
+      page: 1,
+      loading: true,
+      isMobile: false,
+      isPhone: false,
+      isTablet: false,
+      isDesktop: true,
+      screenSize: null,
+      sizeClass: null,
+      deviceClass: null,
+      mobileClass: null,
+      getRows: () => this.rows,
+      setData(value) {
+        this.log('setData', value);
+        this.data = value;
+      },
+      setLimit(limit) {
+        this.log('setLimit', limit);
+        this.limit = limit;
+        this.setPage(1);
+      },
+      setPage(page) {
+        this.log('setPage', page);
+        this.page = page;
+      },
+      setLoading(loading) {
+        this.log('setLoading', loading);
+        this.loading = loading;
+      },
+      setScreenSize(size) {
+        this.log('setScreenSize', size);
+        this.screenSize = size;
+      },
+      log(message, value) {
+        if (this.debug) {
+          console.log(message, value);
+        }
+      },
+    };
 
     if (pagination) {
-      if (pagination.enabled) {
-        this.pagination = pagination.enabled;
+      if (Reflect.has(pagination, 'enabled')) {
+        store.pagination = pagination.enabled;
       }
-      if (pagination.limit) {
-        this.limit = pagination.limit;
+      if (Reflect.has(pagination, 'limit')) {
+        store.limit = pagination.limit;
       }
+    }
+
+    if (data) {
+      if (Reflect.has(data, 'url')) {
+        store.url = data.url;
+      }
+    }
+
+    if (columns) {
+      store.columns = columns;
+    }
+
+    if (wrap) {
+      store.wrap = wrap;
+    }
+
+    this.store = store;
+    this.mqf = new MQFacade();
+
+    this.addScreenSize('small', 'only screen and (max-width: 600px)');
+    this.addScreenSize('medium', 'only screen and (min-width: 601px) and (max-width: 992px)');
+    this.addScreenSize('large', 'only screen and (min-width: 993px)');
+
+    if (isMobile.any) {
+      store.isDesktop = false;
+      store.isMobile = true;
+      store.mobileClass = 'ft-mobile';
+    }
+
+    if (isMobile.phone) {
+      store.isPhone = true;
+      store.isTablet = false;
+      store.deviceClass = 'ft-phone';
+    }
+
+    if (isMobile.tablet) {
+      store.isPhone = false;
+      store.isTablet = true;
+      store.deviceClass = 'ft-tablet';
     }
   },
   mounted() {
-    this.data.resource = this.$resource(this.config.data.url);
     this.getData();
   },
   methods: {
     getData() {
-      this.data.resource.get().then((response) => {
-        this.data = response.data;
-        this.loading = false;
+      axios.get(this.store.url).then((response) => {
+        this.store.setData(response.data);
+        this.store.setLoading(false);
       });
     },
     setData(data) {
       this.data = data.data;
+    },
+    addScreenSize(name, mediaQuery) {
+      this.mqf.on(mediaQuery, () => {
+        this.store.setScreenSize(name);
+        this.store.sizeClass = `ft-size-${name}`;
+      });
+    },
+    removeScreenSizes() {
+      this.mqf.off();
     },
   },
 };

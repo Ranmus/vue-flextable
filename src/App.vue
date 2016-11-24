@@ -1,9 +1,40 @@
 <template lang="pug">
   #app
-    h1 Flextable application example
-    a(:href="config.data.url").source Mocked REST server
-    flextable(:config="config",:test="tester")
+    .header
+      h1 Flextable example
+        a(:href="config.data.url").source  + random data rest server
+
+    .example
+      // Usage example
+      flextable(:config="config",:test="tester")
+        template(slot="title") Users
+        div(slot="row" scope="props")
 </template>
+
+<style lang="sass">
+@import '~roboto-npm-webfont/style.css'
+body
+  color: #757575
+  background: #fafafa
+  padding: 0
+  margin: 0
+  font:
+    family: Roboto, Helvetica, Arial, sans-serif
+    size: 13px
+
+.header
+  color: white
+  position: relative
+  padding: 10px 10% 10px 10%
+  background: #305
+  .source
+    color: rgba(white, 0.5)
+    margin-bottom: 10px
+    text-decoration: none
+
+.example
+  margin: 50px 10% 50px 10%
+</style>
 
 <script lang="babel">
   // Import flextable
@@ -11,12 +42,51 @@
 
   const config = {
     data: {
-      url: 'http://localhost:8090/users',
+      url: 'http://localhost:8090/users/',
       side: 'client',
+    },
+    heading: {
+      // title: 'Users (Title set via config)',
     },
     pagination: {
       enabled: true,
-      limit: 10,
+      limit: 5,
+    },
+    wrap: {
+      phone: true,
+      tablet: true,
+      desktop: false,
+    },
+    columns: {
+      id: {
+        name: 'Id',
+        align: 'right',
+      },
+      firstName: {
+        name: 'First name',
+      },
+      lastName: {
+        name: 'Last name',
+      },
+      email: {
+        name: 'E-mail',
+      },
+      phone: {
+        name: 'Phone',
+      },
+      avatar: {
+        name: 'Avatar',
+        align: 'center',
+        render: value => `<img src="${value}" width="32" height="32"/>`,
+        show: true,
+      },
+      options: {
+        name: 'Options',
+        align: 'right',
+        render: (value, data) => `<button>${data.id}</button>`,
+        show: true,
+        sortable: false,
+      },
     },
   };
 
@@ -32,27 +102,3 @@
     },
   };
 </script>
-
-<style lang="sass">
-  @import '~roboto-npm-webfont/style.css'
-
-  @mixin button
-    display: inline-block
-    color: white
-    padding: 10px
-    text-decoration: none
-    background: blue
-    cursor: pointer
-
-  body
-    color: #757575
-    background: #fafafa
-    padding: 20px 10% 20px 10%
-    font:
-      family: Roboto, Helvetica, Arial sans-serif
-      size: 13px
-
-  a.source
-    @include button()
-    margin-bottom: 10px
-</style>
