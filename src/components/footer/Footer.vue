@@ -4,24 +4,13 @@
   ft-paginator(:store="store")
 </template>
 
-<style lang="sass">
-.ft-footer
-  display: flex
-  justify-content: flex-end
-  padding: 20px 16px
-</style>
-
 <script lang="babel">
+import storeMixin from 'mixins/Store';
 import ftPagesize from './Pagesize';
 import ftPaginator from './Paginator';
 
 export default {
-  props: {
-    store: {
-      type: Object,
-      required: true,
-    },
-  },
+  mixins: [storeMixin],
   components: {
     ftPagesize,
     ftPaginator,

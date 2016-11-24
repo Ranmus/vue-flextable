@@ -3,20 +3,10 @@
   ft-spinner
 </template>
 
-<style lang="sass">
-.ft-loader
-  display: flex
-  justify-content: center
-  align-items: center
-  padding: 50px
-</style>
-
 <script lang="babel">
 import ftSpinner from './Spinner';
 
 export default {
-  components: {
-    ftSpinner,
-  },
+  components: { ftSpinner },
 };
 </script>

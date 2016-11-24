@@ -1,19 +1,28 @@
 <template lang="pug">
 .ft-footer-paginator Page {{ store.page }} of {{ pages }}
-  button(:disabled="isFirst", @click="first").ft-footer-paginator-button | &lt;
-  button(:disabled="isFirst", @click="prev").ft-footer-paginator-button &lt;
-  button(:disabled="isLast", @click="next").ft-footer-paginator-button &gt;
-  button(:disabled="isLast", @click="last").ft-footer-paginator-button &gt; |
+  button(
+    :disabled="isFirst",
+    @click="first"
+    ).ft-footer-paginator-button | &lt;
+  button(
+    :disabled="isFirst",
+    @click="prev"
+    ).ft-footer-paginator-button &lt;
+  button(
+    :disabled="isLast",
+    @click="next"
+    ).ft-footer-paginator-button &gt;
+  button(
+    :disabled="isLast",
+    @click="last"
+    ).ft-footer-paginator-button &gt; |
 </template>
 
 <script lang="babel">
+import storeMixin from 'mixins/Store';
+
 export default {
-  props: {
-    store: {
-      required: true,
-      type: Object,
-    },
-  },
+  mixins: [storeMixin],
   computed: {
     isFirst() {
       return this.store.page <= 1;

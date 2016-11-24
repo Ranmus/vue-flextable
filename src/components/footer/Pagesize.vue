@@ -8,17 +8,11 @@
 </template>
 
 <script lang="babel">
+import storeMixin from 'mixins/Store';
 import ftSelector from '../reusable/Selector';
 
 export default {
-  components: {
-    ftSelector,
-  },
-  props: {
-    store: {
-      required: true,
-      type: Object,
-    },
-  },
+  mixins: [storeMixin],
+  components: { ftSelector },
 };
 </script>

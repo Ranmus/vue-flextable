@@ -1,31 +1,16 @@
 <template lang="pug">
-.flextable
+.flextable(:class=`[store.mobileClass, store.deviceClass, store.sizeClass]`)
   ft-header
     template(v-if="this.$slots.title" slot="title")
       slot(name="title")
 
   ft-loader(v-if="store.loading")
-
-  .flextable-table(v-else="store.loading")
-    ft-grid(
-      v-if="rows.length > 0",
-      :rows="rows",
-      :columns="store.columns",
-      :device="device",
-      :config="config"
-      )
+  ft-grid(v-else="store.loading", :store="store")
   ft-footer(:store="store")
 </template>
 
 <style lang="sass">
-@mixin shadow
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12)
-@mixin border
-  border: 1px solid rgba(0,0,0,.12)
-.flextable
-  @include border
-  @include shadow
-  background: #fff
+@import ~assets/flextable.sass
 </style>
 
 <script lang="babel">
@@ -54,6 +39,7 @@ export default {
   data() {
     return {
       store: {},
+      mqf: null,
     };
   },
   watch: {
@@ -84,26 +70,27 @@ export default {
     },
   },
   created() {
-    const { pagination, columns, data } = this.config;
-    const mqf = new MQFacade({
-      small: 'only screen and (max-width: 600px)',
-      medium: 'only screen and (min-width: 601px) and (max-width: 992px)',
-      large: 'only screen and (min-width: 993px)',
-    });
+    const { pagination, columns, data, wrap } = this.config;
     const store = {
-      $root: this,
       url: null,
       debug: true,
       pagination: true,
       limit: 10,
       limits: [1, 5, 10, 20, 30, 50, 100],
       columns: {},
+      wrap: {},
       data: [],
       page: 1,
       loading: true,
       isMobile: false,
-      screenSize: 'large',
-      deviceType: 'desktop',
+      isPhone: false,
+      isTablet: false,
+      isDesktop: true,
+      screenSize: null,
+      sizeClass: null,
+      deviceClass: null,
+      mobileClass: null,
+      getRows: () => this.rows,
       setData(value) {
         this.log('setData', value);
         this.data = value;
@@ -151,31 +138,34 @@ export default {
       store.columns = columns;
     }
 
-    mqf.on('small', () => {
-      store.setScreenSize('small');
-    });
-
-    mqf.on('medium', () => {
-      store.setScreenSize('medium');
-    });
-
-    mqf.on('large', () => {
-      store.setScreenSize('large');
-    });
-
-    if (isMobile.any) {
-      store.isMobile = true;
-    }
-
-    if (isMobile.phone) {
-      store.deviceType = 'phone';
-    }
-
-    if (isMobile.tablet) {
-      store.deviceType = 'tablet';
+    if (wrap) {
+      store.wrap = wrap;
     }
 
     this.store = store;
+    this.mqf = new MQFacade();
+
+    this.addScreenSize('small', 'only screen and (max-width: 600px)');
+    this.addScreenSize('medium', 'only screen and (min-width: 601px) and (max-width: 992px)');
+    this.addScreenSize('large', 'only screen and (min-width: 993px)');
+
+    if (isMobile.any) {
+      store.isDesktop = false;
+      store.isMobile = true;
+      store.mobileClass = 'ft-mobile';
+    }
+
+    if (isMobile.phone) {
+      store.isPhone = true;
+      store.isTablet = false;
+      store.deviceClass = 'ft-phone';
+    }
+
+    if (isMobile.tablet) {
+      store.isPhone = false;
+      store.isTablet = true;
+      store.deviceClass = 'ft-tablet';
+    }
   },
   mounted() {
     this.getData();
@@ -189,6 +179,15 @@ export default {
     },
     setData(data) {
       this.data = data.data;
+    },
+    addScreenSize(name, mediaQuery) {
+      this.mqf.on(mediaQuery, () => {
+        this.store.setScreenSize(name);
+        this.store.sizeClass = `ft-size-${name}`;
+      });
+    },
+    removeScreenSizes() {
+      this.mqf.off();
     },
   },
 };

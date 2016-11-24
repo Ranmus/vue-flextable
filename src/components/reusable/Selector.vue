@@ -1,5 +1,5 @@
 <template lang="pug">
-select(@change="updateValue($event.target.value)").ft-select
+select(@change="$emit('input', $event.target.value)").ft-select
   template(v-for="option in options")
     option(:value="option",:selected="option == value") {{ option }}
 </template>
@@ -14,11 +14,6 @@ export default {
       type: Array,
       required: false,
       default: () => [],
-    },
-  },
-  methods: {
-    updateValue(value) {
-      this.$emit('input', value);
     },
   },
 };

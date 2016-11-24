@@ -5,19 +5,10 @@
       slot(name="title")
 </template>
 
-<style lang="sass">
-.ft-header
-  padding:
-    left: 16px
-    right: 16px
-</style>
-
 <script lang="babel">
 import ftTitle from './Title';
 
 export default {
-  components: {
-    ftTitle,
-  },
+  components: { ftTitle },
 };
 </script>

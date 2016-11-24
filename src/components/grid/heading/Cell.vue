@@ -3,28 +3,12 @@
   @click="toggleSorting",
   :class=`{
     'ft-heading-cell-sortable': sortable,
-    'ft-heading-cell-left': align === 'left',
-    'ft-heading-cell-right': align === 'right',
-    'ft-heading-cell-center': align === 'center'}`
-  )
+    'ft-align-left': align === 'left',
+    'ft-align-right': align === 'right',
+    'ft-align-center': align === 'center'}`
+    )
   template {{ value }}
 </template>
-
-<style lang="sass">
-.ft-heading-cell
-  width: 100%
-  padding: 16px
-  align-items: center
-  font-weight: bold
-.ft-heading-cell-left
-  text-align: left
-.ft-heading-cell-center
-  text-align: center
-.ft-heading-cell-right
-  text-align: right
-.ft-heading-cell-sortable
-  cursor: pointer
-</style>
 
 <script lang="babel">
 export default {

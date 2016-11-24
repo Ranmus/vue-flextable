@@ -1,24 +1,12 @@
 <template lang="pug">
-.ft-cell
-  .ft-cell-container(v-html="value", :class="alignClass")
+.ft-grid-cell(
+  v-html="value",
+  :class=`{
+    'ft-align-left': align === 'left',
+    'ft-align-right': align === 'right',
+    'ft-align-center': align === 'center'}`
+    )
 </template>
-
-<style lang="sass">
-.ft-cell
-  width: 100%
-  overflow: hidden
-  padding: 16px
-  display: flex
-  align-items: center
-.ft-cell-container
-  width: 100%
-.ft-cell-left
-  text-align: left
-.ft-cell-center
-  text-align: center
-.ft-cell-right
-  text-align: right
-</style>
 
 <script lang="babel">
 export default {
@@ -29,11 +17,6 @@ export default {
     value: {
       required: false,
       default: null,
-    },
-  },
-  computed: {
-    alignClass() {
-      return `ft-cell-${(this.align || 'left')}`;
     },
   },
 };
