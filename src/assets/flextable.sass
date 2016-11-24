@@ -15,18 +15,19 @@
   align-items: center
 
 .ft-header
-  padding:
-    left: $horizontal-padding
-    right: $horizontal-padding
+  @include default-padding
+  display: flex
+  justify-content: space-between
 
 .ft-header-title
-  @include default-paddding
   font:
     size: 2.0em
     weight: bold
 
+.ft-search
+
 .ft-footer
-  @include default-paddding
+  @include default-padding
   display: flex
   justify-content: flex-end
 
