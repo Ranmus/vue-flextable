@@ -1,12 +1,11 @@
 <template lang="pug">
-.ft-title
+.ft-header-title
   slot(name="title") {{ title }}
 </template>
 
 <style lang="sass">
-.ft-title
-  margin-top: 10px
-  padding: 10px 16px
+.ft-header-title
+  padding: 20px 16px 20px 16px
   font:
     size: 2.0em
     weight: bold

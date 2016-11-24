@@ -1,16 +1,30 @@
 <template lang="pug">
 .ft-footer
-  slot(name="pageSize")
-  slot(name="paginator")
+  ft-pagesize(:store="store")
+  ft-paginator(:store="store")
 </template>
 
 <style lang="sass">
 .ft-footer
-  height: 10px
-  text-align: right
-  padding: 20px
+  display: flex
+  justify-content: flex-end
+  padding: 20px 16px
 </style>
 
 <script lang="babel">
-export default {};
+import ftPagesize from './Pagesize';
+import ftPaginator from './Paginator';
+
+export default {
+  props: {
+    store: {
+      type: Object,
+      required: true,
+    },
+  },
+  components: {
+    ftPagesize,
+    ftPaginator,
+  },
+};
 </script>

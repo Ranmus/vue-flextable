@@ -1,22 +1,22 @@
 <template lang="pug">
-.flextable-cell
-  .flextable-cell-container(v-html="value", :class="alignClass")
+.ft-cell
+  .ft-cell-container(v-html="value", :class="alignClass")
 </template>
 
 <style lang="sass">
-.flextable-cell
+.ft-cell
   width: 100%
   overflow: hidden
   padding: 16px
   display: flex
   align-items: center
-.flextable-cell-container
+.ft-cell-container
   width: 100%
-.flextable-cell-left
+.ft-cell-left
   text-align: left
-.flextable-cell-center
+.ft-cell-center
   text-align: center
-.flextable-cell-right
+.ft-cell-right
   text-align: right
 </style>
 
@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     alignClass() {
-      return `flextable-cell-${(this.align || 'left')}`;
+      return `ft-cell-${(this.align || 'left')}`;
     },
   },
 };

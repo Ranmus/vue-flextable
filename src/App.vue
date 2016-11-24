@@ -8,19 +8,11 @@
       // Usage example
       flextable(:config="config",:test="tester")
         template(slot="title") Users
-        div(slot="row-phone-small" scope="props")
-        div(slot="row-phone-medium" scope="props")
-        div(slot="row-phone-large" scope="props")
-        div(slot="row-tablet-small" scope="props")
-        div(slot="row-tablet-medium" scope="props")
-        div(slot="row-tablet-large" scope="props")
-        div(slot="row-desktop-small" scope="props")
-        div(slot="row-desktop-medium" scope="props")
-        div(slot="row-desktop-large" scope="props")
+        div(slot="row" scope="props")
 </template>
 
 <style lang="sass">
-//@import '~roboto-npm-webfont/style.css'
+@import '~roboto-npm-webfont/style.css'
 body
   color: #757575
   background: #fafafa
@@ -50,11 +42,8 @@ body
 
   const config = {
     data: {
-      url: 'http://localhost:8090/users',
+      url: 'http://localhost:8090/users/',
       side: 'client',
-      store: {
-        zzz: 'sss',
-      },
     },
     heading: {
       // title: 'Users (Title set via config)',
@@ -96,6 +85,7 @@ body
         align: 'right',
         render: (value, data) => `<button>${data.id}</button>`,
         show: true,
+        sortable: false,
       },
     },
   };

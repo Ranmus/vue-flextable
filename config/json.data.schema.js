@@ -5,8 +5,8 @@ module.exports = {
     "properties": {
         "users": {
             "type": "array",
-            "minItems": 500,
-            "maxItems": 500,
+            "minItems": 100,
+            "maxItems": 100,
             "items": {
                 "type": "object",
                 "required": ["id", "firstName", "lastName", "email", "phone", "avatar"],

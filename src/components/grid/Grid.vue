@@ -12,7 +12,7 @@
 
 <script lang="babel">
 import MQFacade from 'media-query-facade';
-import ftHeading from './Heading';
+import ftHeading from './heading/Heading';
 import ftRow from './Row';
 
 export default {
