@@ -1,0 +1,65 @@
+@import helpers/definitions
+@import helpers/mixins
+@import helpers/helpers
+@import responsive/responsive.sass
+@import components/spinner
+
+.flextable
+  @include border
+  @include shadow
+  background: #fff
+
+.ft-loader
+  display: flex
+  justify-content: center
+  align-items: center
+
+.ft-header
+  padding:
+    left: $horizontal-padding
+    right: $horizontal-padding
+
+.ft-header-title
+  @include default-paddding
+  font:
+    size: 2.0em
+    weight: bold
+
+.ft-footer
+  @include default-paddding
+  display: flex
+  justify-content: flex-end
+
+.ft-grid
+  display: flex
+  flex-direction: column
+
+.ft-grid-row
+  display: flex
+  align-items: center
+  border-bottom: 1px solid #c7c7c7
+
+.ft-grid-row:last-child
+  border-bottom: 0px
+
+.ft-grid-cell
+  width: 100%
+  overflow: hidden
+  padding: 16px
+
+.ft-heading-row
+  display: flex
+  width: auto
+  border-bottom: 1px solid #c7c7c7
+
+.ft-heading-row:last-child
+  border-bottom: 0px
+
+.ft-heading-cell
+  width: 100%
+  padding: $cell-padding
+  align-items: center
+  font-weight: bold
+
+.ft-heading-cell-sortable
+  cursor: pointer
