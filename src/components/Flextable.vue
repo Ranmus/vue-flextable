@@ -14,12 +14,13 @@
 </style>
 
 <script lang="babel">
-import axios from 'axios';
 import ftHeader from './header/Header';
 import ftFooter from './footer/Footer';
 import ftLoader from './loader/Loader';
 import ftGrid from './grid/Grid';
+import StateManager from './others/StateManager';
 
+const axios = require('axios');
 const isMobile = require('ismobilejs');
 const MQFacade = require('media-query-facade');
 const find = require('just-find');
@@ -41,6 +42,7 @@ export default {
     return {
       store: {},
       mqf: null,
+      state: null,
     };
   },
   watch: {
@@ -49,14 +51,25 @@ export default {
     },
   },
   computed: {
+    unsearchable() {
+      const { columns } = this.store;
+
+      return Reflect.ownKeys(columns)
+        .filter(column => columns[column].searchable === false);
+    },
     rows() {
       let data = this.store.data;
 
       if (this.store.searchEnabled && this.store.searchText.length > 0) {
+        const searchText = this.store.searchText.toLowerCase();
+
         data = data.filter((row) => {
-          const result = find(row, (key, value) =>
-            String(value).indexOf(this.store.searchText) !== -1,
-          );
+          const result = find(row, (key, value) => {
+            if (this.unsearchable.indexOf(key) !== -1) {
+              return false;
+            }
+            return String(value).toLowerCase().indexOf(searchText) !== -1;
+          });
 
           return Reflect.ownKeys(result).length > 0;
         });
@@ -84,9 +97,11 @@ export default {
   },
   created() {
     const { pagination, columns, data, wrap } = this.config;
+
+    this.state = new StateManager(this.config);
     const store = {
       url: null,
-      debug: true,
+      debug: false,
       pagination: true,
       limit: 10,
       limits: [1, 5, 10, 20, 30, 50, 100],

@@ -32,7 +32,7 @@ export default {
     },
     pages() {
       const { data, limit } = this.store;
-      return Math.floor(data.length / limit);
+      return Math.ceil(data.length / limit);
     },
   },
   methods: {

@@ -6,16 +6,18 @@
 
     .example
       // Usage example
-      flextable(:config="config",:test="tester")
-        template(slot="title") Users
-        div(slot="row" scope="props")
+      flextable(:config="config")
+        template(slot="title") Users first table
+      br
+      flextable(:config="config")
+        template(slot="title") Users second table
 </template>
 
 <style lang="sass">
 @import '~roboto-npm-webfont/style.css'
 body
   color: #757575
-  background: #fafafa
+  background: #e8e8e8
   padding: 0
   margin: 0
   font:
@@ -38,7 +40,7 @@ body
 
 <script lang="babel">
   // Import flextable
-  import Flextable from './components/Flextable';
+  import Flextable from 'components/Flextable';
 
   const config = {
     data: {
@@ -79,6 +81,7 @@ body
         align: 'center',
         render: value => `<img src="${value}" width="32" height="32"/>`,
         show: true,
+        searchable: false,
       },
       options: {
         name: 'Options',
