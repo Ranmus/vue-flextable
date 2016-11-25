@@ -14,11 +14,11 @@
 </style>
 
 <script lang="babel">
+import Store from './store/Store';
 import ftHeader from './header/Header';
 import ftFooter from './footer/Footer';
 import ftLoader from './loader/Loader';
 import ftGrid from './grid/Grid';
-import StateManager from './others/StateManager';
 
 const axios = require('axios');
 const isMobile = require('ismobilejs');
@@ -42,7 +42,6 @@ export default {
     return {
       store: {},
       mqf: null,
-      state: null,
     };
   },
   watch: {
@@ -98,7 +97,8 @@ export default {
   created() {
     const { pagination, columns, data, wrap } = this.config;
 
-    this.state = new StateManager(this.config);
+    this.$store = Store();
+
     const store = {
       url: null,
       debug: false,
