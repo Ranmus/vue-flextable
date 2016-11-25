@@ -1,6 +1,6 @@
 <template lang="pug">
 .flextable(:class=`[store.mobileClass, store.deviceClass, store.sizeClass]`)
-  ft-header
+  ft-header(:store="store")
     template(v-if="this.$slots.title" slot="title")
       slot(name="title")
 
@@ -22,6 +22,7 @@ import ftGrid from './grid/Grid';
 
 const isMobile = require('ismobilejs');
 const MQFacade = require('media-query-facade');
+const find = require('just-find');
 
 export default {
   components: {
@@ -49,14 +50,26 @@ export default {
   },
   computed: {
     rows() {
+      let data = this.store.data;
+
+      if (this.store.searchEnabled && this.store.searchText.length > 0) {
+        data = data.filter((row) => {
+          const result = find(row, (key, value) =>
+            String(value).indexOf(this.store.searchText) !== -1,
+          );
+
+          return Reflect.ownKeys(result).length > 0;
+        });
+      }
+
       const { pagination, page, limit } = this.store;
       const offset = (page - 1) * limit;
 
       if (pagination) {
-        return this.store.data.slice(offset, offset + limit);
+        return data.slice(offset, offset + limit);
       }
 
-      return this.data;
+      return data;
     },
     device() {
       if (isMobile.phone) {
@@ -90,6 +103,8 @@ export default {
       sizeClass: null,
       deviceClass: null,
       mobileClass: null,
+      searchEnabled: false,
+      searchText: '',
       getRows: () => this.rows,
       setData(value) {
         this.log('setData', value);
@@ -111,6 +126,10 @@ export default {
       setScreenSize(size) {
         this.log('setScreenSize', size);
         this.screenSize = size;
+      },
+      setSearchText(text) {
+        this.log('setSearchText', text);
+        this.searchText = text;
       },
       log(message, value) {
         if (this.debug) {
