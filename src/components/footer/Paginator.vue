@@ -1,49 +1,44 @@
 <template lang="pug">
-.ft-footer-paginator Page {{ store.page }} of {{ pages }}
+.ft-footer-paginator Page {{ page }} of {{ pages }}
   button(
-    :disabled="isFirst",
+    :disabled="isFirstPage",
     @click="first"
     ).ft-footer-paginator-button | &lt;
   button(
-    :disabled="isFirst",
+    :disabled="isFirstPage",
     @click="prev"
     ).ft-footer-paginator-button &lt;
   button(
-    :disabled="isLast",
+    :disabled="isLastPage",
     @click="next"
     ).ft-footer-paginator-button &gt;
   button(
-    :disabled="isLast",
+    :disabled="isLastPage",
     @click="last"
     ).ft-footer-paginator-button &gt; |
 </template>
 
 <script lang="babel">
-import storeMixin from 'mixins/Store';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  mixins: [storeMixin],
   computed: {
-    isFirst() {
-      return this.store.page <= 1;
-    },
-    isLast() {
-      return this.store.page >= this.pages;
-    },
-    pages() {
-      const { data, limit } = this.store;
-      return Math.floor(data.length / limit);
-    },
+    ...mapGetters([
+      'page',
+      'pages',
+      'isFirstPage',
+      'isLastPage',
+    ]),
   },
   methods: {
     first() {
       this.setPage(1);
     },
     next() {
-      this.setPage(Math.min(this.pages, this.store.page + 1));
+      this.setPage(Math.min(this.pages, this.page + 1));
     },
     prev() {
-      this.setPage(Math.max(1, this.store.page - 1));
+      this.setPage(Math.max(1, this.page - 1));
     },
     last() {
       this.setPage(this.pages);
@@ -51,6 +46,9 @@ export default {
     setPage(page) {
       this.store.setPage(page);
     },
+    ...mapActions([
+      'setPage',
+    ]),
   },
 };
 </script>

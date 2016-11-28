@@ -1,14 +1,24 @@
 <template lang="pug">
 .ft-header
-  ft-title
-    template(v-if="this.$slots.title", slot="title")
-      slot(name="title")
+  ft-title(v-if="slotTitle")
+  ft-search(v-if="dataLoaded")
 </template>
 
 <script lang="babel">
+import { mapGetters } from 'vuex';
+import ftSearch from './Search';
 import ftTitle from './Title';
 
 export default {
-  components: { ftTitle },
+  components: {
+    ftSearch,
+    ftTitle,
+  },
+  computed: {
+    ...mapGetters([
+      'dataLoaded',
+      'slotTitle',
+    ]),
+  },
 };
 </script>

@@ -9,24 +9,31 @@
   @include shadow
   background: #fff
 
+.ft-no-data
+  @include default-padding
+  width: 100%
+  text-align: center
+  font-size: 2.0em
+
 .ft-loader
   display: flex
   justify-content: center
   align-items: center
 
 .ft-header
-  padding:
-    left: $horizontal-padding
-    right: $horizontal-padding
+  @include default-padding
+  display: flex
+  justify-content: space-between
 
 .ft-header-title
-  @include default-paddding
   font:
     size: 2.0em
     weight: bold
 
+.ft-search
+
 .ft-footer
-  @include default-paddding
+  @include default-padding
   display: flex
   justify-content: flex-end
 
@@ -34,22 +41,22 @@
   display: flex
   flex-direction: column
 
-.ft-grid-row
+.ft-row
   display: flex
   align-items: center
   border-bottom: 1px solid #c7c7c7
 
-.ft-grid-row:last-child
+.ft-row:last-child
   border-bottom: 0px
 
-.ft-grid-cell
+.ft-cell
   width: 100%
   overflow: hidden
   padding: 16px
 
 .ft-heading-row
   display: flex
-  width: auto
+  width: 100%
   border-bottom: 1px solid #c7c7c7
 
 .ft-heading-row:last-child
@@ -61,5 +68,25 @@
   align-items: center
   font-weight: bold
 
-.ft-heading-cell-sortable
+.ft-sortable
   cursor: pointer
+
+.ft-accordion
+  @include default-padding
+  width: 100%
+  height: 30px
+  position: absolute
+  cursor: pointer
+  opacity: 0
+
+.ft-accordion + .ft-accordion-title + .ft-accordion-panel
+  transition: all 300ms ease-in-out
+  padding: 0px $horizontal-padding
+  max-height: 0
+  overflow: hidden
+  opacity: 0
+
+.ft-accordion:checked + .ft-accordion-title + .ft-accordion-panel
+  opacity: 1
+  max-height: 300px
+  @include default-padding
