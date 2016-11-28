@@ -1,35 +1,38 @@
 <template lang="pug">
   .ft-search
     input(
-      v-if="enabled",
+      v-if="search.enabled",
       v-model="text",
-      @input="search"
+      @input="searchText"
       )
     button(@click="toggleSearch") &#128269;
 </template>
 
-<style lang="sass">
-</style>
-
 <script lang="babel">
-import storeMixin from 'mixins/Store';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  mixins: [storeMixin],
+  computed: {
+    ...mapGetters([
+      'search',
+    ]),
+  },
   data() {
     return {
       text: '',
-      enabled: false,
     };
   },
   methods: {
-    search() {
-      this.store.setSearchText(this.text);
+    searchText() {
+      this.setSearchText(this.text);
     },
     toggleSearch() {
-      this.enabled = !this.enabled;
-      this.store.searchEnabled = this.enabled;
+      this.setSearch(!this.search.enabled);
     },
+    ...mapActions([
+      'setSearch',
+      'setSearchText',
+    ]),
   },
 };
 </script>

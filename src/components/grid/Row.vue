@@ -1,33 +1,49 @@
-<template lang="pug">
-.ft-grid-row
-  template(v-for="value, key in store.columns")
-    ft-cell(
-      v-if="store.columns[key].show !== false",
-      :value="render(key)",
-      :align="store.columns[key].align"
-      )
-</template>
-
 <script lang="babel">
-import storeMixin from 'mixins/Store';
-import ftCell from './Cell';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  mixins: [storeMixin],
-  components: { ftCell },
   props: {
     row: {
       type: Object,
       required: true,
     },
   },
+  computed: {
+    ...mapGetters([
+      'slotRow',
+      'device',
+      'size',
+      'isDesktop',
+      'isMobile',
+      'isPhone',
+      'isTablet',
+    ]),
+  },
   methods: {
-    render(key) {
-      if (this.store.columns[key].render) {
-        return this.store.columns[key].render(this.row[key], this.row);
-      }
-      return this.row[key];
-    },
+    ...mapActions([
+      'delete',
+      'update',
+    ]),
+  },
+  render(createElement) {
+    return createElement('div',
+      {
+        attrs: {
+          class: 'ft-row',
+        },
+      },
+      [this.slotRow({
+        data: this.row,
+        device: this.device,
+        size: this.size,
+        isDesktop: this.isDesktop,
+        isMobile: this.isMobile,
+        isPhone: this.isPhone,
+        isTablet: this.isTablet,
+        update: this.update,
+        delete: this.delete,
+      })],
+    );
   },
 };
 </script>
