@@ -1,3 +1,4 @@
 module.exports = {
-    port: 8090
+    host: "0.0.0.0",
+    port: 8090,
 }

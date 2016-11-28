@@ -14,7 +14,7 @@ var router = jsonServer.router(generateData())
 exports.run = function() {
     server.use(middlewares)
     server.use(router)
-    server.listen(config.port, function () {
+    server.listen(config.port, config.host, function () {
         console.log('REST Server is listening on port ' + config.port)
     })
 }

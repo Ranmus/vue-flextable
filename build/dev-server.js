@@ -13,6 +13,8 @@ var webpackConfig = process.env.NODE_ENV === 'testing'
 
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
+var host = process.env.HOST || config.dev.host
+
 // Define HTTP proxies to your custom API backend
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
@@ -60,12 +62,12 @@ app.use(hotMiddleware)
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 
-module.exports = app.listen(port, function (err) {
+module.exports = app.listen(port, '0.0.0.0', function (err) {
   if (err) {
     console.log(err)
     return
   }
-  var uri = 'http://localhost:' + port
+  var uri = 'http://' + host + ':' + port
   console.log('Listening at ' + uri + '\n')
 
   // run mocked rest server with auto generated data based on json schema, see config/json.data.schema.js
