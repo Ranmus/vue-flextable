@@ -1,19 +1,23 @@
 <template lang="pug">
-.ft-grid(v-if="store.data.length > 0")
-  ft-heading(:store="store")
-  ft-row(v-for="row in store.getRows()", :row="row", :store="store")
+.ft-grid
+  ft-heading
+  ft-row(v-for="row in rowsToRender", :row="row")
 </template>
 
 <script lang="babel">
-import storeMixin from 'mixins/Store';
+import { mapGetters } from 'vuex';
 import ftHeading from './heading/Heading';
 import ftRow from './Row';
 
 export default {
-  mixins: [storeMixin],
   components: {
     ftHeading,
     ftRow,
+  },
+  computed: {
+    ...mapGetters([
+      'rowsToRender',
+    ]),
   },
 };
 </script>

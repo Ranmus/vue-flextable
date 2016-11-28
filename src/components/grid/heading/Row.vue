@@ -1,20 +1,42 @@
-<template lang="pug">
-.ft-heading-row
-  template(v-for="column in store.columns")
-    ft-heading-cell(
-      v-if="column.show !== false",
-      :value="column.name",
-      :align="column.align",
-      :sortable="column.sortable !== false"
-      )
-</template>
-
 <script lang="babel">
-import storeMixin from 'mixins/Store';
-import ftHeadingCell from './Cell';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  mixins: [storeMixin],
-  components: { ftHeadingCell },
+  computed: {
+    ...mapGetters([
+      'slotHeadingRow',
+      'device',
+      'size',
+      'isDesktop',
+      'isMobile',
+      'isPhone',
+      'isTablet',
+      'sort',
+    ]),
+  },
+  methods: {
+    ...mapActions([
+      'sortBy',
+    ]),
+  },
+  render(createElement) {
+    return createElement('div',
+      {
+        attrs: {
+          class: 'ft-heading-row',
+        },
+      },
+      [this.slotHeadingRow({
+        device: this.device,
+        size: this.size,
+        isDesktop: this.isDesktop,
+        isMobile: this.isMobile,
+        isPhone: this.isPhone,
+        isTablet: this.isTablet,
+        sortBy: this.sortBy,
+        sort: this.sort,
+      })],
+    );
+  },
 };
 </script>

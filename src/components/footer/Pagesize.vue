@@ -1,18 +1,28 @@
 <template lang="pug">
 .ft-footer-pagesize Rows per page:
   ft-selector(
-    :value="store.limit",
-    :options="store.limits",
-    @input="store.setLimit(Number($event))"
+    :value="limit",
+    :options="limits",
+    @input="setLimit(Number($event))"
     )
 </template>
 
 <script lang="babel">
-import storeMixin from 'mixins/Store';
+import { mapGetters, mapActions } from 'vuex';
 import ftSelector from '../reusable/Selector';
 
 export default {
-  mixins: [storeMixin],
+  computed: {
+    ...mapGetters([
+      'limit',
+      'limits',
+    ]),
+  },
+  methods: {
+    ...mapActions([
+      'setLimit',
+    ]),
+  },
   components: { ftSelector },
 };
 </script>
