@@ -1,20 +1,18 @@
 var jsonServer = require('json-server')
 var jsf = require('json-schema-faker')
-var config = require('../config/rest')
-var schema = require('../config/json.data.schema')
+var config = require('../config')
 var middlewares = jsonServer.defaults()
 
-var generateData = function() {
-    return jsf(schema)
-}
-
+var schema = config.rest.schema
+var host = config.rest.host
+var port = config.rest.port
 var server = jsonServer.create()
-var router = jsonServer.router(generateData())
+var router = jsonServer.router(jsf(schema))
 
 exports.run = function() {
     server.use(middlewares)
     server.use(router)
-    server.listen(config.port, function () {
-        console.log('REST Server is listening on port ' + config.port)
+    server.listen(port, host, function () {
+        console.log('REST Server is listening on: ' + host + ':' + port)
     })
 }
