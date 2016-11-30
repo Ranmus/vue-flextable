@@ -1,23 +1,15 @@
-require('./check-versions')()
-var restServer = require('./rest-server')
 var config = require('../config')
-if (!process.env.NODE_ENV) process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
+process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
 var path = require('path')
 var express = require('express')
 var webpack = require('webpack')
 var opn = require('opn')
 var proxyMiddleware = require('http-proxy-middleware')
-var webpackConfig = process.env.NODE_ENV === 'testing'
-  ? require('./webpack.prod.conf')
-  : require('./webpack.dev.conf')
+var webpackConfig = require('./webpack.dev.conf')
+var restServer = require('./rest-server')
 
-// default port where dev server listens for incoming traffic
-var port = process.env.PORT || config.dev.port
-var host = process.env.HOST || config.dev.host
-
-// Define HTTP proxies to your custom API backend
-// https://github.com/chimurai/http-proxy-middleware
-var proxyTable = config.dev.proxyTable
+var port = config.dev.port
+var host = config.dev.host
 
 var app = express()
 var compiler = webpack(webpackConfig)
@@ -37,15 +29,6 @@ compiler.plugin('compilation', function (compilation) {
     hotMiddleware.publish({ action: 'reload' })
     cb()
   })
-})
-
-// proxy api requests
-Object.keys(proxyTable).forEach(function (context) {
-  var options = proxyTable[context]
-  if (typeof options === 'string') {
-    options = { target: options }
-  }
-  app.use(proxyMiddleware(context, options))
 })
 
 // handle fallback for HTML5 history API
@@ -70,7 +53,7 @@ module.exports = app.listen(port, '0.0.0.0', function (err) {
   var uri = 'http://' + host + ':' + port
   console.log('Listening at ' + uri + '\n')
 
-  // run mocked rest server with auto generated data based on json schema, see config/json.data.schema.js
+  // run rest server with auto generated data based on json schema
   restServer.run()
 
   // when env is testing, don't need open it

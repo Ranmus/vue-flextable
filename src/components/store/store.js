@@ -1,13 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-
+const Vuex = require('vuex');
 const arraySort = require('array-sort');
 const axios = require('axios');
 const find = require('just-find');
 const isMobile = require('ismobilejs');
 const MQFacade = require('media-query-facade');
-
-Vue.use(Vuex);
 
 // mutations
 const DATA_LOAD = 'DATA_LOAD';
@@ -376,6 +372,7 @@ const actions = {
   },
 };
 
+/* eslint-disable no-undef */
 export default () => new Vuex.Store({
   state: createState(),
   getters,
