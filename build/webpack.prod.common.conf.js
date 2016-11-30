@@ -14,16 +14,7 @@ var env = process.env.NODE_ENV === 'testing'
 
 module.exports = merge(baseWebpackConfig, {
   entry: {
-    app: './src/vue-flextable.js',
-  },
-  externals: {
-    'vue': 'Vue',
-    'vuex': 'Vuex',
-    // 'media-query-facade': 'media-query-facade',
-    // 'array-sort': 'array-sort',
-    // 'just-find': 'just-find',
-    // 'ismobilejs': 'ismobilejs',
-    // 'axios': 'axios',
+    app: './src/vue-flextable.common.js',
   },
   module: {
     loaders: utils.styleLoaders({ sourceMap: config.build.productionSourceMap, extract: true })
@@ -31,7 +22,7 @@ module.exports = merge(baseWebpackConfig, {
   devtool: config.build.productionSourceMap ? '#source-map' : false,
   output: {
     path: config.build.assetsRoot,
-    filename: utils.assetsPath('flextable.min.js'),
+    filename: utils.assetsPath('flextable.common.js'),
   },
   vue: {
     loaders: utils.cssLoaders({

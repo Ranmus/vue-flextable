@@ -82,17 +82,15 @@
 
 <style lang="sass">
 @import '~roboto-npm-webfont/style.css'
-@import 'assets/example.sass'
+@import '~assets/example.sass'
 </style>
 
 <script lang="babel">
-  import Flextable from 'components/Flextable';
   import ftCell from 'components/grid/Cell';
 
   export default {
     name: 'app',
     components: {
-      Flextable,
       ftCell,
     },
     methods: {
