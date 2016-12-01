@@ -1,16 +1,17 @@
+import MediaQuery from 'utils/MediaQuery';
+
 const Vuex = require('vuex');
 const arraySort = require('array-sort');
 const axios = require('axios');
 const find = require('just-find');
 const isMobile = require('ismobilejs');
-const MQFacade = require('media-query-facade');
 
 // mutations
 const DATA_LOAD = 'DATA_LOAD';
 const DATA_DELETE = 'DATA_DELETE';
 
 const createState = () => ({
-  mqf: new MQFacade(),
+  mq: new MediaQuery(),
   title: null,
   loaded: false,
   loading: false,
@@ -296,21 +297,23 @@ const actions = {
         mediaQuery: definitions[key],
       });
     });
+
+    state.mq.check();
   },
   addScreenSize(context, payload) {
-    const { mqf, classes, screenSizes } = context.state;
+    const { mq, classes, screenSizes } = context.state;
     const { name, mediaQuery } = payload;
 
     screenSizes[name] = mediaQuery;
 
-    mqf.on(mediaQuery, () => {
+    mq.on(mediaQuery, () => {
       classes.size = `ft-size-${name}`;
       context.state.screenSize = name;
     });
   },
   clearScreenSizes(context) {
     const { state } = context;
-    state.mqf.off();
+    state.mq.off();
     state.screenSize = null;
   },
   setSearch(context, payload) {

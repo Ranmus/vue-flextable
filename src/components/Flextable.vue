@@ -14,11 +14,11 @@
 
 <script lang="babel">
 import { mapActions, mapGetters } from 'vuex';
-import Store from './store/store';
-import ftHeader from './header/Header';
-import ftFooter from './footer/Footer';
-import ftState from './state/State';
-import ftGrid from './grid/Grid';
+import Store from 'src/store';
+import ftHeader from 'components/header/Header';
+import ftFooter from 'components/footer/Footer';
+import ftState from 'components/state/State';
+import ftGrid from 'components/grid/Grid';
 
 export default {
   components: {

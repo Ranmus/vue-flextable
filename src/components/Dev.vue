@@ -47,7 +47,6 @@
         template(slot="row" scope="p")
           template(v-if="p.size == 'large' && p.isMobile === false")
             ft-cell(align="right") {{ p.data.id }}
-            ft-cell {{ p.data.id }}
             ft-cell {{ p.data.firstName }}
             ft-cell {{ p.data.lastName }}
             ft-cell {{ p.data.email }}
