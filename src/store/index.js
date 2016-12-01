@@ -1,7 +1,7 @@
 import MediaQuery from 'utils/MediaQuery';
+import sort from 'utils/sort';
 
 const Vuex = require('vuex');
-const arraySort = require('array-sort');
 const axios = require('axios');
 const find = require('just-find');
 const isMobile = require('ismobilejs');
@@ -90,7 +90,7 @@ const getters = {
     }
 
     const reverse = order === 'desc';
-    const sorted = arraySort(_getters.filteredData, name, { reverse });
+    const sorted = sort(_getters.filteredData, name, { reverse });
 
     return sorted;
   },
@@ -346,6 +346,7 @@ const actions = {
     }
   },
   sortBy(context, payload) {
+    /* eslint-disable no-shadow */
     const { sort } = context.state;
 
     if (sort.order === 'asc') {
