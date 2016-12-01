@@ -1,9 +1,9 @@
 import MediaQuery from 'utils/MediaQuery';
+import filter from 'utils/filter';
 import sort from 'utils/sort';
 
 const Vuex = require('vuex');
 const axios = require('axios');
-const find = require('just-find');
 const isMobile = require('ismobilejs');
 
 // mutations
@@ -68,16 +68,7 @@ const getters = {
     const { data, search, searchable } = state;
 
     if (search.enabled && search.text.length) {
-      const text = search.text.toLowerCase();
-      return data.filter((row) => {
-        const result = find(row, (key, value) => {
-          if (searchable.indexOf(key) === -1) {
-            return false;
-          }
-          return String(value).toLowerCase().indexOf(text) !== -1;
-        });
-        return Reflect.ownKeys(result).length > 0;
-      });
+      return filter(data, search.text, searchable);
     }
 
     return data;
@@ -148,20 +139,10 @@ const getters = {
 
 const mutations = {
   [DATA_DELETE]: (state, payload) => {
-    const { url } = state;
+    const { url, data } = state;
 
     axios.delete(url + payload).then(() => {
-      const deleted = state.data.find((row) => {
-        const result = find(row, (key, value) => {
-          if (key === 'id' && Number(value) === Number(payload)) {
-            return true;
-          }
-          return false;
-        });
-        return Reflect.ownKeys(result).length > 0;
-      });
-
-      state.data.splice(state.data.indexOf(deleted), 1);
+      data.splice(data.findIndex(row => row.id === payload), 1);
     });
   },
   [DATA_LOAD]: (state) => {
