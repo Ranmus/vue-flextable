@@ -26,7 +26,7 @@ export default {
           class: 'ft-heading-row',
         },
       },
-      [this.slotHeadingRow({
+      [this.slotsHeadingRow ? this.slotHeadingRow({
         device: this.device,
         size: this.size,
         isDesktop: this.isDesktop,
@@ -35,7 +35,7 @@ export default {
         isTablet: this.isTablet,
         sortBy: this.sortBy,
         sort: this.sort,
-      })],
+      }) : null],
     );
   },
 };

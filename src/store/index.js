@@ -41,6 +41,7 @@ const createState = () => ({
   },
   scopedSlots: {
     row: null,
+    headingRow: null,
   },
   classes: {
     mobile: null,

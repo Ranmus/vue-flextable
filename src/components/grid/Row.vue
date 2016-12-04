@@ -32,7 +32,7 @@ export default {
           class: 'ft-row',
         },
       },
-      [this.slotRow({
+      [this.slotRow ? this.slotRow({
         data: this.row,
         device: this.device,
         size: this.size,
@@ -42,7 +42,7 @@ export default {
         isTablet: this.isTablet,
         update: this.update,
         delete: this.delete,
-      })],
+      }) : null],
     );
   },
 };
