@@ -9,6 +9,8 @@ const isMobile = require('ismobilejs');
 // mutations
 const DATA_LOAD = 'DATA_LOAD';
 const DATA_DELETE = 'DATA_DELETE';
+const DATA_FILTER = 'DATA_FILTER';
+const DATA_SORT = 'DATA_SORT';
 
 const createState = () => ({
   mq: new MediaQuery(),
@@ -35,13 +37,10 @@ const createState = () => ({
     order: null,
   },
   slots: {
-    title: null,
-    nodata: null,
-    row: null,
   },
   scopedSlots: {
-    row: null,
-    headingRow: null,
+    pagesize: null,
+    paginator: null,
   },
   classes: {
     mobile: null,
@@ -107,10 +106,8 @@ const getters = {
   },
   dataLoaded: state => state.loaded,
   dataLoading: state => state.loading,
-  slotTitle: state => state.slots.title,
-  slotNoData: state => state.slots.nodata,
-  slotRow: state => state.scopedSlots.row,
-  slotHeadingRow: state => state.scopedSlots.headingRow,
+  scopedSlots: state => state.scopedSlots,
+  slots: state => state.slots,
   // classes
   mobileClass: state => state.classes.mobile,
   deviceClass: state => state.classes.device,
@@ -139,6 +136,40 @@ const getters = {
 };
 
 const mutations = {
+  [DATA_FILTER]: (state, payload) => {
+    const { search } = state;
+    const { text } = payload;
+
+    if (text.length) {
+      search.enabled = true;
+      search.text = text;
+    } else {
+      search.enabled = false;
+    }
+  },
+  [DATA_SORT]: (state, payload) => {
+    /* eslint-disable no-shadow */
+    const { sort } = state;
+    const { name } = payload;
+
+    if (sort.name !== name) {
+      sort.name = name;
+      sort.order = 'asc';
+      return;
+    }
+
+    if (sort.order === 'asc') {
+      sort.order = 'desc';
+      sort.name = name;
+    } else if (sort.order === 'desc') {
+      sort.order = null;
+      sort.name = null;
+    } else {
+      sort.order = 'asc';
+      sort.name = name;
+    }
+  },
+
   [DATA_DELETE]: (state, payload) => {
     const { url, data } = state;
 
@@ -227,19 +258,18 @@ const actions = {
     context.commit(DATA_LOAD);
   },
   readSlots(context, payload) {
-    const { nodata, title, row } = payload;
     const slots = context.state.slots;
 
-    slots.title = title;
-    slots.nodata = nodata;
-    slots.row = row;
+    Reflect.ownKeys(payload).forEach((key) => {
+      slots[key] = payload[key];
+    });
   },
   readScopedSlots(context, payload) {
-    const { row, headingRow } = payload;
     const scopedSlots = context.state.scopedSlots;
 
-    scopedSlots.row = row;
-    scopedSlots.headingRow = headingRow;
+    Reflect.ownKeys(payload).forEach((key) => {
+      scopedSlots[key] = payload[key];
+    });
   },
   detectDevice(context) {
     const { device, classes } = context.state;
@@ -303,8 +333,9 @@ const actions = {
     search.enabled = payload;
   },
   setSearchText(context, payload) {
-    const { search } = context.state;
-    search.text = payload;
+    context.commit('DATA_FILTER', {
+      text: payload,
+    });
 
     if (context.state.side === 'server') {
       context.commit('DATA_LOAD');
@@ -312,7 +343,7 @@ const actions = {
   },
   setLimit(context, payload) {
     const { state } = context;
-    state.limit = payload;
+    state.limit = payload.limit;
     state.page = 1;
 
     if (state.side === 'server') {
@@ -327,20 +358,19 @@ const actions = {
       context.commit('DATA_LOAD');
     }
   },
-  sortBy(context, payload) {
-    /* eslint-disable no-shadow */
-    const { sort } = context.state;
+  filterBy(context, payload) {
+    context.commit('DATA_FILTER', {
+      text: payload.text,
+    });
 
-    if (sort.order === 'asc') {
-      sort.order = 'desc';
-      sort.name = payload;
-    } else if (sort.order === 'desc') {
-      sort.order = null;
-      sort.name = null;
-    } else {
-      sort.order = 'asc';
-      sort.name = payload;
+    if (context.state.side === 'server') {
+      context.commit('DATA_LOAD');
     }
+  },
+  sortBy(context, payload) {
+    context.commit('DATA_SORT', {
+      name: payload.name,
+    });
 
     if (context.state.side === 'server') {
       context.commit('DATA_LOAD');

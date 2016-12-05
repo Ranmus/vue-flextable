@@ -3,7 +3,7 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters(['slotTitle']),
+    ...mapGetters(['slots']),
   },
   render(createElement) {
     return createElement('div',
@@ -12,7 +12,7 @@ export default {
           class: 'ft-header-title',
         },
       },
-      this.slotTitle,
+      this.slots.title,
     );
   },
 };

@@ -4,18 +4,18 @@ import { mapGetters } from 'vuex';
 export default {
   computed: {
     ...mapGetters([
-      'slotNoData',
+      'slots',
     ]),
   },
   render(createElement) {
-    if (this.slotNoData) {
+    if (this.slots.nodata) {
       return createElement('div',
         {
           attrs: {
             class: 'ft-no-data',
           },
         },
-        this.slotNoData,
+        this.slots.nodata,
       );
     }
     return createElement('div', {
