@@ -21,7 +21,7 @@
 </template>
 
 <script lang="babel">
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   computed: {
@@ -46,11 +46,8 @@ export default {
       this.setPage(this.pages);
     },
     setPage(page) {
-      this.store.setPage(page);
+      this.$store.dispatch('setPage', page);
     },
-    ...mapActions([
-      'setPage',
-    ]),
   },
 };
 </script>

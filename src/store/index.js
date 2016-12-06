@@ -343,7 +343,7 @@ const actions = {
   },
   setLimit(context, payload) {
     const { state } = context;
-    state.limit = payload.limit;
+    state.limit = Number(payload.limit);
     state.page = 1;
 
     if (state.side === 'server') {
