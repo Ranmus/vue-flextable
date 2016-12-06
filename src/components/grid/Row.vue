@@ -10,7 +10,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'slotRow',
+      'scopedSlots',
       'device',
       'size',
       'isDesktop',
@@ -32,7 +32,7 @@ export default {
           class: 'ft-row',
         },
       },
-      [this.slotRow({
+      [this.scopedSlots.row ? this.scopedSlots.row({
         data: this.row,
         device: this.device,
         size: this.size,
@@ -42,7 +42,7 @@ export default {
         isTablet: this.isTablet,
         update: this.update,
         delete: this.delete,
-      })],
+      }) : null],
     );
   },
 };
