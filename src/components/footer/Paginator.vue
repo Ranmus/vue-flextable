@@ -1,25 +1,27 @@
 <template lang="pug">
-.ft-footer-paginator Page {{ page }} of {{ pages }}
-  button(
-    :disabled="isFirstPage",
-    @click="first"
-    ).ft-footer-paginator-button | &lt;
-  button(
-    :disabled="isFirstPage",
-    @click="prev"
-    ).ft-footer-paginator-button &lt;
-  button(
-    :disabled="isLastPage",
-    @click="next"
-    ).ft-footer-paginator-button &gt;
-  button(
-    :disabled="isLastPage",
-    @click="last"
-    ).ft-footer-paginator-button &gt; |
+.ft-footer-paginator
+  slot(name="paginator", :page="page", :pages="pages", :first="first", :prev="prev", :next="next", :last="last")
+    span Page {{ page }} of {{ pages }}
+    button(
+      :disabled="isFirstPage",
+      @click="first"
+      ).ft-footer-paginator-button | &lt;
+    button(
+      :disabled="isFirstPage",
+      @click="prev"
+      ).ft-footer-paginator-button &lt;
+    button(
+      :disabled="isLastPage",
+      @click="next"
+      ).ft-footer-paginator-button &gt;
+    button(
+      :disabled="isLastPage",
+      @click="last"
+      ).ft-footer-paginator-button &gt; |
 </template>
 
 <script lang="babel">
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   computed: {
@@ -44,11 +46,8 @@ export default {
       this.setPage(this.pages);
     },
     setPage(page) {
-      this.store.setPage(page);
+      this.$store.dispatch('setPage', page);
     },
-    ...mapActions([
-      'setPage',
-    ]),
   },
 };
 </script>

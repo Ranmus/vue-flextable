@@ -26,11 +26,14 @@
   justify-content: space-between
 
 .ft-header-title
+  color: $outline-color
   font:
-    size: 2.0em
+    size: 1.6rem
     weight: bold
 
 .ft-search
+
+.ft-search-button
 
 .ft-footer
   @include default-padding
@@ -44,10 +47,7 @@
 .ft-row
   display: flex
   align-items: center
-  border-bottom: 1px solid #c7c7c7
-
-.ft-row:last-child
-  border-bottom: 0px
+  border-top: 1px solid $border-color;
 
 .ft-cell
   width: 100%
@@ -57,16 +57,14 @@
 .ft-heading-row
   display: flex
   width: 100%
-  border-bottom: 1px solid #c7c7c7
-
-.ft-heading-row:last-child
-  border-bottom: 0px
 
 .ft-heading-cell
+  display: flex
   width: 100%
   padding: $cell-padding
-  align-items: center
+  color: $outline-color
   font-weight: bold
+  @include user-select(none)
 
 .ft-sortable
   cursor: pointer

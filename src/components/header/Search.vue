@@ -1,11 +1,12 @@
 <template lang="pug">
   .ft-search
-    input(
-      v-if="search.enabled",
-      v-model="text",
-      @input="searchText"
-      )
-    button(@click="toggleSearch") &#128269;
+    slot(name="search", :filterBy="filterBy")
+      input(
+        v-if="search.enabled",
+        v-model="text",
+        @input="filterBy({text: $event.target.value})"
+        )
+      button(@click="toggleSearch").ft-search-button &#128269;
 </template>
 
 <script lang="babel">
@@ -15,6 +16,7 @@ export default {
   computed: {
     ...mapGetters([
       'search',
+      'scopedSlots',
     ]),
   },
   data() {
@@ -23,15 +25,16 @@ export default {
     };
   },
   methods: {
-    searchText() {
-      this.setSearchText(this.text);
+    filterBy(text) {
+      this.$store.dispatch('filterBy', {
+        text,
+      });
     },
     toggleSearch() {
       this.setSearch(!this.search.enabled);
     },
     ...mapActions([
       'setSearch',
-      'setSearchText',
     ]),
   },
 };

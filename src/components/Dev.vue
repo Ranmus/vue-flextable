@@ -12,72 +12,50 @@
         :limits="[1,5,10,20,30,50,100]",
         :searchable="['id', 'firstName', 'lastName', 'email', 'phone']",
         )
+
+        template(slot="search" scope="p")
+          input(@input="p.filterBy($event.target.value)")
+
+        template(slot="pagesize" scope="p")
+          span Rows per page:
+          select(@input="p.setLimit($event.target.value)")
+            option(value="1") 1
+            option(value="5" selected="selected") 5
+            option(value="10") 10
+            option(value="20") 20
+            option(value="50") 50
+            option(value="100") 100
+
+        template(slot="paginator" scope="p")
+          span Page {{ p.page }} of {{ p.pages }}
+          button(@click="p.first()") First
+          button(@click="p.prev()") Previous
+          button(@click="p.next()") Next
+          button(@click="p.last()") Last
+
         template(slot="title") Users first table
+
         template(slot="nodata") No users loaded
+
         template(slot="headingRow" scope="p")
-          template(v-if="p.size == 'large' && p.isMobile === false")
-            .ft-heading-cell.ft-sortable.ft-align-right(@click="p.sortBy('id')")
-              span(v-if="p.sort.name == 'id' && p.sort.order == 'asc'") &#x25B2;
-              span(v-if="p.sort.name == 'id' && p.sort.order == 'desc'") &#x25BC;
-              span Id
-            .ft-heading-cell.ft-sortable(@click="p.sortBy('firstName')")
-              span First name
-              span(v-if="p.sort.name == 'firstName' && p.sort.order == 'asc'") &#x25B2;
-              span(v-if="p.sort.name == 'firstName' && p.sort.order == 'desc'") &#x25BC;
-            .ft-heading-cell.ft-sortable(@click="p.sortBy('lastName')")
-              span Last name
-              span(v-if="p.sort.name == 'lastName' && p.sort.order == 'asc'") &#x25B2;
-              span(v-if="p.sort.name == 'lastName' && p.sort.order == 'desc'") &#x25BC;
-            .ft-heading-cell.ft-sortable(@click="p.sortBy('email')")
-              span E-mail
-              span(v-if="p.sort.name == 'email' && p.sort.order == 'asc'") &#x25B2;
-              span(v-if="p.sort.name == 'email' && p.sort.order == 'desc'") &#x25BC;
-            .ft-heading-cell.ft-sortable(@click="p.sortBy('phone')")
-              span Phone
-              span(v-if="p.sort.name == 'phone' && p.sort.order == 'asc'") &#x25B2;
-              span(v-if="p.sort.name == 'phone' && p.sort.order == 'desc'") &#x25BC;
-            .ft-heading-cell.ft-align-center Avatar
-            .ft-heading-cell.ft-align-right Options
-          template(v-else-if="p.size == 'medium' && p.isMobile === false")
-            .ft-heading-cell.ft-sortable.ft-align-right Id
-            .ft-heading-cell.ft-sortable Full name
-            .ft-heading-cell.ft-sortable E-mail / Phone
-            .ft-heading-cell.ft-align-center Avatar
-            .ft-heading-cell.ft-align-right Options
+          .ft-heading-cell(
+            v-for="column in columns",
+            :class="column.classes",
+            @click="column.sortable && p.sortBy(column.id)"
+            )
+            div {{ column.name }}
+            div(v-if="p.sort.name == column.id")
+              span(v-if="p.sort.order == 'asc'") &#x25B2;
+              span(v-else) &#x25BC;
+
         template(slot="row" scope="p")
-          template(v-if="p.size == 'large' && p.isMobile === false")
-            ft-cell(align="right") {{ p.data.id }}
-            ft-cell {{ p.data.id }}
-            ft-cell {{ p.data.firstName }}
-            ft-cell {{ p.data.lastName }}
-            ft-cell {{ p.data.email }}
-            ft-cell {{ p.data.phone }}
-            ft-cell(align="center")
-              img(:src="p.data.avatar", width="32", height="32")
-            ft-cell(align="right")
-              button(@click="p.delete(p.data.id)") &#x2718;
-          template(v-else-if="p.size == 'medium' && p.isMobile === false")
-            ft-cell(align="right") {{ p.data.id }}
-            ft-cell {{ p.data.firstName }} {{ p.data.lastName }}
-            ft-cell
-              div {{ p.data.email }}
-              div {{ p.data.phone }}
-            ft-cell(align="center")
-              img(:src="p.data.avatar", width="32", height="32")
-            ft-cell(align="right")
-              button(@click="remove(p.data.id)") {{ p.data.id }}
-          template(v-else-if="p.size == 'small' || p.isMobile == true")
-            ft-cell
-              input(type="checkbox").ft-accordion
-              .ft-accordion-title(style="display: flex; justify-content: space-around")
-                div(style="width: 100%").ft-align-center
-                  img(:src="p.data.avatar", width="32", height="32")
-                div(style="padding: 8px; width: 100%").ft-align-left {{ p.data.firstName }} {{ p.data.lastName }}
-              .ft-accordion-panel
-                p E-mail: {{ p.data.email }}
-                p Phone: {{ p.data.phone }}
-                .ft-align-right
-                  button(@click="remove(p.data.id)") {{ p.data.id }}
+          .ft-cell(v-for="column in columns", :class="column.classes")
+            template(v-if="column.id == 'avatar'")
+              img(:src="p.data[column.id]", width="32", height="32")
+            template(v-else-if="column.id == 'options'") {{ p.data[column.id] }}
+              button Edit
+              button Delete
+            template(v-else) {{ p.data[column.id] }}
 </template>
 
 <style lang="sass">
@@ -90,6 +68,44 @@
 
   export default {
     name: 'app',
+    data() {
+      return {
+        filter: false,
+        columns: [{
+          id: 'id',
+          align: 'right',
+          classes: 'ft-align-right',
+          name: 'Id',
+          sortable: true,
+        }, {
+          id: 'firstName',
+          name: 'First name',
+          sortable: true,
+        }, {
+          id: 'lastName',
+          name: 'Last name',
+          sortable: true,
+        }, {
+          id: 'email',
+          name: 'E-mail',
+          sortable: true,
+        }, {
+          id: 'phone',
+          name: 'Phone',
+          sortable: true,
+        }, {
+          id: 'avatar',
+          align: 'center',
+          classes: 'ft-align-center',
+          name: 'Avatar',
+        }, {
+          id: 'options',
+          align: 'right',
+          classes: 'ft-align-right',
+          name: 'Options',
+        }],
+      };
+    },
     components: {
       ftCell,
     },

@@ -1,10 +1,16 @@
 <template lang="pug">
 .flextable(:class="[mobileClass, deviceClass, sizeClass]")
   ft-header
-
+    template(slot="search" v-if="slots.search" scope="p")
+      slot(name="search", :filterBy="p.filterBy")
   template(v-if="dataLoaded")
     ft-grid
     ft-footer
+      template(v-if="scopedSlots.pagesize" slot="pagesize" scope="p")
+        slot(name="pagesize", :setLimit="p.setLimit")
+      template(v-if="scopedSlots.paginator" slot="paginator" scope="p")
+        slot(name="paginator", :page="p.page", :pages="p.pages", :first="p.first", :prev="p.prev", :next="p.next", :last="p.last")
+
   ft-state(v-else="dataLoaded")
 </template>
 
@@ -14,11 +20,11 @@
 
 <script lang="babel">
 import { mapActions, mapGetters } from 'vuex';
-import Store from './store/store';
-import ftHeader from './header/Header';
-import ftFooter from './footer/Footer';
-import ftState from './state/State';
-import ftGrid from './grid/Grid';
+import Store from 'src/store';
+import ftHeader from 'components/header/Header';
+import ftFooter from 'components/footer/Footer';
+import ftState from 'components/state/State';
+import ftGrid from 'components/grid/Grid';
 
 export default {
   components: {
@@ -71,19 +77,27 @@ export default {
     },
   },
   computed: {
+    currentPage() {
+      return 6;
+    },
+    totalPages() {
+      return 666;
+    },
     ...mapGetters([
       'mobileClass',
       'deviceClass',
       'sizeClass',
       'dataLoaded',
+      'slots',
+      'scopedSlots',
     ]),
   },
   created() {
     this.$store = Store();
   },
   mounted() {
-    const { url, source, side, limit, limits, pagination, sortable, searchable } = this;
-    this.loadConfig({
+    const { $store, url, source, side, limit, limits, pagination, sortable, searchable } = this;
+    $store.dispatch('loadConfig', {
       url,
       source,
       side,
@@ -94,20 +108,24 @@ export default {
       searchable,
     });
 
-    this.readSlots(this.$slots);
-    this.readScopedSlots(this.$scopedSlots);
-    this.detectDevice();
-    this.loadScreenSizes(this.screenSizes);
-    this.loadData();
+    $store.dispatch('readSlots', this.$slots);
+    $store.dispatch('readScopedSlots', this.$scopedSlots);
+    $store.dispatch('detectDevice');
+    $store.dispatch('loadScreenSizes', this.screenSizes);
+    $store.dispatch('loadData');
   },
   methods: {
+    filterBy(text) {
+      this.$store.dispatch('filterBy', {
+        text,
+      });
+    },
+    sortBy(name) {
+      this.$store.dispatch('sortBy', {
+        name,
+      });
+    },
     ...mapActions([
-      'detectDevice',
-      'loadConfig',
-      'loadData',
-      'readSlots',
-      'readScopedSlots',
-      'loadScreenSizes',
       'addScreenSize',
       'clearScreenSizes',
       'removeRowBy',

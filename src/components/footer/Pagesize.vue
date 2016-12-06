@@ -1,14 +1,16 @@
 <template lang="pug">
-.ft-footer-pagesize Rows per page:
-  ft-selector(
-    :value="limit",
-    :options="limits",
-    @input="setLimit(Number($event))"
-    )
+.ft-footer-pagesize
+  slot(name="pagesize", :setLimit="setLimit")
+    span Rows per page:
+    ft-selector(
+      :value="limit",
+      :options="limits",
+      @input="setLimit(Number($event))"
+      )
 </template>
 
 <script lang="babel">
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import ftSelector from '../reusable/Selector';
 
 export default {
@@ -19,9 +21,11 @@ export default {
     ]),
   },
   methods: {
-    ...mapActions([
-      'setLimit',
-    ]),
+    setLimit(limit) {
+      this.$store.dispatch('setLimit', {
+        limit,
+      });
+    },
   },
   components: { ftSelector },
 };

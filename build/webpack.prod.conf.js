@@ -19,9 +19,6 @@ module.exports = merge(baseWebpackConfig, {
   externals: {
     'vue': 'Vue',
     'vuex': 'Vuex',
-    // 'media-query-facade': 'media-query-facade',
-    // 'array-sort': 'array-sort',
-    // 'just-find': 'just-find',
     // 'ismobilejs': 'ismobilejs',
     // 'axios': 'axios',
   },

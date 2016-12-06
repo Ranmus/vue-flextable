@@ -1,7 +1,10 @@
 <template lang="pug">
 .ft-header
-  ft-title(v-if="slotTitle")
+  ft-title(v-if="slots.title")
   ft-search(v-if="dataLoaded")
+    template(slot="search" v-if="scopedSlots.search" scope="p")
+      slot(name="search", :filterBy="p.filterBy")
+
 </template>
 
 <script lang="babel">
@@ -17,7 +20,8 @@ export default {
   computed: {
     ...mapGetters([
       'dataLoaded',
-      'slotTitle',
+      'slots',
+      'scopedSlots',
     ]),
   },
 };

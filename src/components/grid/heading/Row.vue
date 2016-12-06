@@ -1,10 +1,10 @@
 <script lang="babel">
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   computed: {
     ...mapGetters([
-      'slotHeadingRow',
+      'scopedSlots',
       'device',
       'size',
       'isDesktop',
@@ -15,9 +15,11 @@ export default {
     ]),
   },
   methods: {
-    ...mapActions([
-      'sortBy',
-    ]),
+    sortBy(name) {
+      this.$store.dispatch('sortBy', {
+        name,
+      });
+    },
   },
   render(createElement) {
     return createElement('div',
@@ -26,16 +28,16 @@ export default {
           class: 'ft-heading-row',
         },
       },
-      [this.slotHeadingRow({
+      [this.scopedSlots.headingRow ? this.scopedSlots.headingRow({
         device: this.device,
         size: this.size,
         isDesktop: this.isDesktop,
         isMobile: this.isMobile,
         isPhone: this.isPhone,
         isTablet: this.isTablet,
-        sortBy: this.sortBy,
         sort: this.sort,
-      })],
+        sortBy: this.sortBy,
+      }) : null],
     );
   },
 };
