@@ -11,7 +11,7 @@
         :limit.number="5",
         :limits="[1,5,10,20,30,50,100]",
         :searchable="['id', 'firstName', 'lastName', 'email', 'phone']",
-        )
+        ref="flextable")
 
         template(slot="search" scope="p")
           input(@input="p.filterBy($event.target.value)")
@@ -51,10 +51,11 @@
         template(slot="row" scope="p")
           .ft-cell(v-for="column in columns", :class="column.classes")
             template(v-if="column.id == 'avatar'")
-              img(:src="p.data[column.id]", width="32", height="32")
+              img(:src="p.data.avatar", width="32", height="32")
             template(v-else-if="column.id == 'options'") {{ p.data[column.id] }}
-              button Edit
-              button Delete
+              button(@click="reload(Number(p.data.id))") Reload by id
+              button(@click="reload(p.data)") Reload
+              button(@click="remove(p.data)") Delete
             template(v-else) {{ p.data[column.id] }}
 </template>
 
@@ -110,11 +111,11 @@
       ftCell,
     },
     methods: {
-      edit(data) {
-        console.log(data);
+      reload(row) {
+        this.$refs.flextable.reload(row);
       },
-      remove(data) {
-        console.log(data);
+      remove(row) {
+        this.$refs.flextable.delete(row);
       },
     },
   };
