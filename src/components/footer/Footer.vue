@@ -5,7 +5,7 @@
       slot(name="pagesize", :setLimit="p.setLimit")
   ft-paginator
     template(slot="paginator" v-if="scopedSlots.paginator" scope="p")
-      slot(name="paginator", :page="p.page", :pages="p.pages", :first="p.first", :prev="p.prev", :next="p.next", :last="p.last")
+      slot(name="paginator", :data="p.data")
 </template>
 
 <script lang="babel">

@@ -9,6 +9,7 @@ const isMobile = require('ismobilejs');
 // mutations
 const DATA_LOAD = 'DATA_LOAD';
 const DATA_DELETE = 'DATA_DELETE';
+const DATA_RELOAD = 'DATA_RELOAD';
 const DATA_FILTER = 'DATA_FILTER';
 const DATA_SORT = 'DATA_SORT';
 
@@ -123,12 +124,15 @@ const getters = {
   // limits
   limit: state => state.limit,
   limits: state => state.limits,
+  total(state, _getters) {
+    if (state.side === 'server') {
+      return state.total;
+    }
+    return _getters.sortedData.length;
+  },
   page: state => state.page,
   pages(state, _getters) {
-    if (state.side === 'server') {
-      return Math.max(Math.ceil(state.total / state.limit), 1);
-    }
-    return Math.max(Math.ceil(_getters.sortedData.length / state.limit), 1);
+    return Math.max(Math.ceil(_getters.total / state.limit), 1);
   },
   isFirstPage: state => state.page <= 1,
   isLastPage: state => state.page >= state.pages,
@@ -172,10 +176,32 @@ const mutations = {
 
   [DATA_DELETE]: (state, payload) => {
     const { url, data } = state;
+    const { row } = payload;
 
-    axios.delete(url + payload).then(() => {
-      data.splice(data.findIndex(row => row.id === payload), 1);
+    axios.delete(url + row.id).then(() => {
+      data.splice(data.indexOf(row), 1);
     });
+  },
+  [DATA_RELOAD]: (state, payload) => {
+    const { url, data } = state;
+    const { row } = payload;
+
+    if (typeof row === 'number') {
+      const id = Number(row);
+      axios.get(url + id).then((response) => {
+        const found = data.find(row => Number(row.id) === id);
+
+        if (found) {
+          data.splice(data.indexOf(found), 1, response.data);
+        } else {
+          data.push(response.data);
+        }
+      });
+    } else {
+      axios.get(url + row.id).then((response) => {
+        data.splice(data.indexOf(row), 1, response.data);
+      });
+    }
   },
   [DATA_LOAD]: (state) => {
     const { side, source, url } = state;
@@ -383,8 +409,12 @@ const actions = {
       context.commit('DATA_LOAD');
     }
   },
-  update(context, payload) {
-    console.log(payload);
+  reload(context, payload) {
+    context.commit('DATA_RELOAD', payload);
+
+    if (context.state.side === 'server') {
+      context.commit('DATA_LOAD');
+    }
   },
 };
 

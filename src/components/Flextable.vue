@@ -9,7 +9,17 @@
       template(v-if="scopedSlots.pagesize" slot="pagesize" scope="p")
         slot(name="pagesize", :setLimit="p.setLimit")
       template(v-if="scopedSlots.paginator" slot="paginator" scope="p")
-        slot(name="paginator", :page="p.page", :pages="p.pages", :first="p.first", :prev="p.prev", :next="p.next", :last="p.last")
+        slot(
+          name="paginator",
+          :page="p.data.page",
+          :pages="p.data.pages",
+          :first="p.data.first",
+          :prev="p.data.prev",
+          :next="p.data.next",
+          :last="p.data.last",
+          :total="p.data.total",
+          :limit="p.data.limit",
+        )
 
   ft-state(v-else="dataLoaded")
 </template>
@@ -125,10 +135,19 @@ export default {
         name,
       });
     },
+    delete(row) {
+      this.$store.dispatch('delete', {
+        row,
+      });
+    },
+    reload(row) {
+      this.$store.dispatch('reload', {
+        row,
+      });
+    },
     ...mapActions([
       'addScreenSize',
       'clearScreenSizes',
-      'removeRowBy',
     ]),
   },
 };
