@@ -1,7 +1,7 @@
 <template lang="pug">
 .flextable(:class="[mobileClass, deviceClass, sizeClass]")
   ft-header
-    template(slot="search" v-if="slots.search" scope="p")
+    template(slot="search" v-if="namedSlots.search" scope="p")
       slot(name="search", :filterBy="p.filterBy")
   template(v-if="dataLoaded")
     ft-grid
@@ -87,18 +87,12 @@ export default {
     },
   },
   computed: {
-    currentPage() {
-      return 6;
-    },
-    totalPages() {
-      return 666;
-    },
     ...mapGetters([
       'mobileClass',
       'deviceClass',
       'sizeClass',
       'dataLoaded',
-      'slots',
+      'namedSlots',
       'scopedSlots',
     ]),
   },
@@ -106,44 +100,40 @@ export default {
     this.$store = Store();
   },
   mounted() {
-    const { $store, url, source, side, limit, limits, pagination, sortable, searchable } = this;
-    $store.dispatch('loadConfig', {
-      url,
-      source,
-      side,
-      limit,
-      limits,
-      pagination,
-      sortable,
-      searchable,
-    });
+    const config = {
+      url: this.url,
+      source: this.source,
+      side: this.side,
+      limit: this.limit,
+      limits: this.limits,
+      pagination: this.pagination,
+      sortable: this.sortable,
+      searchable: this.searchable,
+      screenSizes: this.screenSizes,
+    };
 
-    $store.dispatch('readSlots', this.$slots);
-    $store.dispatch('readScopedSlots', this.$scopedSlots);
-    $store.dispatch('detectDevice');
-    $store.dispatch('loadScreenSizes', this.screenSizes);
-    $store.dispatch('loadData');
+    const slots = {
+      named: this.$slots,
+      scoped: this.$scopedSlots,
+    };
+
+    this.$store.dispatch('initialize', {
+      config,
+      slots,
+    });
   },
   methods: {
     filterBy(text) {
-      this.$store.dispatch('filterBy', {
-        text,
-      });
+      this.$store.dispatch('filterBy', { text });
     },
     sortBy(name) {
-      this.$store.dispatch('sortBy', {
-        name,
-      });
+      this.$store.dispatch('sortBy', { name });
     },
     delete(row) {
-      this.$store.dispatch('delete', {
-        row,
-      });
+      this.$store.dispatch('delete', { row });
     },
-    reload(row) {
-      this.$store.dispatch('reload', {
-        row,
-      });
+    sync(row) {
+      this.$store.dispatch('sync', { row });
     },
     ...mapActions([
       'addScreenSize',

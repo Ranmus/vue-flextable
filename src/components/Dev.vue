@@ -53,8 +53,8 @@
             template(v-if="column.id == 'avatar'")
               img(:src="p.data.avatar", width="32", height="32")
             template(v-else-if="column.id == 'options'") {{ p.data[column.id] }}
-              button(@click="reload(Number(p.data.id))") Reload by id
-              button(@click="reload(p.data)") Reload
+              button(@click="sync(Number(p.data.id))") Synchronize by id
+              button(@click="sync(p.data)") Synchronize
               button(@click="remove(p.data)") Delete
             template(v-else) {{ p.data[column.id] }}
 </template>
@@ -111,11 +111,11 @@
       ftCell,
     },
     methods: {
-      reload(row) {
-        this.$refs.flextable.reload(row);
+      sync(row) {
+        this.$refs.flextable.sync(row);
       },
       remove(row) {
-        this.$refs.flextable.delete(row);
+        this.$refs.flextable.sync(row);
       },
     },
   };
