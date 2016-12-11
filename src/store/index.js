@@ -7,18 +7,10 @@ import dataModule from './modules/data';
 import slotsModule from './modules/slots';
 
 // mutations
-const DATA_LOAD = 'DATA_LOAD';
 const DATA_FILTER = 'DATA_FILTER';
 const DATA_SORT = 'DATA_SORT';
 
 const createState = () => ({
-  title: null,
-  loaded: false,
-  loading: false,
-  url: null,
-  side: null,
-  source: null,
-  data: [],
   page: 1,
   total: 0,
   pagination: true,
@@ -38,9 +30,7 @@ const createState = () => ({
 
 /* eslint-disable no-param-reassign */
 const getters = {
-  filteredData(state) {
-    const { data, search, searchable } = state;
-
+  filteredData(state, { data, search, searchable }) {
     if (search.enabled && search.text.length) {
       return filter(data, search.text, searchable);
     }
@@ -78,14 +68,13 @@ const getters = {
 
     return _getters.sortedData;
   },
-  dataLoaded: state => state.loaded,
-  dataLoading: state => state.loading,
   search: state => state.search,
+  searchable: state => state.searchable,
   // limits
   limit: state => state.limit,
   limits: state => state.limits,
   total(state, _getters) {
-    if (state.side === 'server') {
+    if (_getters.side === 'server') {
       return state.total;
     }
     return _getters.sortedData.length;
@@ -99,14 +88,15 @@ const getters = {
   sort: state => state.sort,
 };
 
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
 const mutations = {
   [types.CONFIG_INIT]: (state, payload) => {
     const { url, side, source, limit, limits, pagination, sortable, searchable } = payload;
+    const { dataModule } = state;
 
-    state.source = source;
-    state.side = side;
-    state.url = url;
+    dataModule.source = source;
+    dataModule.side = side;
+    dataModule.url = url;
 
     if (limits) {
       state.limits = limits;
@@ -128,50 +118,8 @@ const mutations = {
       state.searchable = searchable;
     }
   },
-  [DATA_LOAD]: (state) => {
-    const { side, source, url } = state;
-
-    if (source) {
-      state.data = source;
-      state.loading = false;
-      state.loaded = true;
-    }
-
-    // if (side === 'server') {
-    //   if (url) {
-    //     const params = {
-    //       _page: state.page,
-    //       _limit: state.limit,
-    //     };
-
-    //     /* eslint-disable no-underscore-dangle */
-    //     if (state.sort.name) {
-    //       params._sort = state.sort.name;
-    //       params._order = state.sort.order.toUpperCase();
-    //     }
-
-    //     if (state.search.enabled && state.search.text) {
-    //       params.q = state.search.text;
-    //       params._page = 1;
-    //       state.page = 1;
-    //     }
-
-    //     state.loading = true;
-    //     axios.get(url, { params }).then((response) => {
-    //       state.total = Number(response.headers['x-total-count']);
-    //       state.data = response.data;
-    //       state.loading = false;
-    //       state.loaded = true;
-    //     });
-    //   }
-    // } else if (url) {
-    //   state.loading = true;
-    //   axios.get(url).then((response) => {
-    //     state.data = response.data;
-    //     state.loading = false;
-    //     state.loaded = true;
-    //   });
-    // }
+  [types.PAGE_SET](state, payload) {
+    console.log(payload);
   },
   [DATA_FILTER]: (state, payload) => {
     const { search } = state;
@@ -214,7 +162,6 @@ const actions = {
     commit(types.SLOTS_INIT, slots);
     commit(types.DEVICE_DETECT);
 
-
     dispatch('initScreenSizes');
     dispatch('loadData');
   },
@@ -222,18 +169,13 @@ const actions = {
     const { search } = context.state;
     search.enabled = payload;
   },
-  loadData({ state }) {
-    if (!state.loading) {
-      console.log(state.url);
-    }
-  },
   setSearchText(context, payload) {
     context.commit('DATA_FILTER', {
       text: payload,
     });
 
     if (context.state.side === 'server') {
-      context.commit('DATA_LOAD');
+      context.store('loadData');
     }
   },
   setLimit(context, payload) {

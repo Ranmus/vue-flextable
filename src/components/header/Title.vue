@@ -12,7 +12,7 @@ export default {
           class: 'ft-header-title',
         },
       },
-      this.slots.title,
+      this.slots.named.title,
     );
   },
 };

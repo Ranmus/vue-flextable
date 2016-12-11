@@ -1,14 +1,14 @@
 <template lang="pug">
-.flextable(:class="[mobileClass, deviceClass, sizeClass]")
+.flextable(:class="[classes.mobile, classes.device, classes.size]")
   ft-header
-    template(slot="search" v-if="namedSlots.search" scope="p")
+    template(slot="search" v-if="slots.named.search" scope="p")
       slot(name="search", :filterBy="p.filterBy")
-  template(v-if="dataLoaded")
+  template(v-if="loaded")
     ft-grid
     ft-footer
-      template(v-if="scopedSlots.pagesize" slot="pagesize" scope="p")
+      template(v-if="slots.scoped.pagesize" slot="pagesize" scope="p")
         slot(name="pagesize", :setLimit="p.setLimit")
-      template(v-if="scopedSlots.paginator" slot="paginator" scope="p")
+      template(v-if="slots.scoped.paginator" slot="paginator" scope="p")
         slot(
           name="paginator",
           :page="p.data.page",
@@ -20,8 +20,7 @@
           :total="p.data.total",
           :limit="p.data.limit",
         )
-
-  ft-state(v-else="dataLoaded")
+  ft-state(v-else="loaded")
 </template>
 
 <style lang="sass">
@@ -88,12 +87,9 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'mobileClass',
-      'deviceClass',
-      'sizeClass',
-      'dataLoaded',
-      'namedSlots',
-      'scopedSlots',
+      'loaded',
+      'slots',
+      'classes',
     ]),
   },
   created() {
