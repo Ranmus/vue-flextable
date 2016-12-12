@@ -30,15 +30,9 @@ export default {
   },
   getters: {
     mq: s => s.mq,
-    device: s => s.device.name,
-    size: s => s.screenSize,
-    isMobile: s => s.device.isMobile,
-    isPhone: s => s.device.isPhone,
-    isTablet: s => s.device.isTablet,
-    isDesktop: s => s.device.isDesktop,
-    mobileClass: s => s.classes.mobile,
-    deviceClass: s => s.classes.device,
-    sizeClass: s => s.classes.size,
+    device: s => s.device,
+    screen: s => s.screen,
+    classes: s => s.classes,
   },
   mutations: {
     [types.DEVICE_DETECT]({ classes, device }) {
@@ -80,8 +74,8 @@ export default {
     },
   },
   actions: {
-    initScreenSizes({ commit, state }) {
-      const { mq, screen } = state;
+    initScreenSizes({ commit, getters }) {
+      const { mq, screen } = getters;
 
       Reflect.ownKeys(screen.sizes).forEach((name) => {
         commit(types.SCREEN_SIZE_ADD, { name, mediaQuery: screen.sizes[name], commit });
@@ -89,7 +83,7 @@ export default {
 
       mq.check();
     },
-    addScreenSize({ commit, state }, { name, mediaQuery }) {
+    addScreenSize({ commit, getters }, { name, mediaQuery }) {
       commit(types.SCREEN_SIZE_ADD, { name, mediaQuery, commit });
     },
     clearScreenSizes({ commit }) {

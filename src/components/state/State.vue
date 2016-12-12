@@ -1,7 +1,7 @@
 <template lang="pug">
 .ft-loader
-  ft-spinner(v-if="dataLoading")
-  ft-no-data(v-else="dataLoading")
+  ft-spinner(v-if="loading")
+  ft-no-data(v-else="loading")
 </template>
 
 <script lang="babel">
@@ -16,7 +16,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'dataLoading',
+      'loading',
     ]),
   },
 };
