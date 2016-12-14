@@ -47,9 +47,7 @@ export default {
       state.loaded = true;
     },
     [types.DATA_DELETE]({ url, data }, { row }) {
-      axios.delete(url + row.id).then(() => {
-        data.splice(data.indexOf(row), 1);
-      });
+      data.splice(data.indexOf(row), 1);
     },
     [types.DATA_SYNC](state, payload) {
       const { url, data } = state;
@@ -77,6 +75,17 @@ export default {
     },
   },
   actions: {
+    delete({ commit, getters }, { row }) {
+      const { url, side } = getters;
+
+      return axios.delete(url + row.id).then(() => {
+        commit('DATA_DELETE', { row });
+
+        if (side === 'server') {
+          commit('DATA_LOAD');
+        }
+      });
+    },
     setSide({ commit }, { side }) {
       commit(types.DATA_SIDE_SET, { side });
     },
