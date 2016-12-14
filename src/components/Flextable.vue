@@ -3,6 +3,7 @@
   ft-header
     template(slot="search" v-if="slots.named.search" scope="p")
       slot(name="search", :filterBy="p.filterBy")
+  .ft-details(v-if="selected.length") Rows selected: {{ selected.length }}
   template(v-if="loaded")
     ft-grid
     ft-footer
@@ -90,6 +91,7 @@ export default {
       'loaded',
       'slots',
       'classes',
+      'selected',
     ]),
   },
   created() {
@@ -130,6 +132,12 @@ export default {
     },
     sync(row) {
       this.$store.dispatch('sync', { row });
+    },
+    select(row) {
+      this.$store.dispatch('select', { row });
+    },
+    isSelected(row) {
+      return this.$store.dispatch('isSelected', { row }).then(state => state);
     },
     ...mapActions([
       'addScreenSize',

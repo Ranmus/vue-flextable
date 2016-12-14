@@ -5,19 +5,18 @@ import types from './types';
 import deviceModule from './modules/device';
 import dataModule from './modules/data';
 import slotsModule from './modules/slots';
+import limitModule from './modules/limit';
+import paginatorModule from './modules/paginator';
 
 // mutations
 const DATA_FILTER = 'DATA_FILTER';
 const DATA_SORT = 'DATA_SORT';
 
 const createState = () => ({
-  page: 1,
-  total: 0,
-  pagination: true,
-  limit: 10,
-  limits: [10, 20, 30, 50, 100],
+  parsedTotal: 0,
   sortable: [],
   searchable: [],
+  selected: [],
   search: {
     enabled: false,
     text: '',
@@ -49,66 +48,37 @@ const getters = {
 
     return sorted;
   },
+  parsedData(state, { sortedData }) {
+    return sortedData;
+  },
+  parsedTotal(state, { parsedData }) {
+    return parsedData.length;
+  },
   rowsToRender(state, _getters) {
-    const { limit, side } = state;
+    const { limit, side, pagination, page, parsedData } = _getters;
 
     if (side === 'server') {
-      return _getters.sortedData;
+      return parsedData;
     }
 
-    if (state.page > _getters.pages) {
-      state.page = _getters.pages;
+    const offset = (page - 1) * limit;
+
+    if (pagination && limit) {
+      return parsedData.slice(offset, offset + limit);
     }
 
-    const offset = (state.page - 1) * limit;
-
-    if (state.pagination && state.limit) {
-      return _getters.sortedData.slice(offset, offset + limit);
-    }
-
-    return _getters.sortedData;
+    return parsedData;
   },
   search: state => state.search,
   searchable: state => state.searchable,
-  // limits
-  limit: state => state.limit,
-  limits: state => state.limits,
-  total(state, _getters) {
-    if (_getters.side === 'server') {
-      return state.total;
-    }
-    return _getters.sortedData.length;
-  },
-  page: state => state.page,
-  pages(state, _getters) {
-    return Math.max(Math.ceil(_getters.total / state.limit), 1);
-  },
-  isFirstPage: state => state.page <= 1,
-  isLastPage: state => state.page >= state.pages,
   sort: state => state.sort,
+  selected: state => state.selected,
 };
 
 /* eslint-disable no-shadow */
 const mutations = {
   [types.CONFIG_INIT]: (state, payload) => {
-    const { url, side, source, limit, limits, pagination, sortable, searchable } = payload;
-    const { dataModule } = state;
-
-    dataModule.source = source;
-    dataModule.side = side;
-    dataModule.url = url;
-
-    if (limits) {
-      state.limits = limits;
-    }
-
-    if (limit) {
-      state.limit = limit;
-    }
-
-    if (pagination !== undefined) {
-      state.pagination = pagination;
-    }
+    const { sortable, searchable } = payload;
 
     if (sortable) {
       state.sortable = sortable;
@@ -117,9 +87,6 @@ const mutations = {
     if (searchable) {
       state.searchable = searchable;
     }
-  },
-  [types.PAGE_SET](state, payload) {
-    console.log(payload);
   },
   [DATA_FILTER]: (state, payload) => {
     const { search } = state;
@@ -154,13 +121,44 @@ const mutations = {
       sort.name = name;
     }
   },
+  [types.ROW_SELECT](state, { row }) {
+    console.log(row);
+  },
+  [types.ROW_UNSELECT](state, { row }) {
+    console.log(row);
+  },
 };
 
 const actions = {
   initialize({ commit, dispatch, state }, { config, slots }) {
+    const { limit, limits, pagination, side, source, url } = config;
     commit(types.CONFIG_INIT, config);
     commit(types.SLOTS_INIT, slots);
     commit(types.DEVICE_DETECT);
+
+    if (pagination !== undefined) {
+      dispatch('setPagination', { pagination });
+    }
+
+    if (limit) {
+      dispatch('setLimit', { limit });
+    }
+
+    if (limits) {
+      dispatch('setLimits', { limits });
+    }
+
+    if (side) {
+      dispatch('setSide', { side });
+    }
+
+    if (source) {
+      dispatch('setSource', { source });
+    }
+
+    if (url) {
+      dispatch('setURL', { url });
+    }
 
     dispatch('initScreenSizes');
     dispatch('loadData');
@@ -176,23 +174,6 @@ const actions = {
 
     if (context.state.side === 'server') {
       context.store('loadData');
-    }
-  },
-  setLimit(context, payload) {
-    const { state } = context;
-    state.limit = Number(payload.limit);
-    state.page = 1;
-
-    if (state.side === 'server') {
-      context.commit('DATA_LOAD');
-    }
-  },
-  setPage(context, payload) {
-    const { state } = context;
-    state.page = payload;
-
-    if (state.side === 'server') {
-      context.commit('DATA_LOAD');
     }
   },
   filterBy(context, payload) {
@@ -227,6 +208,16 @@ const actions = {
       context.commit('DATA_LOAD');
     }
   },
+  select({ state }, { row }) {
+    if (typeof row === 'object' && Array.isArray(row)) {
+      state.selected = row;
+    }
+  },
+  unselect() {
+  },
+  isSelected({ getters }, { row }) {
+    return getters.selected.indexOf(row) !== -1;
+  },
 };
 
 /* eslint-disable no-undef */
@@ -239,5 +230,7 @@ export default () => new Vuex.Store({
     slotsModule,
     dataModule,
     deviceModule,
+    limitModule,
+    paginatorModule,
   },
 });

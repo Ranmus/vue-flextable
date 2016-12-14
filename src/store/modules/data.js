@@ -8,6 +8,7 @@ export default {
     loaded: false,
     loading: false,
     data: [],
+    total: 0,
     source: null,
     url: null,
     side: 'client',
@@ -19,8 +20,24 @@ export default {
     source: s => s.source,
     url: s => s.url,
     side: s => s.side,
+    total({ total }, { data, side }) {
+      if (side === 'server') {
+        return total;
+      }
+
+      return data.length;
+    },
   },
   mutations: {
+    [types.DATA_SIDE_SET](state, { side }) {
+      state.side = side;
+    },
+    [types.DATA_SOURCE_SET](state, { source }) {
+      state.source = source;
+    },
+    [types.DATA_URL_SET](state, { url }) {
+      state.url = url;
+    },
     [types.DATA_LOADING](state) {
       state.loading = true;
     },
@@ -29,10 +46,7 @@ export default {
       state.loading = false;
       state.loaded = true;
     },
-    [types.DATA_DELETE](state, payload) {
-      const { url, data } = state;
-      const { row } = payload;
-
+    [types.DATA_DELETE]({ url, data }, { row }) {
       axios.delete(url + row.id).then(() => {
         data.splice(data.indexOf(row), 1);
       });
@@ -58,11 +72,20 @@ export default {
         });
       }
     },
-    [types.DATA_TOTAL_SET](state, payload) {
-      state.total = payload.total;
+    [types.DATA_TOTAL_SET](state, { total }) {
+      state.total = total;
     },
   },
   actions: {
+    setSide({ commit }, { side }) {
+      commit(types.DATA_SIDE_SET, { side });
+    },
+    setSource({ commit }, { source }) {
+      commit(types.DATA_SOURCE_SET, { source });
+    },
+    setURL({ commit }, { url }) {
+      commit(types.DATA_URL_SET, { url });
+    },
     loadData({ commit, getters }) {
       const { loaded, loading, side, source, url, page, limit, sort, search } = getters;
       if (loaded && (source || side === 'client')) {
