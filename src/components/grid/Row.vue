@@ -20,6 +20,7 @@ export default {
     ...mapActions([
       'delete',
       'update',
+      'toggleSelect',
     ]),
   },
   render(createElement) {
@@ -42,6 +43,7 @@ export default {
         isTablet,
         update: this.update,
         delete: this.delete,
+        toggleSelect: this.toggleSelect,
       }) : null],
     );
   },

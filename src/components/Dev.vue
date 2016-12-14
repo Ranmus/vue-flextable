@@ -18,7 +18,7 @@
 
         template(slot="pagesize" scope="p")
           span Rows per page:
-          select(@input="p.setLimit($event.target.value)")
+          select(@input="p.setLimit(Number($event.target.value))")
             option(value="1") 1
             option(value="5" selected="selected") 5
             option(value="10") 10
@@ -38,6 +38,7 @@
         template(slot="nodata") No users loaded
 
         template(slot="headingRow" scope="p")
+          .ft-heading-cell
           .ft-heading-cell(
             v-for="column in columns",
             :class="column.classes",
@@ -49,6 +50,9 @@
               span(v-else) &#x25BC;
 
         template(slot="row" scope="p")
+          .ft-cell
+            input(type="checkbox", v-model="selected", :value="p.data")
+            template {{ isSelected(p.data) ? 'true' : 'false' }}
           .ft-cell(v-for="column in columns", :class="column.classes")
             template(v-if="column.id == 'avatar'")
               img(:src="p.data.avatar", width="32", height="32")
@@ -71,6 +75,7 @@
     name: 'app',
     data() {
       return {
+        selected: [],
         filter: false,
         columns: [{
           id: 'id',
@@ -110,12 +115,20 @@
     components: {
       ftCell,
     },
+    watch: {
+      selected() {
+        this.$refs.flextable.select(this.selected);
+      },
+    },
     methods: {
       sync(row) {
         this.$refs.flextable.sync(row);
       },
       remove(row) {
         this.$refs.flextable.sync(row);
+      },
+      isSelected(row) {
+        return this.$refs.flextable.isSelected(row);
       },
     },
   };

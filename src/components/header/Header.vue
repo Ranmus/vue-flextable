@@ -4,7 +4,6 @@
   ft-search(v-if="loaded")
     template(slot="search" v-if="slots.scoped.search" scope="p")
       slot(name="search", :filterBy="p.filterBy")
-
 </template>
 
 <script lang="babel">

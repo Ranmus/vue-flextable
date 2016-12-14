@@ -48,7 +48,7 @@ export default {
       this.setPage(this.pages);
     },
     setPage(page) {
-      this.$store.dispatch('setPage', page);
+      this.$store.dispatch('setPage', { page });
     },
   },
 };
