@@ -10,38 +10,40 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'scopedSlots',
+      'slots',
       'device',
-      'size',
-      'isDesktop',
-      'isMobile',
-      'isPhone',
-      'isTablet',
+      'screen',
+      'classes',
     ]),
   },
   methods: {
     ...mapActions([
       'delete',
       'update',
+      'toggleSelect',
     ]),
   },
   render(createElement) {
+    const { isDesktop, isMobile, isPhone, isTablet, name } = this.device;
+    const { size } = this.screen;
+
     return createElement('div',
       {
         attrs: {
           class: 'ft-row',
         },
       },
-      [this.scopedSlots.row ? this.scopedSlots.row({
+      [this.slots.scoped.row ? this.slots.scoped.row({
         data: this.row,
-        device: this.device,
-        size: this.size,
-        isDesktop: this.isDesktop,
-        isMobile: this.isMobile,
-        isPhone: this.isPhone,
-        isTablet: this.isTablet,
+        device: name,
+        size,
+        isDesktop,
+        isMobile,
+        isPhone,
+        isTablet,
         update: this.update,
         delete: this.delete,
+        toggleSelect: this.toggleSelect,
       }) : null],
     );
   },

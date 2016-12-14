@@ -1,17 +1,27 @@
 <template lang="pug">
-.flextable(:class="[mobileClass, deviceClass, sizeClass]")
+.flextable(:class="[classes.mobile, classes.device, classes.size]")
   ft-header
-    template(slot="search" v-if="slots.search" scope="p")
+    template(slot="search" v-if="slots.named.search" scope="p")
       slot(name="search", :filterBy="p.filterBy")
-  template(v-if="dataLoaded")
+  .ft-details(v-if="selected.length") Rows selected: {{ selected.length }}
+  template(v-if="loaded")
     ft-grid
     ft-footer
-      template(v-if="scopedSlots.pagesize" slot="pagesize" scope="p")
+      template(v-if="slots.scoped.pagesize" slot="pagesize" scope="p")
         slot(name="pagesize", :setLimit="p.setLimit")
-      template(v-if="scopedSlots.paginator" slot="paginator" scope="p")
-        slot(name="paginator", :page="p.page", :pages="p.pages", :first="p.first", :prev="p.prev", :next="p.next", :last="p.last")
-
-  ft-state(v-else="dataLoaded")
+      template(v-if="slots.scoped.paginator" slot="paginator" scope="p")
+        slot(
+          name="paginator",
+          :page="p.data.page",
+          :pages="p.data.pages",
+          :first="p.data.first",
+          :prev="p.data.prev",
+          :next="p.data.next",
+          :last="p.data.last",
+          :total="p.data.total",
+          :limit="p.data.limit",
+        )
+  ft-state(v-else="loaded")
 </template>
 
 <style lang="sass">
@@ -77,58 +87,61 @@ export default {
     },
   },
   computed: {
-    currentPage() {
-      return 6;
-    },
-    totalPages() {
-      return 666;
-    },
     ...mapGetters([
-      'mobileClass',
-      'deviceClass',
-      'sizeClass',
-      'dataLoaded',
+      'loaded',
       'slots',
-      'scopedSlots',
+      'classes',
+      'selected',
     ]),
   },
   created() {
     this.$store = Store();
   },
   mounted() {
-    const { $store, url, source, side, limit, limits, pagination, sortable, searchable } = this;
-    $store.dispatch('loadConfig', {
-      url,
-      source,
-      side,
-      limit,
-      limits,
-      pagination,
-      sortable,
-      searchable,
-    });
+    const config = {
+      url: this.url,
+      source: this.source,
+      side: this.side,
+      limit: this.limit,
+      limits: this.limits,
+      pagination: this.pagination,
+      sortable: this.sortable,
+      searchable: this.searchable,
+      screenSizes: this.screenSizes,
+    };
 
-    $store.dispatch('readSlots', this.$slots);
-    $store.dispatch('readScopedSlots', this.$scopedSlots);
-    $store.dispatch('detectDevice');
-    $store.dispatch('loadScreenSizes', this.screenSizes);
-    $store.dispatch('loadData');
+    const slots = {
+      named: this.$slots,
+      scoped: this.$scopedSlots,
+    };
+
+    this.$store.dispatch('initialize', {
+      config,
+      slots,
+    });
   },
   methods: {
     filterBy(text) {
-      this.$store.dispatch('filterBy', {
-        text,
-      });
+      this.$store.dispatch('filterBy', { text });
     },
     sortBy(name) {
-      this.$store.dispatch('sortBy', {
-        name,
-      });
+      this.$store.dispatch('sortBy', { name });
+    },
+    delete(row) {
+      this.$store.dispatch('delete', { row });
+    },
+    sync(row) {
+      this.$store.dispatch('sync', { row });
+    },
+    select(row) {
+      this.$store.dispatch('select', { row });
+    },
+    isSelected(row) {
+      return this.$store.dispatch('isSelected', { row }).then(state => state);
     },
     ...mapActions([
       'addScreenSize',
       'clearScreenSizes',
-      'removeRowBy',
     ]),
   },
 };

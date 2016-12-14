@@ -11,14 +11,14 @@
         :limit.number="5",
         :limits="[1,5,10,20,30,50,100]",
         :searchable="['id', 'firstName', 'lastName', 'email', 'phone']",
-        )
+        ref="flextable")
 
         template(slot="search" scope="p")
           input(@input="p.filterBy($event.target.value)")
 
         template(slot="pagesize" scope="p")
           span Rows per page:
-          select(@input="p.setLimit($event.target.value)")
+          select(@input="p.setLimit(Number($event.target.value))")
             option(value="1") 1
             option(value="5" selected="selected") 5
             option(value="10") 10
@@ -38,6 +38,7 @@
         template(slot="nodata") No users loaded
 
         template(slot="headingRow" scope="p")
+          .ft-heading-cell
           .ft-heading-cell(
             v-for="column in columns",
             :class="column.classes",
@@ -49,12 +50,16 @@
               span(v-else) &#x25BC;
 
         template(slot="row" scope="p")
+          .ft-cell
+            input(type="checkbox", v-model="selected", :value="p.data")
+            template {{ isSelected(p.data) ? 'true' : 'false' }}
           .ft-cell(v-for="column in columns", :class="column.classes")
             template(v-if="column.id == 'avatar'")
-              img(:src="p.data[column.id]", width="32", height="32")
+              img(:src="p.data.avatar", width="32", height="32")
             template(v-else-if="column.id == 'options'") {{ p.data[column.id] }}
-              button Edit
-              button Delete
+              button(@click="sync(Number(p.data.id))") Synchronize by id
+              button(@click="sync(p.data)") Synchronize
+              button(@click="remove(p.data)") Delete
             template(v-else) {{ p.data[column.id] }}
 </template>
 
@@ -70,6 +75,7 @@
     name: 'app',
     data() {
       return {
+        selected: [],
         filter: false,
         columns: [{
           id: 'id',
@@ -109,12 +115,20 @@
     components: {
       ftCell,
     },
-    methods: {
-      edit(data) {
-        console.log(data);
+    watch: {
+      selected() {
+        this.$refs.flextable.select(this.selected);
       },
-      remove(data) {
-        console.log(data);
+    },
+    methods: {
+      sync(row) {
+        this.$refs.flextable.sync(row);
+      },
+      remove(row) {
+        this.$refs.flextable.sync(row);
+      },
+      isSelected(row) {
+        return this.$refs.flextable.isSelected(row);
       },
     },
   };

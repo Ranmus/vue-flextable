@@ -1,11 +1,11 @@
 <template lang="pug">
 .ft-footer
-  ft-pagesize
-    template(slot="pagesize" v-if="scopedSlots.pagesize" scope="p")
+  ft-pagesize(v-if="pagination")
+    template(slot="pagesize" v-if="slots.scoped.pagesize" scope="p")
       slot(name="pagesize", :setLimit="p.setLimit")
-  ft-paginator
-    template(slot="paginator" v-if="scopedSlots.paginator" scope="p")
-      slot(name="paginator", :page="p.page", :pages="p.pages", :first="p.first", :prev="p.prev", :next="p.next", :last="p.last")
+  ft-paginator(v-if="pagination")
+    template(slot="paginator" v-if="slots.scoped.paginator" scope="p")
+      slot(name="paginator", :data="p.data")
 </template>
 
 <script lang="babel">
@@ -20,9 +20,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'dataLoaded',
-      'slotTitle',
       'slots',
+      'pagination',
     ]),
   },
 };

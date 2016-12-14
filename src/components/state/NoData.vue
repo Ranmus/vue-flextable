@@ -8,14 +8,14 @@ export default {
     ]),
   },
   render(createElement) {
-    if (this.slots.nodata) {
+    if (this.slots.named.nodata) {
       return createElement('div',
         {
           attrs: {
             class: 'ft-no-data',
           },
         },
-        this.slots.nodata,
+        this.slots.named.nodata,
       );
     }
     return createElement('div', {

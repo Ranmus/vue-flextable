@@ -1,6 +1,6 @@
 <template lang="pug">
 .ft-footer-paginator
-  slot(name="paginator", :page="page", :pages="pages", :first="first", :prev="prev", :next="next", :last="last")
+  slot(name="paginator", :data="{page, pages, first, prev, next, last, total, limit}")
     span Page {{ page }} of {{ pages }}
     button(
       :disabled="isFirstPage",
@@ -26,6 +26,8 @@ import { mapGetters } from 'vuex';
 export default {
   computed: {
     ...mapGetters([
+      'limit',
+      'total',
       'page',
       'pages',
       'isFirstPage',
@@ -46,7 +48,7 @@ export default {
       this.setPage(this.pages);
     },
     setPage(page) {
-      this.$store.dispatch('setPage', page);
+      this.$store.dispatch('setPage', { page });
     },
   },
 };
