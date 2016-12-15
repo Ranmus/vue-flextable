@@ -3,7 +3,10 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters(['slots']),
+    ...mapGetters([
+      'selected',
+      'slots',
+    ]),
   },
   render(createElement) {
     return createElement('div',
@@ -11,8 +14,13 @@ export default {
         attrs: {
           class: 'ft-header-title',
         },
-      },
-      this.slots.named.title,
+      }, [
+        this.selected.length === 0 ?
+          this.slots.named.title :
+          this.slots.scoped.selected({
+            selected: this.selected,
+          }),
+      ],
     );
   },
 };
