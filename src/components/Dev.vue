@@ -13,6 +13,12 @@
         :searchable="['id', 'firstName', 'lastName', 'email', 'phone']",
         ref="flextable")
 
+        template(slot="nodata") No users loaded
+
+        template(slot="title") Users first table
+
+        template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
+
         template(slot="search" scope="p")
           input(@input="p.filterBy($event.target.value)")
 
@@ -33,15 +39,11 @@
           button(@click="p.next()") Next
           button(@click="p.last()") Last
 
-        template(slot="title") Users first table
-
-        template(slot="nodata") No users loaded
-
         template(slot="headingRow" scope="p")
           .ft-heading-cell
           .ft-heading-cell(
             v-for="column in columns",
-            :class="column.classes",
+            :class="[column.classes, {'ft-clickable' : column.sortable}]",
             @click="column.sortable && p.sortBy(column.id)"
             )
             div {{ column.name }}
@@ -51,8 +53,13 @@
 
         template(slot="row" scope="p")
           .ft-cell
-            input(type="checkbox", v-model="selected", :value="p.data")
-            template {{ isSelected(p.data) ? 'true' : 'false' }}
+            input(
+              type="checkbox",
+              :id="p.data.id",
+              :value="p.data",
+              @click="toggleSelect(p.data)",
+              :checked="p.isSelected"
+              class="ft-clickable")
           .ft-cell(v-for="column in columns", :class="column.classes")
             template(v-if="column.id == 'avatar'")
               img(:src="p.data.avatar", width="32", height="32")
@@ -69,8 +76,6 @@
 </style>
 
 <script lang="babel">
-  import ftCell from 'components/grid/Cell';
-
   export default {
     name: 'app',
     data() {
@@ -112,23 +117,18 @@
         }],
       };
     },
-    components: {
-      ftCell,
-    },
-    watch: {
-      selected() {
-        this.$refs.flextable.select(this.selected);
-      },
-    },
     methods: {
+      toggleSelect(row) {
+        this.$refs.flextable.toggleSelect(row);
+        this.selected = this.$refs.flextable.getSelected();
+      },
       sync(row) {
         this.$refs.flextable.sync(row);
       },
       remove(row) {
-        this.$refs.flextable.sync(row);
-      },
-      isSelected(row) {
-        return this.$refs.flextable.isSelected(row);
+        this.$refs.flextable.delete(row).then(() => {
+          console.log(`row with id ${row.id} deleted`);
+        });
       },
     },
   };

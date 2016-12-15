@@ -7,6 +7,7 @@ import dataModule from './modules/data';
 import slotsModule from './modules/slots';
 import limitModule from './modules/limit';
 import paginatorModule from './modules/paginator';
+import selectModule from './modules/select';
 
 // mutations
 const DATA_FILTER = 'DATA_FILTER';
@@ -16,7 +17,6 @@ const createState = () => ({
   parsedTotal: 0,
   sortable: [],
   searchable: [],
-  selected: [],
   search: {
     enabled: false,
     text: '',
@@ -72,7 +72,6 @@ const getters = {
   search: state => state.search,
   searchable: state => state.searchable,
   sort: state => state.sort,
-  selected: state => state.selected,
 };
 
 /* eslint-disable no-shadow */
@@ -120,12 +119,6 @@ const mutations = {
       sort.order = 'asc';
       sort.name = name;
     }
-  },
-  [types.ROW_SELECT](state, { row }) {
-    console.log(row);
-  },
-  [types.ROW_UNSELECT](state, { row }) {
-    console.log(row);
   },
 };
 
@@ -194,29 +187,12 @@ const actions = {
       context.commit('DATA_LOAD');
     }
   },
-  delete(context, payload) {
-    context.commit('DATA_DELETE', payload);
-
-    if (context.state.side === 'server') {
-      context.commit('DATA_LOAD');
-    }
-  },
   sync(context, payload) {
     context.commit('DATA_SYNC', payload);
 
     if (context.state.side === 'server') {
       context.commit('DATA_LOAD');
     }
-  },
-  select({ state }, { row }) {
-    if (typeof row === 'object' && Array.isArray(row)) {
-      state.selected = row;
-    }
-  },
-  unselect() {
-  },
-  isSelected({ getters }, { row }) {
-    return getters.selected.indexOf(row) !== -1;
   },
 };
 
@@ -232,5 +208,6 @@ export default () => new Vuex.Store({
     deviceModule,
     limitModule,
     paginatorModule,
+    selectModule,
   },
 });
