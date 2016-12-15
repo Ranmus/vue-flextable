@@ -105,7 +105,7 @@ export default {
         return;
       }
 
-      commit(types.DATA_SOURCE_LOADING);
+      commit(types.DATA_LOADING);
 
       if (source) {
         commit(types.DATA_LOADED, { data: source });
