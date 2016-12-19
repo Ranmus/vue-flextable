@@ -48,22 +48,6 @@ export default {
     [types.DATA_DELETE]({ url, data }, { row }) {
       data.splice(data.indexOf(row), 1);
     },
-    [types.DATA_SYNC]({ url, data }, { row }) {
-      const id = Number.isInteger(row) ? row : Number(row.id);
-      const found = data.find(row_ => Number(row_.id === id));
-
-      Vue.http.get(url + id).then((response) => {
-        if (found) {
-          data.splice(data.indexOf(found), 1, response.data);
-        } else {
-          data.push(response.data);
-        }
-      }, ({ status }) => {
-        if (status === 404 && found) {
-          data.splice(data.indexOf(found), 1);
-        }
-      });
-    },
     [types.DATA_TOTAL_SET](state, { total }) {
       state.total = total;
     },
@@ -88,6 +72,33 @@ export default {
     },
     setURL({ commit }, { url }) {
       commit(types.DATA_URL_SET, { url });
+    },
+    sync({ state, rootState, dispatch }, { row }) {
+      const { data, url } = state;
+      const { selected } = rootState.selectModule;
+      const id = Number.isInteger(row) ? row : Number(row.id);
+      const found = data.find(row_ => Number(row_.id) === id);
+
+      return new Promise((resolve, reject) => {
+        Vue.http.get(url + id).then((response) => {
+          if (found) {
+            data.splice(data.indexOf(found), 1, response.data);
+            resolve({ state: 'updated', row: found });
+          } else {
+            data.push(response.data);
+            resolve({ state: 'created', row: response.data });
+          }
+        }, ({ status }) => {
+          if (status === 404 && found) {
+            data.splice(data.indexOf(found), 1);
+            if (selected.indexOf(row) !== -1) {
+              dispatch('toggleSelect', { row });
+            }
+            resolve({ state: 'deleted', row });
+          }
+          reject({ state: 'error', row });
+        });
+      });
     },
     loadData({ commit, getters }) {
       const { loaded, loading, side, source, url, page, limit, sort, search } = getters;
