@@ -187,13 +187,6 @@ const actions = {
       context.commit('DATA_LOAD');
     }
   },
-  sync(context, payload) {
-    context.commit('DATA_SYNC', payload);
-
-    if (context.state.side === 'server') {
-      context.commit('DATA_LOAD');
-    }
-  },
 };
 
 /* eslint-disable no-undef */

@@ -123,7 +123,11 @@
         this.selected = this.$refs.flextable.getSelected();
       },
       sync(row) {
-        this.$refs.flextable.sync(row);
+        const returned = this.$refs.flextable.sync(row);
+
+        returned.then((state) => {
+          console.log(state);
+        });
       },
       remove(row) {
         this.$refs.flextable.delete(row).then(() => {

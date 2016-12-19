@@ -130,7 +130,7 @@ export default {
       return this.$store.dispatch('delete', { row });
     },
     sync(row) {
-      this.$store.dispatch('sync', { row });
+      return this.$store.dispatch('sync', { row });
     },
     select(row) {
       this.$store.dispatch('select', { row });
