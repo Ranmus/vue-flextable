@@ -1,26 +1,26 @@
+/* eslint-disable */
+import uppercamelcase from 'uppercamelcase';
+import Vuex from 'vuex';
 import filter from 'utils/filter';
 import sort from 'utils/sort';
-import Vuex from 'vuex';
 import types from './types';
 import deviceModule from './modules/device';
 import dataModule from './modules/data';
 import slotsModule from './modules/slots';
-import limitModule from './modules/limit';
 import paginatorModule from './modules/paginator';
 import selectModule from './modules/select';
+import gridModule from './modules/grid';
+import filterModule from './modules/filter';
 
 // mutations
-const DATA_FILTER = 'DATA_FILTER';
 const DATA_SORT = 'DATA_SORT';
 
 const createState = () => ({
+  config: {
+    rowsHeight: null,
+  },
   parsedTotal: 0,
   sortable: [],
-  searchable: [],
-  search: {
-    enabled: false,
-    text: '',
-  },
   sort: {
     name: null,
     order: null,
@@ -29,9 +29,12 @@ const createState = () => ({
 
 /* eslint-disable no-param-reassign */
 const getters = {
-  filteredData(state, { data, search, searchable }) {
-    if (search.enabled && search.text.length) {
-      return filter(data, search.text, searchable);
+  filteredData(state, { filterColumns }, { filterModule, dataModule }) {
+    const { data } = dataModule;
+    const { text } = filterModule;
+
+    if (text.length) {
+      return filter(data, text, filterColumns);
     }
 
     return data;
@@ -55,49 +58,25 @@ const getters = {
     return parsedData.length;
   },
   rowsToRender(state, _getters) {
-    const { limit, side, pagination, page, parsedData } = _getters;
+    const { pageSize, side, page, parsedData } = _getters;
 
     if (side === 'server') {
       return parsedData;
     }
 
-    const offset = (page - 1) * limit;
+    const offset = (page - 1) * pageSize;
 
-    if (pagination && limit) {
-      return parsedData.slice(offset, offset + limit);
+    if (pageSize) {
+      return parsedData.slice(offset, offset + pageSize);
     }
 
     return parsedData;
   },
-  search: state => state.search,
-  searchable: state => state.searchable,
   sort: state => state.sort,
 };
 
 /* eslint-disable no-shadow */
 const mutations = {
-  [types.CONFIG_INIT]: (state, payload) => {
-    const { sortable, searchable } = payload;
-
-    if (sortable) {
-      state.sortable = sortable;
-    }
-
-    if (searchable) {
-      state.searchable = searchable;
-    }
-  },
-  [DATA_FILTER]: (state, payload) => {
-    const { search } = state;
-    const { text } = payload;
-
-    if (text.length) {
-      search.enabled = true;
-      search.text = text;
-    } else {
-      search.enabled = false;
-    }
-  },
   [DATA_SORT]: (state, payload) => {
     /* eslint-disable no-shadow */
     const { sort } = state;
@@ -123,30 +102,26 @@ const mutations = {
 };
 
 const actions = {
-  initialize({ commit, dispatch, state }, { config, slots }) {
-    const { limit, limits, pagination, side, source, url } = config;
-    commit(types.CONFIG_INIT, config);
+  initialize({ commit, dispatch, state }, { columns, config, data, side, slots, url }) {
     commit(types.SLOTS_INIT, slots);
     commit(types.DEVICE_DETECT);
 
-    if (pagination !== undefined) {
-      dispatch('setPagination', { pagination });
-    }
+    Object.keys(config).forEach((key) => {
+      dispatch(`set${uppercamelcase(key)}`, { [key]: config[key] });
+    });
 
-    if (limit) {
-      dispatch('setLimit', { limit });
-    }
+    columns.forEach((column) => {
+      if (column.filterable !== false) {
+        dispatch('filterAddColumn', { name: column.name });
+      }
+    });
 
-    if (limits) {
-      dispatch('setLimits', { limits });
+    if (data) {
+      dispatch('setData', { data });
     }
 
     if (side) {
       dispatch('setSide', { side });
-    }
-
-    if (source) {
-      dispatch('setSource', { source });
     }
 
     if (url) {
@@ -155,28 +130,6 @@ const actions = {
 
     dispatch('initScreenSizes');
     dispatch('loadData');
-  },
-  setSearch(context, payload) {
-    const { search } = context.state;
-    search.enabled = payload;
-  },
-  setSearchText(context, payload) {
-    context.commit('DATA_FILTER', {
-      text: payload,
-    });
-
-    if (context.state.side === 'server') {
-      context.store('loadData');
-    }
-  },
-  filterBy(context, payload) {
-    context.commit('DATA_FILTER', {
-      text: payload.text,
-    });
-
-    if (context.state.side === 'server') {
-      context.commit('DATA_LOAD');
-    }
   },
   sortBy(context, payload) {
     context.commit('DATA_SORT', {
@@ -199,8 +152,9 @@ export default () => new Vuex.Store({
     slotsModule,
     dataModule,
     deviceModule,
-    limitModule,
     paginatorModule,
     selectModule,
+    gridModule,
+    filterModule,
   },
 });

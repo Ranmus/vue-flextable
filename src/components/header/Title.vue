@@ -1,27 +1,9 @@
-<script lang="babel">
-import { mapGetters } from 'vuex';
+<template lang="pug">
+.ft-header-title
+  slot Default title
+</template>
 
+<script lang="babel">
 export default {
-  computed: {
-    ...mapGetters([
-      'selected',
-      'slots',
-    ]),
-  },
-  render(createElement) {
-    return createElement('div',
-      {
-        attrs: {
-          class: 'ft-header-title',
-        },
-      }, [
-        this.selected.length === 0 ?
-          this.slots.named.title :
-          this.slots.scoped.selected({
-            selected: this.selected,
-          }),
-      ],
-    );
-  },
 };
 </script>
