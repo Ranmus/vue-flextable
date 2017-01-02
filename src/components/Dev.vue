@@ -6,48 +6,44 @@
     .example
       // Usage example
       flextable(
+        :config="config",
+        :columns="columns",
         url="http://localhost:8090/users/",
         side="client",
-        :limit.number="5",
-        :limits="[1,5,10,20,30,50,100]",
-        :searchable="['id', 'firstName', 'lastName', 'email', 'phone']",
         ref="flextable")
+        template(scope="p")
+          ft-header
+            ft-title Users table
+            ft-filter
+              span(v-if="p.found !== null") Rows found: {{ p.found }}
+              input(@input="filter($event.target.value)")
+          ft-footer
+            ft-paginator
+              span Rows per page:
+              select(@change="p.setPageSize(Number($event.target.value))")
+                option(value="1") 1
+                option(value="5") 5
+                option(value="10", selected="selected") 10
+                option(value="0") No limit
+              span Page {{ p.page }} of {{ p.pages }}
+              button(@click="p.firstPage()") First
+              button(@click="p.previousPage()") Previous
+              button(@click="p.nextPage()") Next
+              button(@click="p.lastPage()") Last
 
         template(slot="nodata") No users loaded
 
-        template(slot="title") Users first table
-
         template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
-
-        template(slot="search" scope="p")
-          input(@input="p.filterBy($event.target.value)")
-
-        template(slot="pagesize" scope="p")
-          span Rows per page:
-          select(@input="p.setLimit(Number($event.target.value))")
-            option(value="1") 1
-            option(value="5" selected="selected") 5
-            option(value="10") 10
-            option(value="20") 20
-            option(value="50") 50
-            option(value="100") 100
-
-        template(slot="paginator" scope="p")
-          span Page {{ p.page }} of {{ p.pages }}
-          button(@click="p.first()") First
-          button(@click="p.prev()") Previous
-          button(@click="p.next()") Next
-          button(@click="p.last()") Last
 
         template(slot="headingRow" scope="p")
           .ft-heading-cell
           .ft-heading-cell(
             v-for="column in columns",
             :class="[column.classes, {'ft-clickable' : column.sortable}]",
-            @click="column.sortable && p.sortBy(column.id)"
+            @click="column.sortable && p.sortBy(column.name)"
             )
-            div {{ column.name }}
-            div(v-if="p.sort.name == column.id")
+            div {{ column.label }}
+            div(v-if="p.sort.name == column.name")
               span(v-if="p.sort.order == 'asc'") &#x25B2;
               span(v-else) &#x25BC;
 
@@ -61,13 +57,13 @@
               :checked="p.isSelected"
               class="ft-clickable")
           .ft-cell(v-for="column in columns", :class="column.classes")
-            template(v-if="column.id == 'avatar'")
+            template(v-if="column.name == 'avatar'")
               img(:src="p.data.avatar", width="32", height="32")
-            template(v-else-if="column.id == 'options'") {{ p.data[column.id] }}
+            template(v-else-if="column.name == 'options'") {{ p.data[column.id] }}
               button(@click="sync(Number(p.data.id))") Synchronize by id
               button(@click="sync(p.data)") Synchronize
               button(@click="remove(p.data)") Delete
-            template(v-else) {{ p.data[column.id] }}
+            template(v-else) {{ p.data[column.name] }}
 </template>
 
 <style lang="sass">
@@ -80,44 +76,64 @@
     name: 'app',
     data() {
       return {
+        page: 0,
+        pages: 0,
+        config: {
+          // pageSize: 5,
+          // limits: [{
+          //   value: 1,
+          //   name: 1,
+          // }, {
+          //   value: 5,
+          //   name: 5,
+          // }, {
+          //   value: 0,
+          //   name: 'no limit',
+          // }],
+          rowsHeight: '100px',
+        },
         selected: [],
-        filter: false,
         columns: [{
-          id: 'id',
+          name: 'id',
+          label: 'Id',
           align: 'right',
           classes: 'ft-align-right',
-          name: 'Id',
           sortable: true,
         }, {
-          id: 'firstName',
-          name: 'First name',
+          name: 'firstName',
+          label: 'First name',
           sortable: true,
         }, {
-          id: 'lastName',
-          name: 'Last name',
+          name: 'lastName',
+          label: 'Last name',
           sortable: true,
         }, {
-          id: 'email',
-          name: 'E-mail',
+          name: 'email',
+          label: 'E-mail',
           sortable: true,
         }, {
-          id: 'phone',
-          name: 'Phone',
+          name: 'phone',
+          label: 'Phone',
           sortable: true,
         }, {
-          id: 'avatar',
+          name: 'avatar',
+          label: 'Avatar',
           align: 'center',
           classes: 'ft-align-center',
-          name: 'Avatar',
+          filterable: false,
         }, {
-          id: 'options',
+          name: 'options',
+          label: 'Options',
           align: 'right',
           classes: 'ft-align-right',
-          name: 'Options',
+          filterable: false,
         }],
       };
     },
     methods: {
+      filter(text) {
+        this.$refs.flextable.filter(text);
+      },
       toggleSelect(row) {
         this.$refs.flextable.toggleSelect(row);
         this.selected = this.$refs.flextable.getSelected();

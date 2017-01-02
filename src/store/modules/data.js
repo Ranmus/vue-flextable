@@ -15,24 +15,16 @@ export default {
   getters: {
     loaded: s => s.loaded,
     loading: s => s.loading,
-    data: s => s.data,
-    source: s => s.source,
     url: s => s.url,
     side: s => s.side,
-    total({ total }, { data, side }) {
-      if (side === 'server') {
-        return total;
-      }
-
-      return data.length;
-    },
+    total: s => (s.side === 'server' ? s.total : s.data.length),
   },
   mutations: {
     [types.DATA_SIDE_SET](state, { side }) {
       state.side = side;
     },
-    [types.DATA_SOURCE_SET](state, { source }) {
-      state.source = source;
+    [types.DATA_DATA_SET](state, { data }) {
+      state.data = data;
     },
     [types.DATA_URL_SET](state, { url }) {
       state.url = url;
@@ -67,8 +59,8 @@ export default {
     setSide({ commit }, { side }) {
       commit(types.DATA_SIDE_SET, { side });
     },
-    setSource({ commit }, { source }) {
-      commit(types.DATA_SOURCE_SET, { source });
+    setData({ commit }, { data }) {
+      commit(types.DATA_DATA_SET, { data });
     },
     setURL({ commit }, { url }) {
       commit(types.DATA_URL_SET, { url });
@@ -101,8 +93,15 @@ export default {
       });
     },
     loadData({ commit, getters }) {
-      const { loaded, loading, side, source, url, page, limit, sort, search } = getters;
-      if (loaded && (source || side === 'client')) {
+      const { loading, side, source, url, page, limit, sort, search } = getters;
+
+      if (!source && !side) {
+        console.log('No data provided.');
+        return;
+      }
+
+      if (side && !url) {
+        console.log('No url for data defined.');
         return;
       }
 
@@ -115,10 +114,6 @@ export default {
       if (source) {
         commit(types.DATA_LOADED, { data: source });
         return;
-      }
-
-      if (!url) {
-        console.log('No data source, define url or source parameter.');
       }
 
       if (side === 'server') {

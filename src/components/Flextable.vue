@@ -1,25 +1,20 @@
 <template lang="pug">
 .flextable(:class="[classes.mobile, classes.device, classes.size]")
-  ft-header
-    template(slot="search" v-if="slots.named.search" scope="p")
-      slot(name="search", :filterBy="p.filterBy")
+  slot(
+    :page="page",
+    :pages="pages",
+    :found="filteredTotal",
+    :setPageSize="setPageSize",
+    :firstPage="firstPage",
+    :previousPage="previousPage",
+    :nextPage="nextPage",
+    :lastPage="lastPage",
+    )
+    ft-header
+    ft-footer
+
   template(v-if="loaded")
     ft-grid
-    ft-footer
-      template(v-if="slots.scoped.pagesize" slot="pagesize" scope="p")
-        slot(name="pagesize", :setLimit="p.setLimit")
-      template(v-if="slots.scoped.paginator" slot="paginator" scope="p")
-        slot(
-          name="paginator",
-          :page="p.data.page",
-          :pages="p.data.pages",
-          :first="p.data.first",
-          :prev="p.data.prev",
-          :next="p.data.next",
-          :last="p.data.last",
-          :total="p.data.total",
-          :limit="p.data.limit",
-        )
   ft-state(v-else="loaded")
 </template>
 
@@ -30,20 +25,18 @@
 <script lang="babel">
 import { mapActions, mapGetters } from 'vuex';
 import Store from 'src/store';
-import ftHeader from 'components/header/Header';
 import ftFooter from 'components/footer/Footer';
 import ftState from 'components/state/State';
 import ftGrid from 'components/grid/Grid';
 
 export default {
   components: {
-    ftHeader,
     ftFooter,
     ftGrid,
     ftState,
   },
   props: {
-    source: {
+    data: {
       type: Array,
       required: false,
     },
@@ -56,37 +49,31 @@ export default {
       required: false,
       default: 'client',
     },
-    screenSizes: {
+    // screenSizes: {
+    //   type: Object,
+    //   required: false,
+    //   default: null,
+    // },
+    // sortable: {
+    //   type: Array,
+    //   required: false,
+    // },
+    columns: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    config: {
       type: Object,
       required: false,
-      default: null,
-    },
-    limit: {
-      type: Number,
-      required: false,
-      default: 10,
-    },
-    limits: {
-      type: Array,
-      required: false,
-      default: () => [10, 20, 30, 50, 100],
-    },
-    pagination: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    sortable: {
-      type: Array,
-      required: false,
-    },
-    searchable: {
-      type: Array,
-      required: false,
+      default: () => {},
     },
   },
   computed: {
     ...mapGetters([
+      'filteredTotal',
+      'page',
+      'pages',
       'loaded',
       'slots',
       'classes',
@@ -97,17 +84,21 @@ export default {
     this.$store = Store();
   },
   mounted() {
-    const config = {
-      url: this.url,
-      source: this.source,
-      side: this.side,
-      limit: this.limit,
-      limits: this.limits,
-      pagination: this.pagination,
-      sortable: this.sortable,
-      searchable: this.searchable,
-      screenSizes: this.screenSizes,
-    };
+    const { columns, config, data, side, url } = this;
+
+    // console.log(this.config);
+
+    // const config = {
+    //   url: this.url,
+    //   source: this.source,
+    //   side: this.side,
+    //   limit: this.limit,
+    //   limits: this.limits,
+    //   pagination: this.pagination,
+    //   sortable: this.sortable,
+    //   searchable: this.searchable,
+    //   screenSizes: this.screenSizes,
+    // };
 
     const slots = {
       named: this.$slots,
@@ -115,13 +106,32 @@ export default {
     };
 
     this.$store.dispatch('initialize', {
+      columns,
       config,
       slots,
+      url,
+      side,
+      data,
     });
   },
   methods: {
-    filterBy(text) {
-      this.$store.dispatch('filterBy', { text });
+    firstPage() {
+      this.$store.dispatch('paginatorFirstPage');
+    },
+    previousPage() {
+      this.$store.dispatch('paginatorPreviousPage');
+    },
+    nextPage() {
+      this.$store.dispatch('paginatorNextPage');
+    },
+    lastPage() {
+      this.$store.dispatch('paginatorLastPage');
+    },
+    setPageSize(pageSize) {
+      this.$store.dispatch('paginatorSetPageSize', { pageSize });
+    },
+    filter(text) {
+      this.$store.dispatch('filterSetText', { text });
     },
     sortBy(name) {
       this.$store.dispatch('sortBy', { name });
