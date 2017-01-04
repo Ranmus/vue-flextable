@@ -24,4 +24,5 @@ export default {
   // filter module
   FILTER_SET_TEXT: 'FILTER_SET_TEXT',
   FILTER_ADD_COLUMN: 'FILTER_ADD_COLUMN',
+  SORT_DATA: 'SORT_DATA',
 };

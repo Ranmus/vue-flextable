@@ -4,6 +4,7 @@
     :page="page",
     :pages="pages",
     :found="filteredTotal",
+    :pageSize="pageSize",
     :setPageSize="setPageSize",
     :firstPage="firstPage",
     :previousPage="previousPage",
@@ -72,6 +73,7 @@ export default {
   computed: {
     ...mapGetters([
       'filteredTotal',
+      'pageSize',
       'page',
       'pages',
       'loaded',

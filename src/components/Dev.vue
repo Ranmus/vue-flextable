@@ -11,20 +11,23 @@
         url="http://localhost:8090/users/",
         side="client",
         ref="flextable")
+        //- Custom layouting
         template(scope="p")
+          //- Header component
           ft-header
+            //- Title component
             ft-title Users table
+            //- Filter component
             ft-filter
               span(v-if="p.found !== null") Rows found: {{ p.found }}
               input(@input="filter($event.target.value)")
+          //- Footer component
           ft-footer
+            //- Paginator component
             ft-paginator
               span Rows per page:
               select(@change="p.setPageSize(Number($event.target.value))")
-                option(value="1") 1
-                option(value="5") 5
-                option(value="10", selected="selected") 10
-                option(value="0") No limit
+                option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
               span Page {{ p.page }} of {{ p.pages }}
               button(@click="p.firstPage()") First
               button(@click="p.previousPage()") Previous
@@ -107,6 +110,11 @@
           name: 'lastName',
           label: 'Last name',
           sortable: true,
+        }, {
+          name: 'address',
+          label: 'Address',
+          sortable: true,
+          filterable: true,
         }, {
           name: 'email',
           label: 'E-mail',

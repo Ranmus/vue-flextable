@@ -8,7 +8,7 @@ module.exports = {
       "maxItems": 100,
       "items": {
         "type": "object",
-        "required": ["id", "firstName", "lastName", "email", "phone", "avatar"],
+        "required": ["id", "firstName", "lastName", "address", "email", "phone", "avatar"],
         "properties": {
           "id": {
             "type": "string",
@@ -21,6 +21,24 @@ module.exports = {
           "lastName": {
             "type": "string",
             "faker": "name.lastName"
+          },
+          "address": {
+            "type": "object",
+            "required": ["country", "city", "street"],
+            "properties": {
+              "country": {
+                "type": "string",
+                "faker": "address.country"
+              },
+              "city": {
+                "type": "string",
+                "faker": "address.city"
+              },
+              "street": {
+                "type": "string",
+                "faker": "address.streetName"
+              }
+            },
           },
           "email": {
             "type": "string",
