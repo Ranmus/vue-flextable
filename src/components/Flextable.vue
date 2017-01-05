@@ -12,11 +12,9 @@
     :lastPage="lastPage",
     )
     ft-header
+    ft-grid(v-if="loaded")
+    ft-state(v-else="loaded")
     ft-footer
-
-  template(v-if="loaded")
-    ft-grid
-  ft-state(v-else="loaded")
 </template>
 
 <style lang="sass">
@@ -88,8 +86,6 @@ export default {
   mounted() {
     const { columns, config, data, side, url } = this;
 
-    // console.log(this.config);
-
     // const config = {
     //   url: this.url,
     //   source: this.source,
@@ -132,11 +128,14 @@ export default {
     setPageSize(pageSize) {
       this.$store.dispatch('paginatorSetPageSize', { pageSize });
     },
+    setPageSizes(pageSizes) {
+      this.$store.dispatch('paginatorSetPageSizes', { pageSizes });
+    },
     filter(text) {
       this.$store.dispatch('filterSetText', { text });
     },
     sortBy(name) {
-      this.$store.dispatch('sortBy', { name });
+      this.$store.dispatch('sortSetField', { name });
     },
     delete(row) {
       return this.$store.dispatch('delete', { row });

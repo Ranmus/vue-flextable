@@ -21,6 +21,9 @@
             ft-filter
               span(v-if="p.found !== null") Rows found: {{ p.found }}
               input(@input="filter($event.target.value)")
+          //- Grid component
+          ft-grid
+            ft-heading
           //- Footer component
           ft-footer
             //- Paginator component
@@ -82,17 +85,17 @@
         page: 0,
         pages: 0,
         config: {
-          // pageSize: 5,
-          // limits: [{
-          //   value: 1,
-          //   name: 1,
-          // }, {
-          //   value: 5,
-          //   name: 5,
-          // }, {
-          //   value: 0,
-          //   name: 'no limit',
-          // }],
+          pageSize: 5,
+          pageSizes: [{
+            value: 1,
+            name: 1,
+          }, {
+            value: 5,
+            name: 5,
+          }, {
+            value: 0,
+            name: 'no limit',
+          }],
           rowsHeight: '100px',
         },
         selected: [],
@@ -114,6 +117,7 @@
           name: 'address',
           label: 'Address',
           sortable: true,
+          sortBy: 'country',
           filterable: true,
         }, {
           name: 'email',

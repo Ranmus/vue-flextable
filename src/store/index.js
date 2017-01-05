@@ -1,4 +1,3 @@
-/* eslint-disable */
 import uppercamelcase from 'uppercamelcase';
 import Vuex from 'vuex';
 import types from './types';
@@ -15,11 +14,12 @@ const createState = () => ({
   config: {
     rowsHeight: null,
   },
-  parsedTotal: 0,
+  columns: [],
 });
 
-/* eslint-disable no-param-reassign */
 const getters = {
+  config: s => s.config,
+  columns: s => s.columns,
   parsedData(state, { sortedData }) {
     return sortedData;
   },
@@ -27,16 +27,14 @@ const getters = {
     return parsedData.length;
   },
   rowsToRender(state, _getters) {
-    const { pageSize, side, page, parsedData } = _getters;
+    const { pageSize, side, parsedData, pageOffset } = _getters;
 
     if (side === 'server') {
       return parsedData;
     }
 
-    const offset = (page - 1) * pageSize;
-
     if (pageSize) {
-      return parsedData.slice(offset, offset + pageSize);
+      return parsedData.slice(pageOffset, pageOffset + pageSize);
     }
 
     return parsedData;
@@ -44,6 +42,9 @@ const getters = {
 };
 
 const mutations = {
+  [types.COLUMNS_SET]() {
+
+  },
 };
 
 const actions = {
@@ -75,6 +76,13 @@ const actions = {
 
     dispatch('initScreenSizes');
     dispatch('loadData');
+  },
+  /* configuration setters */
+  setPageSize({ dispatch }, { pageSize }) {
+    dispatch('paginatorSetPageSize', { pageSize });
+  },
+  setPageSizes({ dispatch }, { pageSizes }) {
+    dispatch('paginatorSetPageSizes', { pageSizes });
   },
 };
 

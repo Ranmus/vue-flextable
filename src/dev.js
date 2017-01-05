@@ -8,6 +8,8 @@ import ftTitle from 'components/header/Title';
 import ftFilter from 'components/header/Filter';
 import ftFooter from 'components/footer/Footer';
 import ftPaginator from 'components/footer/Paginator';
+import ftGrid from 'components/grid/Grid';
+import ftHeading from 'components/grid/heading/Heading';
 
 // Enable Vuex and Flextable component
 Vue.use(Vuex);
@@ -19,6 +21,8 @@ Vue.use(() => {
   Vue.component('ftFilter', ftFilter);
   Vue.component('ftFooter', ftFooter);
   Vue.component('ftPaginator', ftPaginator);
+  Vue.component('ftGrid', ftGrid);
+  Vue.component('ftHeading', ftHeading);
 });
 
 /* eslint-disable no-new */

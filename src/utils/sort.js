@@ -14,6 +14,8 @@ export default function (array, key, options) {
     bigger = -1;
   }
 
+  console.log(key);
+
   return array.sort((a, b) => {
     if (a[key] < b[key]) return smaller;
     if (a[key] > b[key]) return bigger;

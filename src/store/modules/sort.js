@@ -26,7 +26,7 @@ export default {
     sort: s => s.sort,
   },
   mutations: {
-    [types.SORT_DATA]: ({ sort }, { name }) => {
+    [types.SORT_SET_FIELD]: ({ sort }, { name }) => {
       if (sort.name !== name) {
         sort.name = name;
         sort.order = 'asc';
@@ -46,8 +46,8 @@ export default {
     },
   },
   actions: {
-    sortBy({ commit, state }, { name }) {
-      commit(types.SORT_DATA, { name });
+    sortSetField({ commit, state }, { name }) {
+      commit(types.SORT_SET_FIELD, { name });
 
       if (state.side === 'server') {
         commit('DATA_LOAD');
