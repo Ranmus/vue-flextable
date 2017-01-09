@@ -49,7 +49,8 @@ export default {
       const { url, side } = getters;
 
       return Vue.http.delete(url + row.id).then(() => {
-        commit('DATA_DELETE', { row });
+        commit(types.DATA_DELETE, { row });
+        commit(types.SELECT_UNSELECT_ROW, { row });
 
         if (side === 'server') {
           commit('DATA_LOAD');

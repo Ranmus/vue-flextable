@@ -1,6 +1,7 @@
 <template lang="pug">
 .ft-heading
-  ft-heading-row
+  slot
+    ft-heading-row
 </template>
 
 <script lang="babel">

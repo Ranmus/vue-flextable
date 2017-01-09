@@ -1,3 +1,4 @@
+import filter from 'utils/filter';
 import types from '../types';
 
 export default {
@@ -8,16 +9,25 @@ export default {
   getters: {
     filterText: s => s.text,
     filterColumns: s => s.columns,
-    filteredTotal(s, { filteredData }) {
-      return s.text ? filteredData.length : null;
+    filteredData({ text }, { filterColumns }, { dataModule }) {
+      const { data } = dataModule;
+
+      if (text.length) {
+        return filter(data, text, filterColumns);
+      }
+
+      return data;
+    },
+    filteredTotal({ text }, { filteredData }) {
+      return filteredData.length;
     },
   },
   mutations: {
-    [types.FILTER_SET_TEXT](s, { text }) {
-      s.text = text;
+    [types.FILTER_SET_TEXT](state, { text }) {
+      state.text = text;
     },
-    [types.FILTER_ADD_COLUMN](s, { name }) {
-      s.columns.push(name);
+    [types.FILTER_ADD_COLUMN]({ columns }, { name }) {
+      columns.push(name);
     },
   },
   actions: {

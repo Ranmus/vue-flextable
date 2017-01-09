@@ -3,7 +3,7 @@ import types from './../types';
 export default {
   state: {
     pageSize: 10,
-    limits: [{
+    pageSizes: [{
       value: 10,
       name: 10,
     }, {
@@ -25,24 +25,27 @@ export default {
     page: 1,
   },
   getters: {
-    pageSize: s => s.pageSize,
-    limits: state => state.limits,
     page: s => s.page,
     pages(state, { pageSize, parsedTotal }) {
       return pageSize ? Math.max(Math.ceil(parsedTotal / pageSize), 1) : 1;
     },
+    pageSize: s => s.pageSize,
+    pageOffset(state, { page, pageSize }) {
+      return pageSize ? (page - 1) * pageSize : 0;
+    },
+    pageSizes: s => s.pageSizes,
     isFirstPage: s => s.page <= 1,
     isLastPage: s => s.page >= s.pages,
   },
   mutations: {
-    [types.LIMITS_SET](state, { limits }) {
-      state.limits = limits;
-    },
     [types.PAGINATOR_SET_PAGE](state, { page }) {
       state.page = page;
     },
     [types.PAGINATOR_SET_PAGE_SIZE](state, { pageSize }) {
       state.pageSize = pageSize;
+    },
+    [types.PAGINATOR_SET_PAGE_SIZES](state, { pageSizes }) {
+      state.pageSizes = pageSizes;
     },
   },
   actions: {
@@ -50,8 +53,8 @@ export default {
       commit(types.PAGINATOR_SET_PAGE_SIZE, { pageSize });
       dispatch('paginatorSetPage', { page: 1 });
     },
-    setLimits({ commit, dispatch }, { limits }) {
-      commit(types.LIMITS_SET, { limits });
+    paginatorSetPageSizes({ commit, dispatch }, { pageSizes }) {
+      commit(types.PAGINATOR_SET_PAGE_SIZES, { pageSizes });
       dispatch('paginatorSetPage', { page: 1 });
     },
     paginatorNextPage({ commit, state, getters }) {

@@ -4,7 +4,7 @@
     span Rows per page:
     ft-selector(
       :value="pageSize",
-      :options="limits",
+      :options="pageSizes",
       @input="setPageSize(Number($event))"
       )
     span Page {{ page }} of {{ pages }}
@@ -23,7 +23,7 @@ export default {
   computed: {
     ...mapGetters([
       'pageSize',
-      'limits',
+      'pageSizes',
       'total',
       'page',
       'pages',
