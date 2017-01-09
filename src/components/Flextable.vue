@@ -1,15 +1,24 @@
 <template lang="pug">
 .flextable(:class="[classes.mobile, classes.device, classes.size]")
   slot(
+    :selected="selected",
+    :screenSize="screen.size",
+    :device="device",
     :page="page",
     :pages="pages",
-    :found="filteredTotal",
+    :filteredTotal="filteredTotal",
+    :filterText="filterText",
+    :filter="filter",
     :pageSize="pageSize",
     :setPageSize="setPageSize",
     :firstPage="firstPage",
     :previousPage="previousPage",
     :nextPage="nextPage",
     :lastPage="lastPage",
+    :rowsToRender="rowsToRender",
+    :columns="columns",
+    :sort="sort",
+    :toggleSelect="toggleSelect"
     )
     ft-header
     ft-grid(v-if="loaded")
@@ -53,10 +62,6 @@ export default {
     //   required: false,
     //   default: null,
     // },
-    // sortable: {
-    //   type: Array,
-    //   required: false,
-    // },
     columns: {
       type: Array,
       required: false,
@@ -71,6 +76,7 @@ export default {
   computed: {
     ...mapGetters([
       'filteredTotal',
+      'filterText',
       'pageSize',
       'page',
       'pages',
@@ -78,10 +84,23 @@ export default {
       'slots',
       'classes',
       'selected',
+      'rowsToRender',
+      'sort',
+      'screen',
+      'device',
+      'selected',
     ]),
   },
   created() {
     this.$store = Store();
+
+    this.$store.watch((state, getters) => getters.rowsToRender, (rowsToRender) => {
+      this.$emit('rowsToRender', { rowsToRender });
+    });
+
+    this.$store.watch((state, getters) => getters.selected, (rowsSelected) => {
+      this.$emit('rowsSelected', { rowsSelected });
+    });
   },
   mounted() {
     const { columns, config, data, side, url } = this;

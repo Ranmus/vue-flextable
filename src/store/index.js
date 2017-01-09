@@ -42,8 +42,8 @@ const getters = {
 };
 
 const mutations = {
-  [types.COLUMNS_SET]() {
-
+  [types.COLUMNS_SET](state, { columns }) {
+    state.columns = columns;
   },
 };
 
@@ -55,6 +55,8 @@ const actions = {
     Object.keys(config).forEach((key) => {
       dispatch(`set${uppercamelcase(key)}`, { [key]: config[key] });
     });
+
+    commit(types.COLUMNS_SET, { columns });
 
     columns.forEach((column) => {
       if (column.filterable !== false) {
@@ -83,6 +85,9 @@ const actions = {
   },
   setPageSizes({ dispatch }, { pageSizes }) {
     dispatch('paginatorSetPageSizes', { pageSizes });
+  },
+  setMultiSelect({ dispatch }, { multiSelect }) {
+    dispatch('selectSetMultiSelect', { multiSelect });
   },
 };
 

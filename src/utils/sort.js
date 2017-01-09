@@ -14,7 +14,17 @@ export default function (array, key, options) {
     bigger = -1;
   }
 
-  console.log(key);
+  if (typeof options.func === 'function') {
+    return array.sort((a, b) => {
+      let result = options.func(a[key], b[key]);
+
+      if (options.reverse) {
+        result = !result;
+      }
+
+      return result ? 1 : -1;
+    });
+  }
 
   return array.sort((a, b) => {
     if (a[key] < b[key]) return smaller;

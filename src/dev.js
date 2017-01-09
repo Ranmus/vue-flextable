@@ -10,6 +10,10 @@ import ftFooter from 'components/footer/Footer';
 import ftPaginator from 'components/footer/Paginator';
 import ftGrid from 'components/grid/Grid';
 import ftHeading from 'components/grid/heading/Heading';
+import ftHeadingRow from 'components/grid/heading/Row';
+import ftHeadingCell from 'components/grid/heading/Cell';
+import ftRow from 'components/grid/Row';
+import ftCell from 'components/grid/Cell';
 
 // Enable Vuex and Flextable component
 Vue.use(Vuex);
@@ -23,6 +27,10 @@ Vue.use(() => {
   Vue.component('ftPaginator', ftPaginator);
   Vue.component('ftGrid', ftGrid);
   Vue.component('ftHeading', ftHeading);
+  Vue.component('ftHeadingRow', ftHeadingRow);
+  Vue.component('ftHeadingCell', ftHeadingCell);
+  Vue.component('ftRow', ftRow);
+  Vue.component('ftCell', ftCell);
 });
 
 /* eslint-disable no-new */

@@ -19,7 +19,7 @@ export default {
       return data;
     },
     filteredTotal({ text }, { filteredData }) {
-      return text ? filteredData.length : null;
+      return filteredData.length;
     },
   },
   mutations: {
