@@ -1,6 +1,5 @@
+import Vue from 'vue';
 import types from '../types';
-
-const axios = require('axios');
 
 /* eslint-disable no-param-reassign */
 export default {
@@ -16,24 +15,16 @@ export default {
   getters: {
     loaded: s => s.loaded,
     loading: s => s.loading,
-    data: s => s.data,
-    source: s => s.source,
     url: s => s.url,
     side: s => s.side,
-    total({ total }, { data, side }) {
-      if (side === 'server') {
-        return total;
-      }
-
-      return data.length;
-    },
+    total: s => (s.side === 'server' ? s.total : s.data.length),
   },
   mutations: {
     [types.DATA_SIDE_SET](state, { side }) {
       state.side = side;
     },
-    [types.DATA_SOURCE_SET](state, { source }) {
-      state.source = source;
+    [types.DATA_DATA_SET](state, { data }) {
+      state.data = data;
     },
     [types.DATA_URL_SET](state, { url }) {
       state.url = url;
@@ -49,27 +40,6 @@ export default {
     [types.DATA_DELETE]({ url, data }, { row }) {
       data.splice(data.indexOf(row), 1);
     },
-    [types.DATA_SYNC](state, payload) {
-      const { url, data } = state;
-      const { row } = payload;
-
-      if (typeof row === 'number') {
-        const id = Number(row);
-        axios.get(url + id).then((response) => {
-          const found = data.find(row_ => Number(row_.id) === id);
-
-          if (found) {
-            data.splice(data.indexOf(found), 1, response.data);
-          } else {
-            data.push(response.data);
-          }
-        });
-      } else {
-        axios.get(url + row.id).then((response) => {
-          data.splice(data.indexOf(row), 1, response.data);
-        });
-      }
-    },
     [types.DATA_TOTAL_SET](state, { total }) {
       state.total = total;
     },
@@ -78,8 +48,9 @@ export default {
     delete({ commit, getters }, { row }) {
       const { url, side } = getters;
 
-      return axios.delete(url + row.id).then(() => {
-        commit('DATA_DELETE', { row });
+      return Vue.http.delete(url + row.id).then(() => {
+        commit(types.DATA_DELETE, { row });
+        commit(types.SELECT_UNSELECT_ROW, { row });
 
         if (side === 'server') {
           commit('DATA_LOAD');
@@ -89,15 +60,49 @@ export default {
     setSide({ commit }, { side }) {
       commit(types.DATA_SIDE_SET, { side });
     },
-    setSource({ commit }, { source }) {
-      commit(types.DATA_SOURCE_SET, { source });
+    setData({ commit }, { data }) {
+      commit(types.DATA_DATA_SET, { data });
     },
     setURL({ commit }, { url }) {
       commit(types.DATA_URL_SET, { url });
     },
+    sync({ state, rootState, dispatch }, { row }) {
+      const { data, url } = state;
+      const { selected } = rootState.selectModule;
+      const id = Number.isInteger(row) ? row : Number(row.id);
+      const found = data.find(row_ => Number(row_.id) === id);
+
+      return new Promise((resolve, reject) => {
+        Vue.http.get(url + id).then((response) => {
+          if (found) {
+            data.splice(data.indexOf(found), 1, response.data);
+            resolve({ state: 'updated', row: found });
+          } else {
+            data.push(response.data);
+            resolve({ state: 'created', row: response.data });
+          }
+        }, ({ status }) => {
+          if (status === 404 && found) {
+            data.splice(data.indexOf(found), 1);
+            if (selected.indexOf(row) !== -1) {
+              dispatch('toggleSelect', { row });
+            }
+            resolve({ state: 'deleted', row });
+          }
+          reject({ state: 'error', row });
+        });
+      });
+    },
     loadData({ commit, getters }) {
-      const { loaded, loading, side, source, url, page, limit, sort, search } = getters;
-      if (loaded && (source || side === 'client')) {
+      const { loading, side, source, url, page, limit, sort, search } = getters;
+
+      if (!source && !side) {
+        console.log('No data provided.');
+        return;
+      }
+
+      if (side && !url) {
+        console.log('No url for data defined.');
         return;
       }
 
@@ -105,15 +110,11 @@ export default {
         return;
       }
 
-      commit(types.DATA_SOURCE_LOADING);
+      commit(types.DATA_LOADING);
 
       if (source) {
         commit(types.DATA_LOADED, { data: source });
         return;
-      }
-
-      if (!url) {
-        console.log('No data source, define url or source parameter.');
       }
 
       if (side === 'server') {
@@ -134,7 +135,7 @@ export default {
           commit(types.PAGE_SET, { page: 1 });
         }
 
-        axios.get(url, { params }).then(({ data, headers }) => {
+        Vue.http.get(url, { params }).then(({ data, headers }) => {
           const total = Number(headers['x-total-count']);
           commit(types.DATA_TOTAL_SET, { total });
           commit(types.DATA_LOADED, { data });
@@ -142,7 +143,7 @@ export default {
         return;
       }
 
-      axios.get(url).then(({ data, status }) => {
+      Vue.http.get(url).then(({ data, status }) => {
         if (status === 200) {
           commit(types.DATA_LOADED, { data });
         } else {

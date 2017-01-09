@@ -19,8 +19,7 @@ module.exports = merge(baseWebpackConfig, {
   externals: {
     'vue': 'Vue',
     'vuex': 'Vuex',
-    // 'ismobilejs': 'ismobilejs',
-    // 'axios': 'axios',
+    'vue-resource': 'VueResource',
   },
   module: {
     loaders: utils.styleLoaders({ sourceMap: config.build.productionSourceMap, extract: true })

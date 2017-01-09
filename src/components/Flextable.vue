@@ -1,26 +1,29 @@
 <template lang="pug">
 .flextable(:class="[classes.mobile, classes.device, classes.size]")
-  ft-header
-    template(slot="search" v-if="slots.named.search" scope="p")
-      slot(name="search", :filterBy="p.filterBy")
-  template(v-if="loaded")
-    ft-grid
+  slot(
+    :selected="selected",
+    :screenSize="screen.size",
+    :device="device",
+    :page="page",
+    :pages="pages",
+    :filteredTotal="filteredTotal",
+    :filterText="filterText",
+    :filter="filter",
+    :pageSize="pageSize",
+    :setPageSize="setPageSize",
+    :firstPage="firstPage",
+    :previousPage="previousPage",
+    :nextPage="nextPage",
+    :lastPage="lastPage",
+    :rowsToRender="rowsToRender",
+    :columns="columns",
+    :sort="sort",
+    :toggleSelect="toggleSelect"
+    )
+    ft-header
+    ft-grid(v-if="loaded")
+    ft-state(v-else="loaded")
     ft-footer
-      template(v-if="slots.scoped.pagesize" slot="pagesize" scope="p")
-        slot(name="pagesize", :setLimit="p.setLimit")
-      template(v-if="slots.scoped.paginator" slot="paginator" scope="p")
-        slot(
-          name="paginator",
-          :page="p.data.page",
-          :pages="p.data.pages",
-          :first="p.data.first",
-          :prev="p.data.prev",
-          :next="p.data.next",
-          :last="p.data.last",
-          :total="p.data.total",
-          :limit="p.data.limit",
-        )
-  ft-state(v-else="loaded")
 </template>
 
 <style lang="sass">
@@ -30,20 +33,18 @@
 <script lang="babel">
 import { mapActions, mapGetters } from 'vuex';
 import Store from 'src/store';
-import ftHeader from 'components/header/Header';
 import ftFooter from 'components/footer/Footer';
 import ftState from 'components/state/State';
 import ftGrid from 'components/grid/Grid';
 
 export default {
   components: {
-    ftHeader,
     ftFooter,
     ftGrid,
     ftState,
   },
   props: {
-    source: {
+    data: {
       type: Array,
       required: false,
     },
@@ -56,58 +57,65 @@ export default {
       required: false,
       default: 'client',
     },
-    screenSizes: {
+    // screenSizes: {
+    //   type: Object,
+    //   required: false,
+    //   default: null,
+    // },
+    columns: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    config: {
       type: Object,
       required: false,
-      default: null,
-    },
-    limit: {
-      type: Number,
-      required: false,
-      default: 10,
-    },
-    limits: {
-      type: Array,
-      required: false,
-      default: () => [10, 20, 30, 50, 100],
-    },
-    pagination: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    sortable: {
-      type: Array,
-      required: false,
-    },
-    searchable: {
-      type: Array,
-      required: false,
+      default: () => {},
     },
   },
   computed: {
     ...mapGetters([
+      'filteredTotal',
+      'filterText',
+      'pageSize',
+      'page',
+      'pages',
       'loaded',
       'slots',
       'classes',
+      'selected',
+      'rowsToRender',
+      'sort',
+      'screen',
+      'device',
       'selected',
     ]),
   },
   created() {
     this.$store = Store();
+
+    this.$store.watch((state, getters) => getters.rowsToRender, (rowsToRender) => {
+      this.$emit('rowsToRender', { rowsToRender });
+    });
+
+    this.$store.watch((state, getters) => getters.selected, (rowsSelected) => {
+      this.$emit('rowsSelected', { rowsSelected });
+    });
   },
   mounted() {
-    const config = {
-      url: this.url,
-      source: this.source,
-      side: this.side,
-      limit: this.limit,
-      limits: this.limits,
-      pagination: this.pagination,
-      sortable: this.sortable,
-      searchable: this.searchable,
-      screenSizes: this.screenSizes,
-    };
+    const { columns, config, data, side, url } = this;
+
+    // const config = {
+    //   url: this.url,
+    //   source: this.source,
+    //   side: this.side,
+    //   limit: this.limit,
+    //   limits: this.limits,
+    //   pagination: this.pagination,
+    //   sortable: this.sortable,
+    //   searchable: this.searchable,
+    //   screenSizes: this.screenSizes,
+    // };
 
     const slots = {
       named: this.$slots,
@@ -115,22 +123,44 @@ export default {
     };
 
     this.$store.dispatch('initialize', {
+      columns,
       config,
       slots,
+      url,
+      side,
+      data,
     });
   },
   methods: {
-    filterBy(text) {
-      this.$store.dispatch('filterBy', { text });
+    firstPage() {
+      this.$store.dispatch('paginatorFirstPage');
+    },
+    previousPage() {
+      this.$store.dispatch('paginatorPreviousPage');
+    },
+    nextPage() {
+      this.$store.dispatch('paginatorNextPage');
+    },
+    lastPage() {
+      this.$store.dispatch('paginatorLastPage');
+    },
+    setPageSize(pageSize) {
+      this.$store.dispatch('paginatorSetPageSize', { pageSize });
+    },
+    setPageSizes(pageSizes) {
+      this.$store.dispatch('paginatorSetPageSizes', { pageSizes });
+    },
+    filter(text) {
+      this.$store.dispatch('filterSetText', { text });
     },
     sortBy(name) {
-      this.$store.dispatch('sortBy', { name });
+      this.$store.dispatch('sortSetField', { name });
     },
     delete(row) {
       return this.$store.dispatch('delete', { row });
     },
     sync(row) {
-      this.$store.dispatch('sync', { row });
+      return this.$store.dispatch('sync', { row });
     },
     select(row) {
       this.$store.dispatch('select', { row });

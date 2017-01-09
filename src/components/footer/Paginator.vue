@@ -1,32 +1,29 @@
 <template lang="pug">
-.ft-footer-paginator
-  slot(name="paginator", :data="{page, pages, first, prev, next, last, total, limit}")
+.ft-paginator
+  slot
+    span Rows per page:
+    ft-selector(
+      :value="pageSize",
+      :options="pageSizes",
+      @input="setPageSize(Number($event))"
+      )
     span Page {{ page }} of {{ pages }}
-    button(
-      :disabled="isFirstPage",
-      @click="first"
-      ).ft-footer-paginator-button | &lt;
-    button(
-      :disabled="isFirstPage",
-      @click="prev"
-      ).ft-footer-paginator-button &lt;
-    button(
-      :disabled="isLastPage",
-      @click="next"
-      ).ft-footer-paginator-button &gt;
-    button(
-      :disabled="isLastPage",
-      @click="last"
-      ).ft-footer-paginator-button &gt; |
+    button(:disabled="isFirstPage", @click="first").ft-paginator-button | &lt;
+    button(:disabled="isFirstPage", @click="prev").ft-paginator-button &lt;
+    button(:disabled="isLastPage", @click="next").ft-paginator-button &gt;
+    button(:disabled="isLastPage", @click="last").ft-paginator-button &gt; |
 </template>
 
 <script lang="babel">
 import { mapGetters } from 'vuex';
+import ftSelector from '../reusable/Selector';
 
 export default {
+  components: { ftSelector },
   computed: {
     ...mapGetters([
-      'limit',
+      'pageSize',
+      'pageSizes',
       'total',
       'page',
       'pages',
@@ -36,19 +33,19 @@ export default {
   },
   methods: {
     first() {
-      this.setPage(1);
+      this.$store.dispatch('paginatorFirstPage');
     },
     next() {
-      this.setPage(Math.min(this.pages, this.page + 1));
+      this.$store.dispatch('paginatorNextPage');
     },
     prev() {
-      this.setPage(Math.max(1, this.page - 1));
+      this.$store.dispatch('paginatorPreviousPage');
     },
     last() {
-      this.setPage(this.pages);
+      this.$store.dispatch('paginatorLastPage');
     },
-    setPage(page) {
-      this.$store.dispatch('setPage', { page });
+    setPageSize(pageSize) {
+      this.$store.dispatch('paginatorSetPageSize', { pageSize });
     },
   },
 };

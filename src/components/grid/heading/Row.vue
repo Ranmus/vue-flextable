@@ -1,14 +1,22 @@
+<template lang="pug">
+.ft-heading-row
+  slot
+    ft-heading-cell(v-if="multiSelect !== false", :column="{sortable:false, filterable: false}")
+    ft-heading-cell(v-for="column in columns", :column="column")
+</template>
+
 <script lang="babel">
 import { mapGetters } from 'vuex';
+import ftHeadingCell from './Cell';
 
 export default {
+  components: {
+    ftHeadingCell,
+  },
   computed: {
     ...mapGetters([
-      'slots',
-      'device',
-      'screen',
-      'classes',
-      'sort',
+      'columns',
+      'multiSelect',
     ]),
   },
   methods: {
@@ -17,28 +25,6 @@ export default {
         name,
       });
     },
-  },
-  render(createElement) {
-    const { isDesktop, isMobile, isPhone, isTablet, name } = this.device;
-    const { size } = this.screen;
-
-    return createElement('div',
-      {
-        attrs: {
-          class: 'ft-heading-row',
-        },
-      },
-      [this.slots.scoped.headingRow ? this.slots.scoped.headingRow({
-        device: name,
-        size,
-        isDesktop,
-        isMobile,
-        isPhone,
-        isTablet,
-        sort: this.sort,
-        sortBy: this.sortBy,
-      }) : null],
-    );
   },
 };
 </script>

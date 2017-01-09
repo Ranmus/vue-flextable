@@ -7,7 +7,7 @@
 .flextable
   @include border
   @include shadow
-  background: #fff
+  background: $background-color
 
 .ft-no-data
   @include default-padding
@@ -31,10 +31,6 @@
   font:
     size: 1.6rem
     weight: bold
-
-.ft-search
-
-.ft-search-button
 
 .ft-footer
   @include default-padding
@@ -63,12 +59,18 @@
   width: 100%
 
 .ft-heading-cell
+  overflow: hidden
   display: flex
   width: 100%
   padding: $cell-padding
   color: $outline-color
   font-weight: bold
   @include user-select(none)
+
+.ft-heading-cell-sorted
+  color: $sorted-color
+
+.ft-cell-sorted
 
 .ft-clickable
   cursor: pointer

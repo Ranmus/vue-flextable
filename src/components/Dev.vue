@@ -2,77 +2,86 @@
   #app
     .header
       h1 Flextable example
-        a(href="http://localhost:8090/users/").source  + random data rest server
+        a(href="http://localhost:8090/users/").source + random data rest server
     .example
       // Usage example
       flextable(
+        :config="config",
+        :columns="columns",
         url="http://localhost:8090/users/",
         side="client",
-        :limit.number="5",
-        :limits="[1,5,10,20,30,50,100]",
-        :searchable="['id', 'firstName', 'lastName', 'email', 'phone']",
-        ref="flextable")
+        ref="flextable",
+        v-on:rowsToRender="rowsToRender"
+        v-on:rowsSelected="rowsSelected"
+        )
+        //- Custom layouting
+        template(scope="p")
+          //- Header component
+          ft-header
+            //- Title component
+            ft-title
+              template(v-if="p.selected.length > 0") Items selected: {{ p.selected.length }}
+              template(v-else) Users table
+            //- Filter component
+            ft-filter
+              span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
+              input(@input="p.filter($event.target.value)")
+          //- Grid component
+          ft-grid
+            //- Grid heading component
+            ft-heading
+              //- Grid heading row component
+              ft-heading-row
+                //- //- Grid heading cell component
+                //- ft-heading-cell(:column="{sortable: false, filterable: false}")
+                //- ft-heading-cell(v-for="column in p.columns", :column="column")
+                //-   template(slot="asc-icon") &#8593;
+                //-   template(slot="desc-icon") &#8595;
+            //- Grid row component for rows rendering
+            ft-row(v-for="row in p.rowsToRender", :row="row")
+              //- Cell component for custom value rendering by using named slots
+              //- (names are same like column names)
+              ft-cell(slot="multiSelect")
+                input(
+                  type="checkbox",
+                  @click="p.toggleSelect(row)",
+                  class="ft-clickable",
+                  :checked="p.selected.indexOf(row) !== -1"
+                  )
+              ft-cell(slot="avatar", class="ft-align-center")
+                img(:src="row.avatar", width="32", height="32")
+              ft-cell(slot="address")
+                div {{ row.address.country }}, {{ row.address.city }}
+              ft-cell(slot="options")
+                button(@click="sync(Number(row.id))") Synchronize by id
+                button(@click="sync(row)") Synchronize
+                button(@click="remove(row)") Delete
+          //- Footer component
+          ft-footer
+            //- Paginator component
+            ft-paginator
+              span Rows per page:
+              select(@change="p.setPageSize(Number($event.target.value))")
+                option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
+              span Page {{ p.page }} of {{ p.pages }}
+              button(@click="p.firstPage()") First
+              button(@click="p.previousPage()") Previous
+              button(@click="p.nextPage()") Next
+              button(@click="p.lastPage()") Last
 
         template(slot="nodata") No users loaded
-
-        template(slot="title") Users first table
-
         template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
-
-        template(slot="search" scope="p")
-          input(@input="p.filterBy($event.target.value)")
-
-        template(slot="pagesize" scope="p")
-          span Rows per page:
-          select(@input="p.setLimit(Number($event.target.value))")
-            option(value="1") 1
-            option(value="5" selected="selected") 5
-            option(value="10") 10
-            option(value="20") 20
-            option(value="50") 50
-            option(value="100") 100
-
-        template(slot="paginator" scope="p")
-          span Page {{ p.page }} of {{ p.pages }}
-          button(@click="p.first()") First
-          button(@click="p.prev()") Previous
-          button(@click="p.next()") Next
-          button(@click="p.last()") Last
-
-        template(slot="headingRow" scope="p")
-          .ft-heading-cell
-          .ft-heading-cell(
-            v-for="column in columns",
-            :class="[column.classes, {'ft-clickable' : column.sortable}]",
-            @click="column.sortable && p.sortBy(column.id)"
-            )
-            div {{ column.name }}
-            div(v-if="p.sort.name == column.id")
-              span(v-if="p.sort.order == 'asc'") &#x25B2;
-              span(v-else) &#x25BC;
-
-        template(slot="row" scope="p")
-          .ft-cell
-            input(
-              type="checkbox",
-              :id="p.data.id",
-              :value="p.data",
-              @click="toggleSelect(p.data)",
-              :checked="p.isSelected"
-              class="ft-clickable")
-          .ft-cell(v-for="column in columns", :class="column.classes")
-            template(v-if="column.id == 'avatar'")
-              img(:src="p.data.avatar", width="32", height="32")
-            template(v-else-if="column.id == 'options'") {{ p.data[column.id] }}
-              button(@click="sync(Number(p.data.id))") Synchronize by id
-              button(@click="sync(p.data)") Synchronize
-              button(@click="remove(p.data)") Delete
-            template(v-else) {{ p.data[column.id] }}
 </template>
 
 <style lang="sass">
 @import '~roboto-npm-webfont/style.css'
 @import '~assets/example.sass'
+
+.example-blue
+  color: blue !important
+
+.example-bold
+  font-weight: bold
 </style>
 
 <script lang="babel">
@@ -80,50 +89,76 @@
     name: 'app',
     data() {
       return {
-        selected: [],
-        filter: false,
+        config: {
+          multiSelect: true,
+          pageSize: 5,
+          pageSizes: [{
+            value: 1,
+            name: 1,
+          }, {
+            value: 5,
+            name: 5,
+          }, {
+            value: 0,
+            name: 'no limit',
+          }],
+        },
         columns: [{
-          id: 'id',
+          name: 'id',
+          label: 'Id',
           align: 'right',
-          classes: 'ft-align-right',
-          name: 'Id',
           sortable: true,
         }, {
-          id: 'firstName',
-          name: 'First name',
+          name: 'firstName',
+          label: 'First name',
           sortable: true,
         }, {
-          id: 'lastName',
-          name: 'Last name',
+          name: 'lastName',
+          label: 'Last name',
           sortable: true,
         }, {
-          id: 'email',
-          name: 'E-mail',
+          name: 'address',
+          label: 'Address',
+          sortable: true,
+          sortFunction: (a, b) => a.country > b.country,
+          filterable: true,
+        }, {
+          name: 'email',
+          label: 'E-mail',
           sortable: true,
         }, {
-          id: 'phone',
-          name: 'Phone',
+          name: 'phone',
+          label: 'Phone',
           sortable: true,
+          classes: 'example-blue example-bold',
         }, {
-          id: 'avatar',
+          name: 'avatar',
+          label: 'Avatar',
           align: 'center',
-          classes: 'ft-align-center',
-          name: 'Avatar',
+          filterable: false,
+          sortable: false,
         }, {
-          id: 'options',
+          name: 'options',
+          label: 'Options',
           align: 'right',
-          classes: 'ft-align-right',
-          name: 'Options',
+          filterable: false,
+          sortable: false,
         }],
       };
     },
     methods: {
-      toggleSelect(row) {
-        this.$refs.flextable.toggleSelect(row);
-        this.selected = this.$refs.flextable.getSelected();
+      rowsToRender({ rowsToRender }) {
+        console.log(rowsToRender);
+      },
+      rowsSelected({ rowsSelected }) {
+        console.log(rowsSelected);
       },
       sync(row) {
-        this.$refs.flextable.sync(row);
+        const returned = this.$refs.flextable.sync(row);
+
+        returned.then((state) => {
+          console.log(state);
+        });
       },
       remove(row) {
         this.$refs.flextable.delete(row).then(() => {

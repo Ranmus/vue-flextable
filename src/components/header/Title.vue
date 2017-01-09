@@ -1,27 +1,22 @@
+<template lang="pug">
+.ft-header-title
+  slot
+    template(v-if="multiSelect")
+      template(v-if="selected.length")
+        slot(name="items-selected") Items selected: {{ selected.length }}
+      template(v-else) Default title
+    template(v-else) Default title
+</template>
+
 <script lang="babel">
 import { mapGetters } from 'vuex';
 
 export default {
   computed: {
     ...mapGetters([
+      'multiSelect',
       'selected',
-      'slots',
     ]),
-  },
-  render(createElement) {
-    return createElement('div',
-      {
-        attrs: {
-          class: 'ft-header-title',
-        },
-      }, [
-        this.selected.length === 0 ?
-          this.slots.named.title :
-          this.slots.scoped.selected({
-            selected: this.selected,
-          }),
-      ],
-    );
   },
 };
 </script>
