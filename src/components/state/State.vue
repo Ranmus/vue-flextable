@@ -1,7 +1,8 @@
 <template lang="pug">
 .ft-loader
-  ft-spinner(v-if="loading")
-  ft-no-data(v-else="loading")
+  slot
+    ft-spinner(v-if="loading")
+    ft-no-data(v-else="loading")
 </template>
 
 <script lang="babel">

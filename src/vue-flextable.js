@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+import Vue from 'vue';
 import Flextable from 'components/Flextable';
 import ftHeader from 'components/header/Header';
 import ftTitle from 'components/header/Title';
@@ -11,6 +11,9 @@ import ftHeadingRow from 'components/grid/heading/Row';
 import ftHeadingCell from 'components/grid/heading/Cell';
 import ftRow from 'components/grid/Row';
 import ftCell from 'components/grid/Cell';
+import ftState from 'components/state/State';
+import ftSpinner from 'components/state/Spinner';
+import ftNoData from 'components/state/NoData';
 
 Vue.use(() => {
   Vue.component('flextable', Flextable);
@@ -25,4 +28,7 @@ Vue.use(() => {
   Vue.component('ftHeadingCell', ftHeadingCell);
   Vue.component('ftRow', ftRow);
   Vue.component('ftCell', ftCell);
+  Vue.component('ftState', ftState);
+  Vue.component('ftSpinner', ftSpinner);
+  Vue.component('ftNoData', ftNoData);
 });

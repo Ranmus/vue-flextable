@@ -11,8 +11,8 @@
         url="http://localhost:8090/users/",
         side="client",
         ref="flextable",
-        v-on:rowsToRender="rowsToRender"
-        v-on:rowsSelected="rowsSelected"
+        v-on:rendered="rendered"
+        v-on:selected="selected"
         )
         //- Custom layouting
         template(scope="p")
@@ -27,7 +27,7 @@
               span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
               input(@input="p.filter($event.target.value)")
           //- Grid component
-          ft-grid
+          ft-grid(v-if="p.dataLoaded && p.filteredTotal")
             //- Grid heading component
             ft-heading
               //- Grid heading row component
@@ -56,20 +56,21 @@
                 button(@click="sync(Number(row.id))") Synchronize by id
                 button(@click="sync(row)") Synchronize
                 button(@click="remove(row)") Delete
+          ft-state(v-else)
           //- Footer component
-          ft-footer
+          ft-footer(v-if="p.filteredTotal")
             //- Paginator component
-            ft-paginator
-              span Rows per page:
-              select(@change="p.setPageSize(Number($event.target.value))")
-                option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
-              span Page {{ p.page }} of {{ p.pages }}
-              button(@click="p.firstPage()") First
-              button(@click="p.previousPage()") Previous
-              button(@click="p.nextPage()") Next
-              button(@click="p.lastPage()") Last
+            //- ft-paginator
+            //-   span Rows per page:
+            //-   select(@change="p.setPageSize(Number($event.target.value))")
+            //-     option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
+            //-   span Page {{ p.page }} of {{ p.pages }}
+            //-   button(@click="p.firstPage()") First
+            //-   button(@click="p.previousPage()") Previous
+            //-   button(@click="p.nextPage()") Next
+            //-   button(@click="p.lastPage()") Last
 
-        template(slot="nodata") No users loaded
+        //- template(slot="nodata") No users loaded
         template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
 </template>
 
@@ -147,11 +148,11 @@
       };
     },
     methods: {
-      rowsToRender({ rowsToRender }) {
-        console.log(rowsToRender);
+      rendered({ rows }) {
+        console.log(rows);
       },
-      rowsSelected({ rowsSelected }) {
-        console.log(rowsSelected);
+      selected({ rows }) {
+        console.log(rows);
       },
       sync(row) {
         const returned = this.$refs.flextable.sync(row);

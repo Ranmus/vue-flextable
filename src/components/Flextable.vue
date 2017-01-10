@@ -18,7 +18,9 @@
     :rowsToRender="rowsToRender",
     :columns="columns",
     :sort="sort",
-    :toggleSelect="toggleSelect"
+    :toggleSelect="toggleSelect",
+    :dataLoaded="loaded",
+    :dataLoading="loading"
     )
     ft-header
     ft-grid(v-if="loaded")
@@ -33,12 +35,14 @@
 <script lang="babel">
 import { mapActions, mapGetters } from 'vuex';
 import Store from 'src/store';
-import ftFooter from 'components/footer/Footer';
-import ftState from 'components/state/State';
+import ftHeader from 'components/header/Header';
 import ftGrid from 'components/grid/Grid';
+import ftState from 'components/state/State';
+import ftFooter from 'components/footer/Footer';
 
 export default {
   components: {
+    ftHeader,
     ftFooter,
     ftGrid,
     ftState,
@@ -81,6 +85,7 @@ export default {
       'page',
       'pages',
       'loaded',
+      'loading',
       'slots',
       'classes',
       'selected',
@@ -94,12 +99,13 @@ export default {
   created() {
     this.$store = Store();
 
-    this.$store.watch((state, getters) => getters.rowsToRender, (rowsToRender) => {
-      this.$emit('rowsToRender', { rowsToRender });
+    /* events */
+    this.$store.watch((state, getters) => getters.rowsToRender, (rows) => {
+      this.$emit('rendered', { rows });
     });
 
-    this.$store.watch((state, getters) => getters.selected, (rowsSelected) => {
-      this.$emit('rowsSelected', { rowsSelected });
+    this.$store.watch((state, getters) => getters.selected, (rows) => {
+      this.$emit('selected', { rows });
     });
   },
   mounted() {

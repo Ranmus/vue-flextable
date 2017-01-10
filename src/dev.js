@@ -8,12 +8,15 @@ import ftTitle from 'components/header/Title';
 import ftFilter from 'components/header/Filter';
 import ftFooter from 'components/footer/Footer';
 import ftPaginator from 'components/footer/Paginator';
-import ftGrid from 'components/grid/Grid';
 import ftHeading from 'components/grid/heading/Heading';
 import ftHeadingRow from 'components/grid/heading/Row';
 import ftHeadingCell from 'components/grid/heading/Cell';
+import ftGrid from 'components/grid/Grid';
 import ftRow from 'components/grid/Row';
 import ftCell from 'components/grid/Cell';
+import ftState from 'components/state/State';
+import ftSpinner from 'components/state/Spinner';
+import ftNoData from 'components/state/NoData';
 
 // Enable Vuex and Flextable component
 Vue.use(Vuex);
@@ -31,6 +34,9 @@ Vue.use(() => {
   Vue.component('ftHeadingCell', ftHeadingCell);
   Vue.component('ftRow', ftRow);
   Vue.component('ftCell', ftCell);
+  Vue.component('ftState', ftState);
+  Vue.component('ftSpinner', ftSpinner);
+  Vue.component('ftNoData', ftNoData);
 });
 
 /* eslint-disable no-new */
