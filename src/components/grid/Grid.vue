@@ -1,7 +1,8 @@
 <template lang="pug">
 .ft-grid
-  ft-heading
-  ft-row(v-for="row in rowsToRender", :row="row")
+  slot
+    ft-heading
+    ft-row(v-for="row in rowsToRender", :row="row")
 </template>
 
 <script lang="babel">
