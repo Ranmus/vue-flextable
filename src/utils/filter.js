@@ -7,11 +7,18 @@
  */
 
  // TODO: Need to refactor for recursive filter literal objects (+ implement filter paths)
-export default function (array, search, keys) {
+export default function (array, search, filterColumns) {
   const text = String(search).toLowerCase();
+  const keys = Object.keys(filterColumns);
+
+  const filterKeys = keys.filter(key => filterColumns[key] !== null);
 
   return array.filter(item =>
     keys.some((key) => {
+      if (filterKeys.every(key => filterColumns[key](item[key])) === false) {
+        return false;
+      }
+
       if (Reflect.has(item, key)) {
         if (typeof item[key] === 'object') {
           return Object.keys(item[key]).some((subKey) => {
