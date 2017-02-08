@@ -150,8 +150,11 @@ export default {
     setPageSizes(pageSizes) {
       this.$store.dispatch('paginatorSetPageSizes', { pageSizes });
     },
-    filter(text, name = null) {
-      this.$store.dispatch('filterSetText', { text, name });
+    filter(text) {
+      this.$store.dispatch('filterSetText', { text });
+    },
+    filterColumn(name, callback) {
+      this.$store.dispatch('filterColumn', { name, callback });
     },
     sortBy(name) {
       this.$store.dispatch('sortSetField', { name });
