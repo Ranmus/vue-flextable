@@ -4,7 +4,7 @@ import types from '../types';
 export default {
   state: {
     text: '',
-    columns: [],
+    columns: new Map(),
   },
   getters: {
     filterText: s => s.text,
@@ -23,16 +23,17 @@ export default {
     },
   },
   mutations: {
-    [types.FILTER_SET_TEXT](state, { text }) {
+    [types.FILTER_SET_TEXT](state, { text, name }) {
+      console.log(name);
       state.text = text;
     },
     [types.FILTER_ADD_COLUMN]({ columns }, { name }) {
-      columns.push(name);
+      columns.set(name, null);
     },
   },
   actions: {
-    filterSetText({ commit }, { text }) {
-      commit(types.FILTER_SET_TEXT, { text });
+    filterSetText({ commit }, { text, name }) {
+      commit(types.FILTER_SET_TEXT, { text, name });
     },
     filterAddColumn({ commit }, { name }) {
       commit(types.FILTER_ADD_COLUMN, { name });

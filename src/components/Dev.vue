@@ -2,8 +2,11 @@
   #app
     .header
       h1 Flextable example
+        =" "
         a(href="http://localhost:8090/users/").source + random data rest server
     .example
+      select
+        option(v-for="n in 10", :value="n") {{ n }}
       // Usage example
       flextable(
         :config="config",
@@ -74,7 +77,6 @@
 </template>
 
 <style lang="sass">
-@import '~roboto-npm-webfont/style.css'
 @import '~assets/example.sass'
 
 .example-blue
@@ -148,10 +150,10 @@
     },
     methods: {
       rowsToRender({ rowsToRender }) {
-        console.log(rowsToRender);
+        console.log('rows to render', rowsToRender);
       },
       rowsSelected({ rowsSelected }) {
-        console.log(rowsSelected);
+        console.log('rows selected', rowsSelected);
       },
       sync(row) {
         const returned = this.$refs.flextable.sync(row);
