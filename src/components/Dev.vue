@@ -2,6 +2,7 @@
   #app
     .header
       h1 Flextable example
+        =" "
         a(href="http://localhost:8090/users/").source + random data rest server
     .example
       // Usage example
@@ -22,6 +23,10 @@
             ft-title
               template(v-if="p.selected.length > 0") Items selected: {{ p.selected.length }}
               template(v-else) Users table
+                br
+                select(v-model.number="addressId")
+                  option(value="0") All addresses
+                  option(v-for="n in 10", :value="n") {{ n }}
             //- Filter component
             ft-filter
               span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
@@ -51,7 +56,7 @@
               ft-cell(slot="avatar", class="ft-align-center")
                 img(:src="row.avatar", width="32", height="32")
               ft-cell(slot="address")
-                div {{ row.address.country }}, {{ row.address.city }}
+                div {{ row.address.id }}: {{ row.address.country }}, {{ row.address.city }}
               ft-cell(slot="options")
                 button(@click="sync(Number(row.id))") Synchronize by id
                 button(@click="sync(row)") Synchronize
@@ -74,7 +79,6 @@
 </template>
 
 <style lang="sass">
-@import '~roboto-npm-webfont/style.css'
 @import '~assets/example.sass'
 
 .example-blue
@@ -89,6 +93,7 @@
     name: 'app',
     data() {
       return {
+        addressId: null,
         config: {
           multiSelect: true,
           pageSize: 5,
@@ -146,12 +151,21 @@
         }],
       };
     },
+    watch: {
+      addressId(id) {
+        if (id === 0) {
+          this.$refs.flextable.filterColumn('address', null);
+        } else {
+          this.$refs.flextable.filterColumn('address', data => data.id === id);
+        }
+      },
+    },
     methods: {
       rowsToRender({ rowsToRender }) {
-        console.log(rowsToRender);
+        console.log('rows to render', rowsToRender);
       },
       rowsSelected({ rowsSelected }) {
-        console.log(rowsSelected);
+        console.log('rows selected', rowsSelected);
       },
       sync(row) {
         const returned = this.$refs.flextable.sync(row);

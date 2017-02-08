@@ -153,6 +153,9 @@ export default {
     filter(text) {
       this.$store.dispatch('filterSetText', { text });
     },
+    filterColumn(name, callback) {
+      this.$store.dispatch('filterColumn', { name, callback });
+    },
     sortBy(name) {
       this.$store.dispatch('sortSetField', { name });
     },

@@ -1,6 +1,6 @@
 {
   "name": "vue-flextable",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Flexible table vue component",
   "author": "Łukasz Strzyżowski <l.strzyzowski@bkf.pl>",
   "private": true,
@@ -16,7 +16,6 @@
   "dependencies": {
     "decamelize": "^1.2.0",
     "ismobilejs": "^0.4.0",
-    "roboto-npm-webfont": "0.0.2",
     "uppercamelcase": "^1.1.0",
     "vue": "^2.1.8",
     "vue-resource": "^1.0.3",

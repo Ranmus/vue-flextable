@@ -1,22 +1,21 @@
+import Vue from 'vue';
 import filter from 'utils/filter';
 import types from '../types';
 
 export default {
   state: {
+    idx: 0,
     text: '',
-    columns: [],
+    columns: {},
   },
   getters: {
     filterText: s => s.text,
     filterColumns: s => s.columns,
-    filteredData({ text }, { filterColumns }, { dataModule }) {
+    filterIdx: s => s.idx,
+    filteredData(state, { filterIdx, filterText, filterColumns }, { dataModule }) {
       const { data } = dataModule;
 
-      if (text.length) {
-        return filter(data, text, filterColumns);
-      }
-
-      return data;
+      return filter(data, filterText, filterColumns, filterIdx);
     },
     filteredTotal({ text }, { filteredData }) {
       return filteredData.length;
@@ -26,8 +25,12 @@ export default {
     [types.FILTER_SET_TEXT](state, { text }) {
       state.text = text;
     },
-    [types.FILTER_ADD_COLUMN]({ columns }, { name }) {
-      columns.push(name);
+    [types.FILTER_ADD_COLUMN]({ columns, columnsNames }, { name }) {
+      Vue.set(columns, name, null);
+    },
+    [types.FILTER_COLUMN](state, { name, callback }) {
+      Vue.set(state.columns, name, callback);
+      state.idx += 1;
     },
   },
   actions: {
@@ -36,6 +39,9 @@ export default {
     },
     filterAddColumn({ commit }, { name }) {
       commit(types.FILTER_ADD_COLUMN, { name });
+    },
+    filterColumn({ commit }, { name, callback }) {
+      commit(types.FILTER_COLUMN, { name, callback });
     },
   },
 };
