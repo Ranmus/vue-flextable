@@ -11,6 +11,11 @@ export default {
     source: null,
     url: null,
     side: 'client',
+    response: {
+      ok: null,
+      status: null,
+      text: null,
+    },
   },
   getters: {
     loaded: s => s.loaded,
@@ -18,6 +23,7 @@ export default {
     url: s => s.url,
     side: s => s.side,
     total: s => (s.side === 'server' ? s.total : s.data.length),
+    response: s => s.response,
   },
   mutations: {
     [types.DATA_SIDE_SET](state, { side }) {
@@ -31,6 +37,14 @@ export default {
     },
     [types.DATA_LOADING](state) {
       state.loading = true;
+    },
+    [types.DATA_LOADING_ERROR](state, { ok, status, text }) {
+      const { response } = state;
+      response.ok = ok === true;
+      response.status = status;
+      response.text = text;
+      state.loading = false;
+      state.loaded = false;
     },
     [types.DATA_LOADED](state, { data }) {
       state.data = data;
@@ -143,12 +157,22 @@ export default {
         return;
       }
 
-      Vue.http.get(url).then(({ data, status }) => {
+      Vue.http.get(url).then(({ data, ok, status, statusText }) => {
         if (status === 200) {
           commit(types.DATA_LOADED, { data });
         } else {
-          console.log(`Bad response occured while getting data. Status: ${status}; url {$url}`);
+          commit(types.DATA_LOADING_ERROR, {
+            ok,
+            status,
+            text: statusText,
+          });
         }
+      }, ({ ok, status, statusText }) => {
+        commit(types.DATA_LOADING_ERROR, {
+          ok,
+          status,
+          text: statusText,
+        });
       });
     },
   },

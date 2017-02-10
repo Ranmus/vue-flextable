@@ -4,6 +4,9 @@ var utils = require('./utils')
 var projectRoot = path.resolve(__dirname, '../')
 
 module.exports = {
+  entry: {
+    app: './src/vue-flextable.js',
+  },
   output: {
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/',

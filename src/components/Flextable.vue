@@ -36,9 +36,9 @@
 import { mapActions, mapGetters } from 'vuex';
 import Store from 'src/store';
 import ftHeader from 'components/header/Header';
+import ftFooter from 'components/footer/Footer';
 import ftGrid from 'components/grid/Grid';
 import ftState from 'components/state/State';
-import ftFooter from 'components/footer/Footer';
 
 export default {
   components: {

@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import Flextable from 'components/Flextable';
 import ftHeader from 'components/header/Header';
 import ftTitle from 'components/header/Title';
@@ -15,20 +14,32 @@ import ftState from 'components/state/State';
 import ftSpinner from 'components/state/Spinner';
 import ftNoData from 'components/state/NoData';
 
-Vue.use(() => {
-  Vue.component('flextable', Flextable);
-  Vue.component('ftHeader', ftHeader);
-  Vue.component('ftTitle', ftTitle);
-  Vue.component('ftFilter', ftFilter);
-  Vue.component('ftFooter', ftFooter);
-  Vue.component('ftPaginator', ftPaginator);
-  Vue.component('ftGrid', ftGrid);
-  Vue.component('ftHeading', ftHeading);
-  Vue.component('ftHeadingRow', ftHeadingRow);
-  Vue.component('ftHeadingCell', ftHeadingCell);
-  Vue.component('ftRow', ftRow);
-  Vue.component('ftCell', ftCell);
-  Vue.component('ftState', ftState);
-  Vue.component('ftSpinner', ftSpinner);
-  Vue.component('ftNoData', ftNoData);
-});
+const Components = {
+  Flextable,
+  ftHeader,
+  ftTitle,
+  ftFooter,
+  ftPaginator,
+  ftGrid,
+  ftHeading,
+  ftHeadingRow,
+  ftHeadingCell,
+  ftRow,
+  ftCell,
+  ftState,
+  ftSpinner,
+  ftNoData,
+  install(Vue) {
+    const keys = Reflect.ownKeys(this);
+    keys.pop();
+    keys.forEach((key) => {
+      Vue.component(key, this[key]);
+    });
+  },
+};
+
+if (window && window.Vue) {
+  window.Vue.use(Components);
+}
+
+module.exports = Components;
