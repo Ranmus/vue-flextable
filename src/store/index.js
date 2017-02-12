@@ -8,7 +8,7 @@ import paginatorModule from './modules/paginator';
 import selectModule from './modules/select';
 import gridModule from './modules/grid';
 import filterModule from './modules/filter';
-import sortModule from './modules/sort';
+import sort from './modules/sort';
 
 const createState = () => ({
   config: {
@@ -17,11 +17,12 @@ const createState = () => ({
   columns: [],
 });
 
+/* eslint-disable */
 const getters = {
   config: s => s.config,
   columns: s => s.columns,
-  parsedData(state, { sortedData }) {
-    return sortedData;
+  parsedData(state, getters, rootState, rootGetters) {
+    return rootGetters['sort/sorted'];
   },
   parsedTotal(state, { parsedData }) {
     return parsedData.length;
@@ -105,6 +106,6 @@ export default () => new Vuex.Store({
     selectModule,
     gridModule,
     filterModule,
-    sortModule,
+    sort,
   },
 });

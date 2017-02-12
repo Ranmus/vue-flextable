@@ -16,67 +16,67 @@
         v-on:selected="selected"
         )
         //- Custom layouting
-        //- template(scope="p")
-        //-   //- Header component
-        //-   ft-header
-        //-     //- Title component
-        //-     ft-title
-        //-       template(v-if="p.selected.length > 0") Items selected: {{ p.selected.length }}
-        //-       template(v-else) Users table
-        //-         br
-        //-         select(v-model.number="addressId")
-        //-           option(value="0") All addresses
-        //-           option(v-for="n in 10", :value="n") {{ n }}
-        //-     //- Filter component
-        //-     ft-filter
-        //-       span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
-        //-       input(@input="p.filter($event.target.value)")
-        //-   //- Grid component
-        //-   ft-grid(v-if="p.dataLoaded && p.filteredTotal")
-        //-     //- Grid heading component
-        //-     ft-heading
-        //-       //- Grid heading row component
-        //-       ft-heading-row
-        //-         //- //- Grid heading cell component
-        //-         //- ft-heading-cell(:column="{sortable: false, filterable: false}")
-        //-         //- ft-heading-cell(v-for="column in p.columns", :column="column")
-        //-         //-   template(slot="asc-icon") &#8593;
-        //-         //-   template(slot="desc-icon") &#8595;
-        //-     //- Grid row component for rows rendering
-        //-     ft-row(v-for="row in p.rowsToRender", :row="row")
-        //-       //- Cell component for custom value rendering by using named slots
-        //-       //- (names are same like column names)
-        //-       ft-cell(slot="multiSelect")
-        //-         input(
-        //-           type="checkbox",
-        //-           @click="p.toggleSelect(row)",
-        //-           class="ft-clickable",
-        //-           :checked="p.selected.indexOf(row) !== -1"
-        //-           )
-        //-       ft-cell(slot="avatar", class="ft-align-center")
-        //-         img(:src="row.avatar", width="32", height="32")
-        //-       ft-cell(slot="address")
-        //-         div {{ row.address.id }}: {{ row.address.country }}, {{ row.address.city }}
-        //-       ft-cell(slot="options")
-        //-         button(@click="sync(Number(row.id))") Synchronize by id
-        //-         button(@click="sync(row)") Synchronize
-        //-         button(@click="remove(row)") Delete
-        //-   ft-state(v-else)
+        template(scope="p")
+          //- Header component
+          ft-header
+            //- Title component
+            ft-title
+              template(v-if="p.selected.length > 0") Items selected: {{ p.selected.length }}
+              template(v-else) Users table
+                br
+                select(v-model.number="addressId")
+                  option(value="0") All addresses
+                  option(v-for="n in 10", :value="n") {{ n }}
+            //- Filter component
+            ft-filter
+              span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
+              input(@input="p.filter($event.target.value)")
+          //- Grid component
+          ft-grid(v-if="p.dataLoaded && p.filteredTotal")
+            //- Grid heading component
+            ft-heading
+              //- Grid heading row component
+              ft-heading-row
+                //- //- Grid heading cell component
+                ft-heading-cell(:column="{sortable: false, filterable: false}")
+                ft-heading-cell(v-for="column in p.columns", :column="column")
+                  template(slot="asc-icon") &#8593;
+                  template(slot="desc-icon") &#8595;
+            //- Grid row component for rows rendering
+            ft-row(v-for="row in p.rowsToRender", :row="row")
+              //- Cell component for custom value rendering by using named slots
+              //- (names are same like column names)
+              ft-cell(slot="multiSelect")
+                input(
+                  type="checkbox",
+                  @click="p.toggleSelect(row)",
+                  class="ft-clickable",
+                  :checked="p.selected.indexOf(row) !== -1"
+                  )
+              ft-cell(slot="avatar", class="ft-align-center")
+                img(:src="row.avatar", width="32", height="32")
+              ft-cell(slot="address")
+                div {{ row.address.id }}: {{ row.address.country }}, {{ row.address.city }}
+              ft-cell(slot="options")
+                button(@click="sync(Number(row.id))") Synchronize by id
+                button(@click="sync(row)") Synchronize
+                button(@click="remove(row)") Delete
+          ft-state(v-else)
           //- Footer component
-          //- ft-footer(v-if="p.filteredTotal")
+          ft-footer(v-if="p.filteredTotal")
             //- Paginator component
-            //- ft-paginator
-            //-   span Rows per page:
-            //-   select(@change="p.setPageSize(Number($event.target.value))")
-            //-     option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
-            //-   span Page {{ p.page }} of {{ p.pages }}
-            //-   button(@click="p.firstPage()") First
-            //-   button(@click="p.previousPage()") Previous
-            //-   button(@click="p.nextPage()") Next
-            //-   button(@click="p.lastPage()") Last
+            ft-paginator
+              span Rows per page:
+              select(@change="p.setPageSize(Number($event.target.value))")
+                option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
+              span Page {{ p.page }} of {{ p.pages }}
+              button(@click="p.firstPage()") First
+              button(@click="p.previousPage()") Previous
+              button(@click="p.nextPage()") Next
+              button(@click="p.lastPage()") Last
 
-        //- template(slot="nodata") No users loaded
-        //- template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
+        template(slot="nodata") No users loaded
+        template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
 </template>
 
 <style lang="sass">

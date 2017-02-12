@@ -90,7 +90,6 @@ export default {
       'classes',
       'selected',
       'rowsToRender',
-      'sort',
       'screen',
       'device',
       'selected',
@@ -162,8 +161,8 @@ export default {
     filterColumn(name, callback) {
       this.$store.dispatch('filterColumn', { name, callback });
     },
-    sortBy(name) {
-      this.$store.dispatch('sortSetField', { name });
+    sort({ name, order, func }) {
+      this.$store.dispatch('sort/sort', { name, order, func });
     },
     delete(row) {
       return this.$store.dispatch('delete', { row });

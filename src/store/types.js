@@ -28,7 +28,7 @@ export default {
   FILTER_ADD_COLUMN: 'FILTER_ADD_COLUMN',
   FILTER_COLUMN: 'FILTER_COLUMN',
   // sort module
-  SORT_SET_FIELD: 'SORT_SET_FIELD',
+  SORT: 'SORT',
   // main module
   COLUMNS_SET: 'COLUMNS_SET',
 };

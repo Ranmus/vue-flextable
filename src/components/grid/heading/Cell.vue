@@ -1,7 +1,7 @@
 <template lang="pug">
 .ft-heading-cell(
   :class="[alignClass, {'ft-clickable': column.sortable !== false}, {'ft-heading-cell-sorted': sort.name === column.name && sort.name}, column.classes]",
-  @click="column.sortable !== false && sortBy(column.name, column.sortFunction)")
+  @click="sort({ name: column.name })")
   slot
     template(v-if="sort.name === column.name")
       template(v-if="column.align === 'right'")
@@ -20,8 +20,6 @@
 </template>
 
 <script lang="babel">
-import { mapGetters } from 'vuex';
-
 export default {
   props: {
     column: {
@@ -43,13 +41,10 @@ export default {
 
       return alignClass;
     },
-    ...mapGetters([
-      'sort',
-    ]),
   },
   methods: {
-    sortBy(name, func) {
-      this.$store.dispatch('sortSetField', { name, func });
+    sort({ name }) {
+      this.$store.dispatch('sort/sort', { name });
     },
   },
 };
