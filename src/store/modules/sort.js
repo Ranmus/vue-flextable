@@ -1,13 +1,14 @@
+import { push, get, has, remove } from 'utils/stack';
 import sort from 'utils/sort';
 import types from '../types';
-import LimitedStackMap from '../../utils/LimitedStackMap';
+
 
 /* eslint-disable */
 export default {
   namespaced: true,
   state: {
-    multi: false,
-    stack: new LimitedStackMap(1),
+    stack: [],
+    multiple: true,
   },
   getters: {
     sorted(state, getters, rootState, rootGetters) {
@@ -28,9 +29,43 @@ export default {
     sort: s => s.sort,
   },
   mutations: {
-    [types.SORT]: ({ stack }, { name, order, func }) => {
-      console.log(name, order, func);
+    [types.SORT]: ({ multiple, stack }, { column, order, func }) => {
+      const { name } = column;
 
+      if (order === false) {
+        has({ stack }, name) && remove({ stack }, name);
+        return;
+      }
+
+      if (has({ stack }, name)) {
+        const item = get({ stack }, name);
+
+        if (func) {
+          item.func = func || column.sortFunction || null;
+        }
+
+        if (order) {
+          item.order = order;
+        } else if (item.order === 'asc')  {
+          item.order = 'desc';
+        } else if (item.order === 'desc') {
+          remove({ stack }, name);
+        }
+      } else {
+        push({ multiple, stack }, {
+          name,
+          order: order || 'asc',
+          func: func || column.sortFunction || null,
+        });
+      }
+
+      stack.forEach((item) => {
+        console.log(`${item.name}: ${item.order}`, item.func);
+      });
+
+      if (stack.length === 0) {
+        console.log(null);
+      }
       return;
       if (sort.name !== name) {
         sort.name = name;
@@ -56,31 +91,18 @@ export default {
   },
   actions: {
     sort({ commit, state, getters, rootState, rootGetters }, { name, order, func }) {
-      const { stack } = state;
       const { columns } = rootGetters;
-      let item = null;
+      const column = columns.find(column => column.name === name);
 
-      if (!stack.has(name)) {
-        const column = columns.find(column => column.name === name);
-
-        if (!column || column.sortable === false) {
-          return;
-        }
-
-        commit(types.SORT, {
-          name,
-          order: 'asc',
-          func: column.sortFunction || func,
-        });
-      } else {
-
+      if (!name || !column) {
+        return;
       }
 
+      if (column.sortable === false) {
+        return;
+      }
 
-
-      // console.log(name, order, func);
-      return;
-      commit(types.SORT, { name, func });
+      commit(types.SORT, { column, order, func });
 
       if (state.side === 'server') {
         commit('DATA_LOAD');
