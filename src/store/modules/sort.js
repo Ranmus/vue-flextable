@@ -1,35 +1,83 @@
 import { push, get, has, remove } from 'utils/stack';
-import sort from 'utils/sort';
 import types from '../types';
-
-
 /* eslint-disable */
+function sort(array, key, options) {
+  let smaller = -1;
+  let bigger = 1;
+
+  if (options.reverse) {
+    smaller = 1;
+    bigger = -1;
+  }
+
+  if (typeof options.func === 'function') {
+    return array.sort((a, b) => {
+      let result = options.func(a[key], b[key]);
+
+      if (options.reverse) {
+        result = !result;
+      }
+
+      return result ? 1 : -1;
+    });
+  }
+
+  return array.sort((a, b) => {
+    if (a[key] < b[key]) return smaller;
+    if (a[key] > b[key]) return bigger;
+    return 0;
+  });
+}
+
+function getItem(object, path) {
+  const length = path.length;
+  let index = 0;
+
+  while(object !== undefined && index < length) {
+    object = object[path[index++]];
+  }
+
+  return object;
+}
+
 export default {
   namespaced: true,
   state: {
     stack: [],
-    multiple: true,
+    multiple: false,
   },
   getters: {
-    sorted(state, getters, rootState, rootGetters) {
+    sorted({ stack }, getters, rootState, rootGetters) {
       const filtered = rootGetters['filteredData'];
 
-      return filtered;
-      const { name, order, func } = state.sort;
-
-      if (order === null) {
+      if (!stack.length) {
         return filtered;
       }
 
-      const reverse = order === 'desc';
-      const sorted = sort(filtered, name, { reverse, func });
+      const { name, sortBy, order } = stack[0];
+      const func = typeof sortBy === 'function' ? sortBy : null;
+      const path = typeof sortBy === 'string' ? sortBy.split('.') : null;
+      const negator = 1 * (order === 'asc' ? 1 : -1);
 
-      return sorted;
+      return filtered.sort((prev, next) => {
+        if (func) {
+          return func(prev[name], next[name]) * negator;
+        }
+
+        if (path) {
+          if (getItem(prev, path) < getItem(next, path)) return 1 * negator;
+          if (getItem(prev, path) > getItem(next, path)) return -1 * negator;
+          return 0;
+        }
+
+        if (prev[name] < next[name]) return 1 * negator;
+        if (prev[name] > next[name]) return -1 * negator;
+        return 0;
+      });
     },
-    sort: s => s.sort,
   },
   mutations: {
-    [types.SORT]: ({ multiple, stack }, { column, order, func }) => {
+    [types.SORT]: ({ multiple, stack }, { column, order, sortBy }) => {
       const { name } = column;
 
       if (order === false) {
@@ -40,8 +88,8 @@ export default {
       if (has({ stack }, name)) {
         const item = get({ stack }, name);
 
-        if (func) {
-          item.func = func || column.sortFunction || null;
+        if (sortBy) {
+          item.sortBy = sortBy || column.sortBy || null;
         }
 
         if (order) {
@@ -55,42 +103,13 @@ export default {
         push({ multiple, stack }, {
           name,
           order: order || 'asc',
-          func: func || column.sortFunction || null,
+          sortBy: sortBy || column.sortBy || null,
         });
-      }
-
-      stack.forEach((item) => {
-        console.log(`${item.name}: ${item.order}`, item.func);
-      });
-
-      if (stack.length === 0) {
-        console.log(null);
-      }
-      return;
-      if (sort.name !== name) {
-        sort.name = name;
-        sort.order = 'asc';
-        sort.func = func || null;
-        return;
-      }
-
-      if (sort.order === 'asc') {
-        sort.order = 'desc';
-        sort.name = name;
-        sort.func = func;
-      } else if (sort.order === 'desc') {
-        sort.order = null;
-        sort.name = null;
-        sort.func = null;
-      } else {
-        sort.order = 'asc';
-        sort.name = name;
-        sort.func = func || null;
       }
     },
   },
   actions: {
-    sort({ commit, state, getters, rootState, rootGetters }, { name, order, func }) {
+    sort({ commit, state, getters, rootState, rootGetters }, { name, order, sortBy }) {
       const { columns } = rootGetters;
       const column = columns.find(column => column.name === name);
 
@@ -102,7 +121,7 @@ export default {
         return;
       }
 
-      commit(types.SORT, { column, order, func });
+      commit(types.SORT, { column, order, sortBy });
 
       if (state.side === 'server') {
         commit('DATA_LOAD');

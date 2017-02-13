@@ -126,7 +126,12 @@
           name: 'address',
           label: 'Address',
           sortable: true,
-          sortFunction: (a, b) => a.country > b.country,
+          // sortBy: 'address.id',
+          sortBy: (a, b) => {
+            if (Number(a.id) > Number(b.id)) return 1;
+            if (Number(a.id) < Number(b.id)) return -1;
+            return 0;
+          },
           filterable: true,
         }, {
           name: 'email',
