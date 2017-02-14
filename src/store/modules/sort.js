@@ -1,62 +1,146 @@
-import sort from 'utils/sort';
+import { push, get, has, remove } from 'utils/stack';
 import types from '../types';
 
-/* eslint-disable no-shadow */
+/* eslint-disable no-plusplus */
+function getItem(object, path) {
+  const length = path.length;
+  let index = 0;
+
+  while (object !== undefined && index < length) {
+    object = object[path[index++]];
+  }
+
+  return object;
+}
+
 export default {
+  namespaced: true,
   state: {
-    sortable: [],
-    sort: {
-      name: null,
-      order: null,
-      func: null,
-    },
+    multiple: true,
+    stack: [],
   },
   getters: {
-    sortedData(state, { filteredData }) {
-      const { name, order, func } = state.sort;
+    multiple: s => s.multiple,
+    stack: s => s.stack,
+    status({ stack }) {
+      const status = {};
+      stack.forEach(({ name, order, sortBy }) => {
+        status[name] = {
+          order,
+          sortBy,
+        };
+      });
+      return status;
+    },
+    sorted({ stack }, getters, rootState, rootGetters) {
+      const filtered = rootGetters.filteredData;
+      const sorters = [];
 
-      if (order === null) {
-        return filteredData;
+      if (!stack.length) {
+        return filtered;
       }
 
-      const reverse = order === 'desc';
-      const sorted = sort(filteredData, name, { reverse, func });
+      stack.forEach(({ name, order, sortBy }) => {
+        sorters.push({
+          name,
+          func: typeof sortBy === 'function' ? sortBy : null,
+          path: typeof sortBy === 'string' ? sortBy.split('.') : null,
+          negator: 1 * (order === 'asc' ? 1 : -1),
+        });
+      });
 
-      return sorted;
+      let index = 0;
+      let result = 0;
+      let sorter = null;
+
+      return filtered.sort((prev, next) => {
+        index = 0;
+        result = 0;
+
+        while (result === 0 && index < sorters.length) {
+          sorter = sorters[index++];
+
+          if (sorter.func) {
+            result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
+          } else if (sorter.path) {
+            if (getItem(prev, sorter.path) < getItem(next, sorter.path)) {
+              result = sorter.negator;
+            } else if (getItem(prev, sorter.path) > getItem(next, sorter.path)) {
+              result = -sorter.negator;
+            } else {
+              result = 0;
+            }
+          } else if (prev[sorter.name] < next[sorter.name]) {
+            result = sorter.negator;
+          } else if (prev[sorter.name] > next[sorter.name]) {
+            result = -sorter.negator;
+          } else {
+            result = 0;
+          }
+        }
+
+        return result;
+      });
     },
-    sort: s => s.sort,
   },
   mutations: {
-    [types.SORT_SET_FIELD]: ({ sort }, { name, func }) => {
-      if (sort.name !== name) {
-        sort.name = name;
-        sort.order = 'asc';
-        sort.func = func || null;
+    [types.SORT_SET_MULTIPLE](state, { multiple }) {
+      state.multiple = multiple;
+    },
+    [types.SORT]: ({ multiple, stack }, { column, order, sortBy }) => {
+      const { name } = column;
+
+      if (order === false) {
+        if (has({ stack }, name)) {
+          remove({ stack }, name);
+        }
         return;
       }
 
-      if (sort.order === 'asc') {
-        sort.order = 'desc';
-        sort.name = name;
-        sort.func = func;
-      } else if (sort.order === 'desc') {
-        sort.order = null;
-        sort.name = null;
-        sort.func = null;
+      if (has({ stack }, name) === true) {
+        const item = get({ stack }, name);
+
+        if (sortBy) {
+          item.sortBy = sortBy || column.sortBy || null;
+        }
+
+        if (order) {
+          item.order = order;
+        } else if (item.order === 'asc') {
+          item.order = 'desc';
+        } else if (item.order === 'desc') {
+          remove({ stack }, name);
+        }
       } else {
-        sort.order = 'asc';
-        sort.name = name;
-        sort.func = func || null;
+        push({ multiple, stack }, {
+          name,
+          order: order || 'asc',
+          sortBy: sortBy || column.sortBy || null,
+        });
       }
     },
   },
   actions: {
-    sortSetField({ commit, state }, { name, func }) {
-      commit(types.SORT_SET_FIELD, { name, func });
+    sort({ commit, state, getters, rootState, rootGetters }, { name, order, sortBy }) {
+      const { columns } = rootGetters;
+      const column = columns.find(column => column.name === name);
+
+      if (!name || !column) {
+        return;
+      }
+
+      if (column.sortable === false) {
+        return;
+      }
+
+      commit(types.SORT, { column, order, sortBy });
 
       if (state.side === 'server') {
         commit('DATA_LOAD');
       }
+    },
+    setMultiple({ commit }, { multiple }) {
+      commit(types.SORT_SET_MULTIPLE, { multiple });
     },
   },
 };

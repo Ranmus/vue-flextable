@@ -1,18 +1,18 @@
 <template lang="pug">
 .ft-heading-cell(
-  :class="[alignClass, {'ft-clickable': column.sortable !== false}, {'ft-heading-cell-sorted': sort.name === column.name && sort.name}, column.classes]",
-  @click="column.sortable !== false && sortBy(column.name, column.sortFunction)")
+  :class="[alignClass, {'ft-clickable': column.sortable !== false}, {'ft-heading-cell-sorted': sorting}, column.classes]",
+  @click="sort({ name: column.name })")
   slot
-    template(v-if="sort.name === column.name")
+    template(v-if="sorting")
       template(v-if="column.align === 'right'")
-        template(v-if="sort.order === 'asc'")
+        template(v-if="sortingOrder === 'asc'")
           slot(name="asc-icon") &#x25B2;
           template {{ column.label }}
         template(v-else)
           slot(name="desc-icon") &#x25BC;
           template {{ column.label }}
       template(v-else)
-        template(v-if="sort.order === 'asc'") {{ column.label }}
+        template(v-if="sortingOrder === 'asc'") {{ column.label }}
           slot(name="asc-icon") &#x25B2;
         template(v-else) {{ column.label }}
           slot(name="desc-icon") &#x25BC;
@@ -31,6 +31,12 @@ export default {
     },
   },
   computed: {
+    sorting() {
+      return this.status[this.column.name] !== undefined;
+    },
+    sortingOrder() {
+      return this.sorting ? this.status[this.column.name].order : null;
+    },
     alignClass() {
       const { align } = this.column;
       let alignClass = 'ft-align-left';
@@ -43,13 +49,13 @@ export default {
 
       return alignClass;
     },
-    ...mapGetters([
-      'sort',
-    ]),
+    ...mapGetters({
+      status: 'sort/status',
+    }),
   },
   methods: {
-    sortBy(name, func) {
-      this.$store.dispatch('sortSetField', { name, func });
+    sort({ name }) {
+      this.$store.dispatch('sort/sort', { name });
     },
   },
 };

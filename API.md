@@ -1,24 +1,13 @@
-# Named slots
-title - title of table
-nodata - no data information
-row - template for row rendering
-  props:
-    data.xxx
-    size
-    device
-    isMobile
-    isPhone
-    isTablet
-heading-row = template for heading row rendering
-  props:
-    size
-    device
-    isMobile
-    isPhone
-    isTablet
-    sortBy - method for sorting
+@ Column definition
+name (string) - key in json
+label (string) - label for column
+sortable (bool) - is column sortable? (default: true)
+sortBy (string/function) - Sort definition. By path string like 'json.leaf.subleaf', function that will be used in array.sort. Arguments: prev, next, rootPrev, rootNext. Result will be multipled by sorting negator (1 for asc, -1 for desc).
+
+
 
 # Options
+multiSort (bool) - enable/disable sorting by multiple columns
 url - url for data source
 source - plain data source
 side - server or client side
