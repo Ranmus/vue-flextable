@@ -90,6 +90,9 @@ const actions = {
   setMultiSelect({ dispatch }, { multiSelect }) {
     dispatch('selectSetMultiSelect', { multiSelect });
   },
+  setMultiSort({ dispatch }, { multiSort }) {
+    dispatch('sort/setMultiple', { multiple: multiSort });
+  }
 };
 
 /* eslint-disable no-undef */

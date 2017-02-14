@@ -14,6 +14,7 @@
         ref="flextable",
         v-on:rendered="rendered"
         v-on:selected="selected"
+        v-on:sorted="sorted"
         )
         //- Custom layouting
         template(scope="p")
@@ -96,6 +97,7 @@
       return {
         addressId: null,
         config: {
+          multiSort: true,
           multiSelect: true,
           pageSize: 5,
           pageSizes: [{
@@ -126,12 +128,7 @@
           name: 'address',
           label: 'Address',
           sortable: true,
-          // sortBy: 'address.id',
-          sortBy: (a, b) => {
-            if (Number(a.id) > Number(b.id)) return 1;
-            if (Number(a.id) < Number(b.id)) return -1;
-            return 0;
-          },
+          sortBy: 'address.id',
           filterable: true,
         }, {
           name: 'email',
@@ -167,11 +164,14 @@
       },
     },
     methods: {
-      rendered({ rowsToRender }) {
-        console.log('rows to render', rowsToRender);
+      rendered({ rows }) {
+        console.log(`Event rendered: ${rows}`);
       },
-      selected({ rowsSelected }) {
-        console.log('rows selected', rowsSelected);
+      selected({ rows }) {
+        console.log(`Event selected: ${rows}`);
+      },
+      sorted({ status }) {
+        console.log(`Event sorted: ${status}`);
       },
       sync(row) {
         const returned = this.$refs.flextable.sync(row);

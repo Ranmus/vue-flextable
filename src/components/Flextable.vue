@@ -106,6 +106,10 @@ export default {
     this.$store.watch((state, getters) => getters.selected, (rows) => {
       this.$emit('selected', { rows });
     });
+
+    this.$store.watch((state, getters) => getters['sort/status'], (status) => {
+      this.$emit('sorted', { status });
+    });
   },
   mounted() {
     const { columns, config, data, side, url } = this;

@@ -29,6 +29,7 @@ export default {
   FILTER_COLUMN: 'FILTER_COLUMN',
   // sort module
   SORT: 'SORT',
+  SORT_SET_MULTIPLE: 'SORT_SET_MULTIPLE',
   // main module
   COLUMNS_SET: 'COLUMNS_SET',
 };
