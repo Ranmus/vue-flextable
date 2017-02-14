@@ -2,8 +2,23 @@ import Vue from 'vue';
 import filter from 'utils/filter';
 import types from '../types';
 
+/* eslint-disable */
+function getItem(object, path) {
+  const length = path.length;
+  let index = 0;
+
+  while (object !== undefined && index < length) {
+    object = object[path[index++]];
+  }
+
+  return object;
+}
+
 export default {
   state: {
+    multiple: true,
+    stack: [],
+    // deprecated
     idx: 0,
     text: '',
     columns: {},

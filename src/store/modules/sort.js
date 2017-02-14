@@ -1,18 +1,8 @@
 import { push, get, has, remove } from 'utils/stack';
+import getDeep from 'utils/getDeep';
 import types from '../types';
 
 /* eslint-disable no-plusplus */
-function getItem(object, path) {
-  const length = path.length;
-  let index = 0;
-
-  while (object !== undefined && index < length) {
-    object = object[path[index++]];
-  }
-
-  return object;
-}
-
 export default {
   namespaced: true,
   state: {
@@ -63,9 +53,9 @@ export default {
           if (sorter.func) {
             result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
           } else if (sorter.path) {
-            if (getItem(prev, sorter.path) < getItem(next, sorter.path)) {
+            if (getDeep(prev, sorter.path) < getDeep(next, sorter.path)) {
               result = sorter.negator;
-            } else if (getItem(prev, sorter.path) > getItem(next, sorter.path)) {
+            } else if (getDeep(prev, sorter.path) > getDeep(next, sorter.path)) {
               result = -sorter.negator;
             } else {
               result = 0;
