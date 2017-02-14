@@ -33,7 +33,7 @@
               span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
               input(@input="p.filter($event.target.value)")
           //- Grid component
-          ft-grid(v-if="p.dataLoaded && p.filteredTotal")
+          ft-grid(v-if="p.dataLoaded")
             //- Grid heading component
             ft-heading
               //- Grid heading row component
@@ -157,9 +157,9 @@
     watch: {
       addressId(id) {
         if (id === 0) {
-          this.$refs.flextable.filterColumn('address', null);
+          this.$refs.flextable.filterBy('address', null);
         } else {
-          this.$refs.flextable.filterColumn('address', data => data.id === id);
+          this.$refs.flextable.filterBy('address', data => data.id === id);
         }
       },
     },

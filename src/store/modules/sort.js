@@ -23,7 +23,7 @@ export default {
       return status;
     },
     sorted({ stack }, getters, rootState, rootGetters) {
-      const filtered = rootGetters.filteredData;
+      const filtered = rootGetters['filter/filtered'];
       const sorters = [];
 
       if (!stack.length) {

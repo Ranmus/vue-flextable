@@ -1,61 +1,61 @@
+/* eslint-disable */
 import Vue from 'vue';
-import filter from 'utils/filter';
+import getDeep from 'utils/getDeep';
 import types from '../types';
 
-/* eslint-disable */
-function getItem(object, path) {
-  const length = path.length;
-  let index = 0;
+function filter(array, search, filterColumns) {
+  const text = String(search).toLowerCase();
+  const keys = Object.keys(filterColumns);
 
-  while (object !== undefined && index < length) {
-    object = object[path[index++]];
-  }
+  const filterKeys = keys.filter(key => filterColumns[key] !== null);
 
-  return object;
+  return array.filter(item =>
+    keys.some((key) => {
+      if (filterKeys.every(key => filterColumns[key](item[key])) === false) {
+        return false;
+      }
+
+      if (Reflect.has(item, key)) {
+        if (typeof item[key] === 'object') {
+          return Object.keys(item[key]).some((subKey) => {
+            const value = String(item[key][subKey]);
+            return value.toLowerCase().indexOf(text) !== -1;
+          });
+        }
+        return String(item[key]).toLowerCase().indexOf(text) !== -1;
+      }
+      return false;
+    }),
+  );
 }
 
 export default {
+  namespaced: true,
   state: {
-    multiple: true,
     stack: [],
-    // deprecated
-    idx: 0,
-    text: '',
-    columns: {},
+    rows: [],
+    value: null,
   },
   getters: {
-    filterText: s => s.text,
-    filterColumns: s => s.columns,
-    filterIdx: s => s.idx,
-    filteredData(state, { filterIdx, filterText, filterColumns }, { dataModule }) {
-      const { data } = dataModule;
-
-      return filter(data, filterText, filterColumns, filterIdx);
+    stack: s => s.stack,
+    rows: s => s.rows,
+    value: s => s.value,
+    status() {
+      return {};
     },
-    filteredTotal({ text }, { filteredData }) {
-      return filteredData.length;
+    filtered(state, { stack, value }, { dataModule }) {
+      const { data } = dataModule;
+      return data;
     },
   },
   mutations: {
-    [types.FILTER_SET_TEXT](state, { text }) {
-      state.text = text;
-    },
-    [types.FILTER_ADD_COLUMN]({ columns, columnsNames }, { name }) {
-      Vue.set(columns, name, null);
-    },
-    [types.FILTER_COLUMN](state, { name, callback }) {
+    [types.FILTER](state, { name, callback }) {
       Vue.set(state.columns, name, callback);
       state.idx += 1;
     },
   },
   actions: {
-    filterSetText({ commit }, { text }) {
-      commit(types.FILTER_SET_TEXT, { text });
-    },
-    filterAddColumn({ commit }, { name }) {
-      commit(types.FILTER_ADD_COLUMN, { name });
-    },
-    filterColumn({ commit }, { name, callback }) {
+    filter({ commit }, { name, callback }) {
       commit(types.FILTER_COLUMN, { name, callback });
     },
   },

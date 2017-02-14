@@ -1,7 +1,8 @@
 <template lang="pug">
   .ft-filter
     slot
-      span(v-if="filteredTotal !== null") Rows found: {{ filteredTotal }} 
+      span(v-if="rows.length !== 0") Rows found: {{ rows.length }}
+      =" "
       input(
         v-if="enabled",
         v-model="text",
@@ -15,9 +16,9 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters([
-      'filteredTotal',
-    ]),
+    ...mapGetters({
+      rows: 'filter/rows',
+    }),
   },
   data() {
     return {
