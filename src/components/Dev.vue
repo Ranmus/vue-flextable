@@ -15,6 +15,7 @@
         v-on:rendered="rendered"
         v-on:selected="selected"
         v-on:sorted="sorted"
+        v-on:filtered="filtered"
         )
         //- Custom layouting
         template(scope="p")
@@ -25,13 +26,16 @@
               template(v-if="p.selected.length > 0") Items selected: {{ p.selected.length }}
               template(v-else) Users table
                 br
+                select(v-model.number="ids")
+                  option(value="0") All Ids
+                  option(value="10000") Less than 10000
                 select(v-model.number="addressId")
                   option(value="0") All addresses
                   option(v-for="n in 10", :value="n") {{ n }}
             //- Filter component
             ft-filter
-              span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
-              input(@input="p.filter($event.target.value)")
+              //- span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
+              //- input(@input="p.filter($event.target.value)")
           //- Grid component
           ft-grid(v-if="p.dataLoaded")
             //- Grid heading component
@@ -64,7 +68,7 @@
                 button(@click="remove(row)") Delete
           ft-state(v-else)
           //- Footer component
-          ft-footer(v-if="p.filteredTotal")
+          ft-footer
             //- Paginator component
             ft-paginator
               span Rows per page:
@@ -95,6 +99,7 @@
     name: 'app',
     data() {
       return {
+        ids: null,
         addressId: null,
         config: {
           multiSort: true,
@@ -129,7 +134,7 @@
           label: 'Address',
           sortable: true,
           sortBy: 'address.id',
-          filterable: true,
+          filterBy: 'address.city',
         }, {
           name: 'email',
           label: 'E-mail',
@@ -156,11 +161,26 @@
     },
     watch: {
       addressId(id) {
-        if (id === 0) {
-          this.$refs.flextable.filterBy('address', null);
-        } else {
-          this.$refs.flextable.filterBy('address', data => data.id === id);
-        }
+        this.$refs.flextable.filter({
+          name: 'address',
+          filterBy: 'address.id',
+          value: id || false,
+        });
+      },
+      ids(id) {
+        this.$refs.flextable.filter({
+          name: 'id',
+          value: id || false,
+          filterBy: (row) => {
+            if (id === 0) {
+              return true;
+            }
+            if (Number(row.id) < id) {
+              return true;
+            }
+            return false;
+          },
+        });
       },
     },
     methods: {
@@ -171,7 +191,10 @@
         console.log(`Event selected: ${rows}`);
       },
       sorted({ status }) {
-        console.log(`Event sorted: ${status}`);
+        console.log('Event sorted:', status);
+      },
+      filtered({ status }) {
+        console.log('Event filtered:', status);
       },
       sync(row) {
         const returned = this.$refs.flextable.sync(row);

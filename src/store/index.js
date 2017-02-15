@@ -57,7 +57,7 @@ const actions = {
       dispatch(`set${uppercamelcase(key)}`, { [key]: config[key] });
     });
 
-    commit(types.COLUMNS_SET, { columns });
+    dispatch('setColumns', { columns });
 
     if (data) {
       dispatch('setData', { data });
@@ -73,6 +73,9 @@ const actions = {
 
     dispatch('initScreenSizes');
     dispatch('loadData');
+  },
+  setColumns({ commit }, { columns }) {
+    commit(types.COLUMNS_SET, { columns });
   },
   /* configuration setters */
   setPageSize({ dispatch }, { pageSize }) {

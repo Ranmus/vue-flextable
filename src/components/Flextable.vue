@@ -8,7 +8,6 @@
     :pages="pages",
     :sort="sort",
     :filter="filter",
-    :filterStatus="filterStatus",
     :sortStatus="sortStatus",
     :pageSize="pageSize",
     :setPageSize="setPageSize",
@@ -109,6 +108,10 @@ export default {
     this.$store.watch((state, getters) => getters['sort/status'], (status) => {
       this.$emit('sorted', { status });
     });
+
+    this.$store.watch((state, getters) => getters['filter/status'], (status) => {
+      this.$emit('filtered', { status });
+    });
   },
   mounted() {
     const { columns, config, data, side, url } = this;
@@ -158,8 +161,8 @@ export default {
     setPageSizes(pageSizes) {
       this.$store.dispatch('paginatorSetPageSizes', { pageSizes });
     },
-    filter({ name, value, func }) {
-      this.$store.dispatch('filter/filter', { name, value, func });
+    filter({ name, value, filterBy }) {
+      this.$store.dispatch('filter/filter', { name, value, filterBy });
     },
     sort({ name, order, sortBy }) {
       this.$store.dispatch('sort/sort', { name, order, sortBy });

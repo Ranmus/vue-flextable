@@ -111,7 +111,7 @@ export default {
     },
   },
   actions: {
-    sort({ commit, state, getters, rootState, rootGetters }, { name, order, sortBy }) {
+    sort({ commit, state, getters, rootState, rootGetters }, { name, order, sortBy } = {}) {
       const { columns } = rootGetters;
       const column = columns.find(column => column.name === name);
 
@@ -129,7 +129,7 @@ export default {
         commit('DATA_LOAD');
       }
     },
-    setMultiple({ commit }, { multiple }) {
+    setMultiple({ commit }, { multiple } = {}) {
       commit(types.SORT_SET_MULTIPLE, { multiple });
     },
   },
