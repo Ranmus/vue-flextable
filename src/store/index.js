@@ -7,7 +7,7 @@ import slotsModule from './modules/slots';
 import paginatorModule from './modules/paginator';
 import selectModule from './modules/select';
 import gridModule from './modules/grid';
-import filterModule from './modules/filter';
+import filter from './modules/filter';
 import sort from './modules/sort';
 
 const createState = () => ({
@@ -57,13 +57,7 @@ const actions = {
       dispatch(`set${uppercamelcase(key)}`, { [key]: config[key] });
     });
 
-    commit(types.COLUMNS_SET, { columns });
-
-    columns.forEach((column) => {
-      if (column.filterable !== false) {
-        dispatch('filterAddColumn', { name: column.name });
-      }
-    });
+    dispatch('setColumns', { columns });
 
     if (data) {
       dispatch('setData', { data });
@@ -79,6 +73,9 @@ const actions = {
 
     dispatch('initScreenSizes');
     dispatch('loadData');
+  },
+  setColumns({ commit }, { columns }) {
+    commit(types.COLUMNS_SET, { columns });
   },
   /* configuration setters */
   setPageSize({ dispatch }, { pageSize }) {
@@ -108,7 +105,7 @@ export default () => new Vuex.Store({
     paginatorModule,
     selectModule,
     gridModule,
-    filterModule,
+    filter,
     sort,
   },
 });

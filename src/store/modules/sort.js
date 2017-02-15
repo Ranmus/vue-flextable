@@ -1,18 +1,8 @@
 import { push, get, has, remove } from 'utils/stack';
+import getDeep from 'utils/getDeep';
 import types from '../types';
 
 /* eslint-disable no-plusplus */
-function getItem(object, path) {
-  const length = path.length;
-  let index = 0;
-
-  while (object !== undefined && index < length) {
-    object = object[path[index++]];
-  }
-
-  return object;
-}
-
 export default {
   namespaced: true,
   state: {
@@ -33,7 +23,7 @@ export default {
       return status;
     },
     sorted({ stack }, getters, rootState, rootGetters) {
-      const filtered = rootGetters.filteredData;
+      const filtered = rootGetters['filter/filtered'];
       const sorters = [];
 
       if (!stack.length) {
@@ -63,9 +53,9 @@ export default {
           if (sorter.func) {
             result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
           } else if (sorter.path) {
-            if (getItem(prev, sorter.path) < getItem(next, sorter.path)) {
+            if (getDeep(prev, sorter.path) < getDeep(next, sorter.path)) {
               result = sorter.negator;
-            } else if (getItem(prev, sorter.path) > getItem(next, sorter.path)) {
+            } else if (getDeep(prev, sorter.path) > getDeep(next, sorter.path)) {
               result = -sorter.negator;
             } else {
               result = 0;
@@ -121,7 +111,7 @@ export default {
     },
   },
   actions: {
-    sort({ commit, state, getters, rootState, rootGetters }, { name, order, sortBy }) {
+    sort({ commit, state, getters, rootState, rootGetters }, { name, order, sortBy } = {}) {
       const { columns } = rootGetters;
       const column = columns.find(column => column.name === name);
 
@@ -139,7 +129,7 @@ export default {
         commit('DATA_LOAD');
       }
     },
-    setMultiple({ commit }, { multiple }) {
+    setMultiple({ commit }, { multiple } = {}) {
       commit(types.SORT_SET_MULTIPLE, { multiple });
     },
   },

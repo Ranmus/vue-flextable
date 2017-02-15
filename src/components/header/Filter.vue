@@ -1,38 +1,40 @@
 <template lang="pug">
   .ft-filter
     slot
-      span(v-if="filteredTotal !== null") Rows found: {{ filteredTotal }} 
+      span(v-if="status.filtered.length && value") Rows found: {{ status.filtered.length }}
+      =" "
       input(
         v-if="enabled",
-        v-model="text",
-        @input="filter($event.target.value)"
+        v-model="value",
+        @input="filter({ value: enabled ? value : '' })"
         )
       button(@click="toggle") Search
 </template>
 
 <script lang="babel">
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters([
-      'filteredTotal',
-    ]),
+    ...mapGetters({
+      status: 'filter/status',
+    }),
   },
   data() {
     return {
       enabled: false,
-      text: '',
+      value: '',
     };
   },
   methods: {
     toggle() {
+      const { value } = this;
       this.enabled = !this.enabled;
-      this.filter(this.enabled ? this.text : '');
+      this.filter({ value: this.enabled ? value : '' });
     },
-    filter(text) {
-      this.$store.dispatch('filterSetText', { text });
-    },
+    ...mapActions({
+      filter: 'filter/filter',
+    }),
   },
 };
 </script>
