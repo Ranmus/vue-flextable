@@ -1,6 +1,6 @@
 {
   "name": "vue-flextable",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Flexible table vue component",
   "author": "Łukasz Strzyżowski <l.strzyzowski@bkf.pl>",
   "scripts": {
