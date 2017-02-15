@@ -33,6 +33,8 @@ export default {
     [types.DATA_DATA_SET](state, { data }) {
       state.data = data;
       state.source = data;
+      state.loading = false;
+      state.loaded = true;
     },
     [types.DATA_URL_SET](state, { url }) {
       state.url = url;
