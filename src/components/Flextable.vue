@@ -6,9 +6,9 @@
     :device="device",
     :page="page",
     :pages="pages",
-    :filteredTotal="filteredTotal",
-    :filterText="filterText",
+    :sort="sort",
     :filter="filter",
+    :sortStatus="sortStatus",
     :pageSize="pageSize",
     :setPageSize="setPageSize",
     :firstPage="firstPage",
@@ -17,7 +17,6 @@
     :lastPage="lastPage",
     :rowsToRender="rowsToRender",
     :columns="columns",
-    :sort="sort",
     :toggleSelect="toggleSelect",
     :dataLoaded="loaded",
     :dataLoading="loading"
@@ -78,22 +77,21 @@ export default {
     },
   },
   computed: {
-    ...mapGetters([
-      'filteredTotal',
-      'filterText',
-      'pageSize',
-      'page',
-      'pages',
-      'loaded',
-      'loading',
-      'slots',
-      'classes',
-      'selected',
-      'rowsToRender',
-      'screen',
-      'device',
-      'selected',
-    ]),
+    ...mapGetters({
+      filterStatus: 'filter/status',
+      sortStatus: 'sort/status',
+      pageSize: 'pageSize',
+      page: 'page',
+      pages: 'pages',
+      loaded: 'loaded',
+      loading: 'loading',
+      slots: 'slots',
+      classes: 'classes',
+      rowsToRender: 'rowsToRender',
+      screen: 'screen',
+      device: 'device',
+      selected: 'selected',
+    }),
   },
   created() {
     this.$store = Store();
@@ -109,6 +107,10 @@ export default {
 
     this.$store.watch((state, getters) => getters['sort/status'], (status) => {
       this.$emit('sorted', { status });
+    });
+
+    this.$store.watch((state, getters) => getters['filter/status'], (status) => {
+      this.$emit('filtered', { status });
     });
   },
   mounted() {
@@ -159,14 +161,11 @@ export default {
     setPageSizes(pageSizes) {
       this.$store.dispatch('paginatorSetPageSizes', { pageSizes });
     },
-    filter(text) {
-      this.$store.dispatch('filterSetText', { text });
+    filter({ name, value, filterBy }) {
+      this.$store.dispatch('filter/filter', { name, value, filterBy });
     },
-    filterColumn(name, callback) {
-      this.$store.dispatch('filterColumn', { name, callback });
-    },
-    sort({ name, order, func }) {
-      this.$store.dispatch('sort/sort', { name, order, func });
+    sort({ name, order, sortBy }) {
+      this.$store.dispatch('sort/sort', { name, order, sortBy });
     },
     delete(row) {
       return this.$store.dispatch('delete', { row });

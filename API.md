@@ -18,3 +18,9 @@ screen-sizes - definitions of screen sizes
 :screen-sizes=`{
   'small': 'only screen and (max-width: 600px)'
 }`
+
+# Events
+
+- rendered
+- selected
+- sorted
