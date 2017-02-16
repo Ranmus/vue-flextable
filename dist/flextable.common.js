@@ -117,6 +117,7 @@ module.exports =
 	  Flextable: _Flextable2.default,
 	  ftHeader: _Header2.default,
 	  ftTitle: _Title2.default,
+	  ftFilter: _Filter2.default,
 	  ftFooter: _Footer2.default,
 	  ftPaginator: _Paginator2.default,
 	  ftGrid: _Grid2.default,
