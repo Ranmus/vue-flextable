@@ -22,6 +22,7 @@ export default {
     loading: s => s.loading,
     url: s => s.url,
     side: s => s.side,
+    source: s => s.source,
     total: s => (s.side === 'server' ? s.total : s.data.length),
     response: s => s.response,
   },
@@ -31,6 +32,9 @@ export default {
     },
     [types.DATA_DATA_SET](state, { data }) {
       state.data = data;
+      state.source = data;
+      state.loading = false;
+      state.loaded = true;
     },
     [types.DATA_URL_SET](state, { url }) {
       state.url = url;
@@ -110,7 +114,11 @@ export default {
     loadData({ commit, getters }) {
       const { loading, side, source, url, page, limit, sort, search } = getters;
 
-      if (!source && !side) {
+      if (source) {
+        return;
+      }
+
+      if (!side) {
         console.log('No data provided.');
         return;
       }

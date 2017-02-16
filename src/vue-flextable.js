@@ -18,6 +18,7 @@ const Components = {
   Flextable,
   ftHeader,
   ftTitle,
+  ftFilter,
   ftFooter,
   ftPaginator,
   ftGrid,
