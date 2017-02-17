@@ -2,7 +2,7 @@ import Vue from 'vue';
 import types from './../types';
 
 /* eslint-disable no-param-reassign */
-export default {
+export default () => ({
   state: {
     slots: {
       named: {},
@@ -24,4 +24,4 @@ export default {
       });
     },
   },
-};
+});

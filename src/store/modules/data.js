@@ -2,7 +2,7 @@ import Vue from 'vue';
 import types from '../types';
 
 /* eslint-disable no-param-reassign */
-export default {
+export default () => ({
   state: {
     loaded: false,
     loading: false,
@@ -184,4 +184,4 @@ export default {
       });
     },
   },
-};
+});

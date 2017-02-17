@@ -4,7 +4,7 @@ import types from './../types';
 const isMobile = require('ismobilejs');
 
 /* eslint-disable no-param-reassign */
-export default {
+export default () => ({
   state: {
     mq: new MediaQuery(),
     device: {
@@ -90,4 +90,4 @@ export default {
       commit(types.SCREEN_SIZES_CLEAR);
     },
   },
-};
+});

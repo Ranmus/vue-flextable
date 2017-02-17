@@ -3,7 +3,7 @@ import getDeep from 'utils/getDeep';
 import types from '../types';
 
 /* eslint-disable no-plusplus */
-export default {
+export default () => ({
   namespaced: true,
   state: {
     multiple: true,
@@ -133,4 +133,4 @@ export default {
       commit(types.SORT_SET_MULTIPLE, { multiple });
     },
   },
-};
+});

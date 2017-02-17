@@ -1,6 +1,6 @@
 import types from '../types';
 
-export default {
+export default () => ({
   state: {
     rowsHeight: null,
   },
@@ -14,4 +14,4 @@ export default {
       commit(types.GRID_ROWSHEIGHT_SET, { rowsHeight });
     },
   },
-};
+});

@@ -1,6 +1,6 @@
 import types from './../types';
 
-export default {
+export default () => ({
   state: {
     pageSize: 10,
     pageSizes: [{
@@ -75,4 +75,4 @@ export default {
       commit(types.PAGINATOR_SET_PAGE, { page });
     },
   },
-};
+});

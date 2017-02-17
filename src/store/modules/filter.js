@@ -3,7 +3,7 @@ import { push, get, has, remove } from 'utils/stack';
 import getDeep from 'utils/getDeep';
 import types from '../types';
 
-export default {
+export default () => ({
   namespaced: true,
   state: {
     multiple: true,
@@ -125,4 +125,4 @@ export default {
       commit(types.FILTER, { name, value, filterBy });
     },
   },
-};
+});
