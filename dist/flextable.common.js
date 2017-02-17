@@ -1093,10 +1093,11 @@ module.exports =
 	    device: 'device',
 	    selected: 'selected'
 	  })),
+	  beforeCreate: function beforeCreate() {
+	    this.$store = (0, _store2.default)();
+	  },
 	  created: function created() {
 	    var _this = this;
-	
-	    this.$store = (0, _store2.default)();
 	
 	    this.$store.watch(function (state, getters) {
 	      return getters.rowsToRender;
@@ -1391,129 +1392,135 @@ module.exports =
 	  };
 	};
 	
-	var getters = {
-	  config: function config(s) {
-	    return s.config;
-	  },
-	  columns: function columns(s) {
-	    return s.columns;
-	  },
-	  parsedData: function parsedData(state, getters, rootState, rootGetters) {
-	    return rootGetters['sort/sorted'];
-	  },
-	  parsedTotal: function parsedTotal(state, _ref) {
-	    var parsedData = _ref.parsedData;
+	var createGetters = function createGetters() {
+	  return {
+	    config: function config(s) {
+	      return s.config;
+	    },
+	    columns: function columns(s) {
+	      return s.columns;
+	    },
+	    parsedData: function parsedData(state, getters, rootState, rootGetters) {
+	      return rootGetters['sort/sorted'];
+	    },
+	    parsedTotal: function parsedTotal(state, _ref) {
+	      var parsedData = _ref.parsedData;
 	
-	    return parsedData.length;
-	  },
-	  rowsToRender: function rowsToRender(state, _getters) {
-	    var pageSize = _getters.pageSize,
-	        side = _getters.side,
-	        parsedData = _getters.parsedData,
-	        pageOffset = _getters.pageOffset;
+	      return parsedData.length;
+	    },
+	    rowsToRender: function rowsToRender(state, _getters) {
+	      var pageSize = _getters.pageSize,
+	          side = _getters.side,
+	          parsedData = _getters.parsedData,
+	          pageOffset = _getters.pageOffset;
 	
 	
-	    if (side === 'server') {
+	      if (side === 'server') {
+	        return parsedData;
+	      }
+	
+	      if (pageSize) {
+	        return parsedData.slice(pageOffset, pageOffset + pageSize);
+	      }
+	
 	      return parsedData;
 	    }
-	
-	    if (pageSize) {
-	      return parsedData.slice(pageOffset, pageOffset + pageSize);
-	    }
-	
-	    return parsedData;
-	  }
+	  };
 	};
 	
-	var mutations = (0, _defineProperty3.default)({}, _types2.default.COLUMNS_SET, function (state, _ref2) {
-	  var columns = _ref2.columns;
+	var createMutations = function createMutations() {
+	  return (0, _defineProperty3.default)({}, _types2.default.COLUMNS_SET, function (state, _ref2) {
+	    var columns = _ref2.columns;
 	
-	  state.columns = columns;
-	});
+	    state.columns = columns;
+	  });
+	};
 	
-	var actions = {
-	  initialize: function initialize(_ref3, _ref4) {
-	    var commit = _ref3.commit,
-	        dispatch = _ref3.dispatch,
-	        state = _ref3.state;
-	    var columns = _ref4.columns,
-	        config = _ref4.config,
-	        data = _ref4.data,
-	        side = _ref4.side,
-	        slots = _ref4.slots,
-	        url = _ref4.url;
+	var createActions = function createActions() {
+	  return {
+	    initialize: function initialize(_ref4, _ref5) {
+	      var commit = _ref4.commit,
+	          dispatch = _ref4.dispatch,
+	          state = _ref4.state;
+	      var columns = _ref5.columns,
+	          config = _ref5.config,
+	          data = _ref5.data,
+	          side = _ref5.side,
+	          slots = _ref5.slots,
+	          url = _ref5.url;
 	
-	    commit(_types2.default.SLOTS_INIT, slots);
-	    commit(_types2.default.DEVICE_DETECT);
+	      commit(_types2.default.SLOTS_INIT, slots);
+	      commit(_types2.default.DEVICE_DETECT);
 	
-	    (0, _keys2.default)(config).forEach(function (key) {
-	      dispatch('set' + (0, _uppercamelcase2.default)(key), (0, _defineProperty3.default)({}, key, config[key]));
-	    });
+	      (0, _keys2.default)(config).forEach(function (key) {
+	        dispatch('set' + (0, _uppercamelcase2.default)(key), (0, _defineProperty3.default)({}, key, config[key]));
+	      });
 	
-	    dispatch('setColumns', { columns: columns });
+	      dispatch('setColumns', { columns: columns });
 	
-	    if (data) {
-	      dispatch('setData', { data: data });
+	      if (data) {
+	        dispatch('setData', { data: data });
+	      }
+	
+	      if (side) {
+	        dispatch('setSide', { side: side });
+	      }
+	
+	      if (url) {
+	        dispatch('setURL', { url: url });
+	      }
+	
+	      dispatch('initScreenSizes');
+	      dispatch('loadData');
+	    },
+	    setColumns: function setColumns(_ref6, _ref7) {
+	      var commit = _ref6.commit;
+	      var columns = _ref7.columns;
+	
+	      commit(_types2.default.COLUMNS_SET, { columns: columns });
+	    },
+	    setPageSize: function setPageSize(_ref8, _ref9) {
+	      var dispatch = _ref8.dispatch;
+	      var pageSize = _ref9.pageSize;
+	
+	      dispatch('paginatorSetPageSize', { pageSize: pageSize });
+	    },
+	    setPageSizes: function setPageSizes(_ref10, _ref11) {
+	      var dispatch = _ref10.dispatch;
+	      var pageSizes = _ref11.pageSizes;
+	
+	      dispatch('paginatorSetPageSizes', { pageSizes: pageSizes });
+	    },
+	    setMultiSelect: function setMultiSelect(_ref12, _ref13) {
+	      var dispatch = _ref12.dispatch;
+	      var multiSelect = _ref13.multiSelect;
+	
+	      dispatch('selectSetMultiSelect', { multiSelect: multiSelect });
+	    },
+	    setMultiSort: function setMultiSort(_ref14, _ref15) {
+	      var dispatch = _ref14.dispatch;
+	      var multiSort = _ref15.multiSort;
+	
+	      dispatch('sort/setMultiple', { multiple: multiSort });
 	    }
-	
-	    if (side) {
-	      dispatch('setSide', { side: side });
-	    }
-	
-	    if (url) {
-	      dispatch('setURL', { url: url });
-	    }
-	
-	    dispatch('initScreenSizes');
-	    dispatch('loadData');
-	  },
-	  setColumns: function setColumns(_ref5, _ref6) {
-	    var commit = _ref5.commit;
-	    var columns = _ref6.columns;
-	
-	    commit(_types2.default.COLUMNS_SET, { columns: columns });
-	  },
-	  setPageSize: function setPageSize(_ref7, _ref8) {
-	    var dispatch = _ref7.dispatch;
-	    var pageSize = _ref8.pageSize;
-	
-	    dispatch('paginatorSetPageSize', { pageSize: pageSize });
-	  },
-	  setPageSizes: function setPageSizes(_ref9, _ref10) {
-	    var dispatch = _ref9.dispatch;
-	    var pageSizes = _ref10.pageSizes;
-	
-	    dispatch('paginatorSetPageSizes', { pageSizes: pageSizes });
-	  },
-	  setMultiSelect: function setMultiSelect(_ref11, _ref12) {
-	    var dispatch = _ref11.dispatch;
-	    var multiSelect = _ref12.multiSelect;
-	
-	    dispatch('selectSetMultiSelect', { multiSelect: multiSelect });
-	  },
-	  setMultiSort: function setMultiSort(_ref13, _ref14) {
-	    var dispatch = _ref13.dispatch;
-	    var multiSort = _ref14.multiSort;
-	
-	    dispatch('sort/setMultiple', { multiple: multiSort });
-	  }
+	  };
 	};
 	
 	exports.default = function () {
 	  return new _vuex2.default.Store({
 	    state: createState(),
-	    getters: getters,
-	    mutations: mutations,
-	    actions: actions,
+	    getters: createGetters(),
+	    mutations: createMutations(),
+	    actions: createActions(),
 	    modules: {
-	      slotsModule: _slots2.default,
-	      dataModule: _data2.default,
-	      deviceModule: _device2.default,
-	      paginatorModule: _paginator2.default,
-	      selectModule: _select2.default,
-	      gridModule: _grid2.default,
-	      filter: _filter2.default,
-	      sort: _sort2.default
+	      slotsModule: (0, _slots2.default)(),
+	      dataModule: (0, _data2.default)(),
+	      deviceModule: (0, _device2.default)(),
+	      paginatorModule: (0, _paginator2.default)(),
+	      selectModule: (0, _select2.default)(),
+	      gridModule: (0, _grid2.default)(),
+	      filter: (0, _filter2.default)(),
+	      sort: (0, _sort2.default)()
 	    }
 	  });
 	};
@@ -1720,8 +1727,6 @@ module.exports =
 	
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 	
-	var _mutations;
-	
 	var _MediaQuery = __webpack_require__(65);
 	
 	var _MediaQuery2 = _interopRequireDefault(_MediaQuery);
@@ -1734,122 +1739,126 @@ module.exports =
 	
 	var isMobile = __webpack_require__(101);
 	
-	exports.default = {
-	  state: {
-	    mq: new _MediaQuery2.default(),
-	    device: {
-	      name: 'desktop',
-	      isDesktop: true,
-	      isMobile: false,
-	      isPhone: false,
-	      isTablet: false
-	    },
-	    screen: {
-	      size: null,
-	      sizes: {
-	        small: 'only screen and (max-width: 600px)',
-	        medium: 'only screen and (min-width: 601px) and (max-width: 992px)',
-	        large: 'only screen and (min-width: 993px)'
+	exports.default = function () {
+	  var _mutations;
+	
+	  return {
+	    state: {
+	      mq: new _MediaQuery2.default(),
+	      device: {
+	        name: 'desktop',
+	        isDesktop: true,
+	        isMobile: false,
+	        isPhone: false,
+	        isTablet: false
+	      },
+	      screen: {
+	        size: null,
+	        sizes: {
+	          small: 'only screen and (max-width: 600px)',
+	          medium: 'only screen and (min-width: 601px) and (max-width: 992px)',
+	          large: 'only screen and (min-width: 993px)'
+	        }
+	      },
+	      classes: {
+	        mobile: null,
+	        device: 'ft-desktop',
+	        size: null
 	      }
 	    },
-	    classes: {
-	      mobile: null,
-	      device: 'ft-desktop',
-	      size: null
-	    }
-	  },
-	  getters: {
-	    mq: function mq(s) {
-	      return s.mq;
+	    getters: {
+	      mq: function mq(s) {
+	        return s.mq;
+	      },
+	      device: function device(s) {
+	        return s.device;
+	      },
+	      screen: function screen(s) {
+	        return s.screen;
+	      },
+	      classes: function classes(s) {
+	        return s.classes;
+	      }
 	    },
-	    device: function device(s) {
-	      return s.device;
-	    },
-	    screen: function screen(s) {
-	      return s.screen;
-	    },
-	    classes: function classes(s) {
-	      return s.classes;
-	    }
-	  },
-	  mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.DEVICE_DETECT, function (_ref) {
-	    var classes = _ref.classes,
-	        device = _ref.device;
+	    mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.DEVICE_DETECT, function (_ref) {
+	      var classes = _ref.classes,
+	          device = _ref.device;
 	
-	    if (isMobile.any) {
-	      device.isDesktop = false;
-	      device.isMobile = true;
-	      device.name = 'mobile';
-	      classes.mobile = 'ft-mobile';
-	    }
+	      if (isMobile.any) {
+	        device.isDesktop = false;
+	        device.isMobile = true;
+	        device.name = 'mobile';
+	        classes.mobile = 'ft-mobile';
+	      }
 	
-	    if (isMobile.phone) {
-	      device.isPhone = true;
-	      device.isTablet = false;
-	      device.name = 'phone';
-	      classes.device = 'ft-phone';
-	    }
+	      if (isMobile.phone) {
+	        device.isPhone = true;
+	        device.isTablet = false;
+	        device.name = 'phone';
+	        classes.device = 'ft-phone';
+	      }
 	
-	    if (isMobile.tablet) {
-	      device.isPhone = false;
-	      device.isTablet = true;
-	      device.name = 'tablet';
-	      classes.device = 'ft-tablet';
-	    }
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.SCREEN_SIZE_CHANGE, function (_ref2, _ref3) {
-	    var classes = _ref2.classes,
-	        screen = _ref2.screen;
-	    var name = _ref3.name;
+	      if (isMobile.tablet) {
+	        device.isPhone = false;
+	        device.isTablet = true;
+	        device.name = 'tablet';
+	        classes.device = 'ft-tablet';
+	      }
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SCREEN_SIZE_CHANGE, function (_ref2, _ref3) {
+	      var classes = _ref2.classes,
+	          screen = _ref2.screen;
+	      var name = _ref3.name;
 	
-	    classes.size = 'ft-size-' + name;
-	    screen.size = name;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.SCREEN_SIZE_ADD, function (_ref4, _ref5) {
-	    var mq = _ref4.mq,
-	        screen = _ref4.screen;
-	    var name = _ref5.name,
-	        mediaQuery = _ref5.mediaQuery,
-	        commit = _ref5.commit;
+	      classes.size = 'ft-size-' + name;
+	      screen.size = name;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SCREEN_SIZE_ADD, function (_ref4, _ref5) {
+	      var mq = _ref4.mq,
+	          screen = _ref4.screen;
+	      var name = _ref5.name,
+	          mediaQuery = _ref5.mediaQuery,
+	          commit = _ref5.commit;
 	
-	    screen.sizes[name] = mediaQuery;
+	      screen.sizes[name] = mediaQuery;
 	
-	    mq.on(mediaQuery, function () {
-	      commit(_types2.default.SCREEN_SIZE_CHANGE, { name: name });
-	    });
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.SCREEN_SIZES_CLEAR, function (_ref6) {
-	    var mq = _ref6.mq,
-	        screen = _ref6.screen;
-	
-	    mq.off();
-	    screen.size = null;
-	  }), _mutations),
-	  actions: {
-	    initScreenSizes: function initScreenSizes(_ref7) {
-	      var commit = _ref7.commit,
-	          getters = _ref7.getters;
-	      var mq = getters.mq,
-	          screen = getters.screen;
-	
-	
-	      (0, _ownKeys2.default)(screen.sizes).forEach(function (name) {
-	        commit(_types2.default.SCREEN_SIZE_ADD, { name: name, mediaQuery: screen.sizes[name], commit: commit });
+	      mq.on(mediaQuery, function () {
+	        commit(_types2.default.SCREEN_SIZE_CHANGE, { name: name });
 	      });
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SCREEN_SIZES_CLEAR, function (_ref6) {
+	      var mq = _ref6.mq,
+	          screen = _ref6.screen;
 	
-	      mq.check();
-	    },
-	    addScreenSize: function addScreenSize(_ref8, _ref9) {
-	      var commit = _ref8.commit,
-	          getters = _ref8.getters;
-	      var name = _ref9.name,
-	          mediaQuery = _ref9.mediaQuery;
+	      mq.off();
+	      screen.size = null;
+	    }), _mutations),
+	    actions: {
+	      initScreenSizes: function initScreenSizes(_ref7) {
+	        var commit = _ref7.commit,
+	            getters = _ref7.getters;
+	        var mq = getters.mq,
+	            screen = getters.screen;
 	
-	      commit(_types2.default.SCREEN_SIZE_ADD, { name: name, mediaQuery: mediaQuery, commit: commit });
-	    },
-	    clearScreenSizes: function clearScreenSizes(_ref10) {
-	      var commit = _ref10.commit;
 	
-	      commit(_types2.default.SCREEN_SIZES_CLEAR);
+	        (0, _ownKeys2.default)(screen.sizes).forEach(function (name) {
+	          commit(_types2.default.SCREEN_SIZE_ADD, { name: name, mediaQuery: screen.sizes[name], commit: commit });
+	        });
+	
+	        mq.check();
+	      },
+	      addScreenSize: function addScreenSize(_ref8, _ref9) {
+	        var commit = _ref8.commit,
+	            getters = _ref8.getters;
+	        var name = _ref9.name,
+	            mediaQuery = _ref9.mediaQuery;
+	
+	        commit(_types2.default.SCREEN_SIZE_ADD, { name: name, mediaQuery: mediaQuery, commit: commit });
+	      },
+	      clearScreenSizes: function clearScreenSizes(_ref10) {
+	        var commit = _ref10.commit;
+	
+	        commit(_types2.default.SCREEN_SIZES_CLEAR);
+	      }
 	    }
-	  }
+	  };
 	};
 
 /***/ },
@@ -2944,8 +2953,6 @@ module.exports =
 	
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 	
-	var _mutations;
-	
 	var _vue = __webpack_require__(118);
 	
 	var _vue2 = _interopRequireDefault(_vue);
@@ -2956,256 +2963,260 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  state: {
-	    loaded: false,
-	    loading: false,
-	    data: [],
-	    total: 0,
-	    source: null,
-	    url: null,
-	    side: 'client',
-	    response: {
-	      ok: null,
-	      status: null,
-	      text: null
-	    }
-	  },
-	  getters: {
-	    loaded: function loaded(s) {
-	      return s.loaded;
+	exports.default = function () {
+	  var _mutations;
+	
+	  return {
+	    state: {
+	      loaded: false,
+	      loading: false,
+	      data: [],
+	      total: 0,
+	      source: null,
+	      url: null,
+	      side: 'client',
+	      response: {
+	        ok: null,
+	        status: null,
+	        text: null
+	      }
 	    },
-	    loading: function loading(s) {
-	      return s.loading;
+	    getters: {
+	      loaded: function loaded(s) {
+	        return s.loaded;
+	      },
+	      loading: function loading(s) {
+	        return s.loading;
+	      },
+	      url: function url(s) {
+	        return s.url;
+	      },
+	      side: function side(s) {
+	        return s.side;
+	      },
+	      source: function source(s) {
+	        return s.source;
+	      },
+	      total: function total(s) {
+	        return s.side === 'server' ? s.total : s.data.length;
+	      },
+	      response: function response(s) {
+	        return s.response;
+	      }
 	    },
-	    url: function url(s) {
-	      return s.url;
-	    },
-	    side: function side(s) {
-	      return s.side;
-	    },
-	    source: function source(s) {
-	      return s.source;
-	    },
-	    total: function total(s) {
-	      return s.side === 'server' ? s.total : s.data.length;
-	    },
-	    response: function response(s) {
-	      return s.response;
-	    }
-	  },
-	  mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.DATA_SIDE_SET, function (state, _ref) {
-	    var side = _ref.side;
+	    mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.DATA_SIDE_SET, function (state, _ref) {
+	      var side = _ref.side;
 	
-	    state.side = side;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_DATA_SET, function (state, _ref2) {
-	    var data = _ref2.data;
+	      state.side = side;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_DATA_SET, function (state, _ref2) {
+	      var data = _ref2.data;
 	
-	    state.data = data;
-	    state.source = data;
-	    state.loading = false;
-	    state.loaded = true;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_URL_SET, function (state, _ref3) {
-	    var url = _ref3.url;
+	      state.data = data;
+	      state.source = data;
+	      state.loading = false;
+	      state.loaded = true;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_URL_SET, function (state, _ref3) {
+	      var url = _ref3.url;
 	
-	    state.url = url;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_LOADING, function (state) {
-	    state.loading = true;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_LOADING_ERROR, function (state, _ref4) {
-	    var ok = _ref4.ok,
-	        status = _ref4.status,
-	        text = _ref4.text;
-	    var response = state.response;
+	      state.url = url;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_LOADING, function (state) {
+	      state.loading = true;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_LOADING_ERROR, function (state, _ref4) {
+	      var ok = _ref4.ok,
+	          status = _ref4.status,
+	          text = _ref4.text;
+	      var response = state.response;
 	
-	    response.ok = ok === true;
-	    response.status = status;
-	    response.text = text;
-	    state.loading = false;
-	    state.loaded = false;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_LOADED, function (state, _ref5) {
-	    var data = _ref5.data;
+	      response.ok = ok === true;
+	      response.status = status;
+	      response.text = text;
+	      state.loading = false;
+	      state.loaded = false;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_LOADED, function (state, _ref5) {
+	      var data = _ref5.data;
 	
-	    state.data = data;
-	    state.loading = false;
-	    state.loaded = true;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_DELETE, function (_ref6, _ref7) {
-	    var url = _ref6.url,
-	        data = _ref6.data;
-	    var row = _ref7.row;
+	      state.data = data;
+	      state.loading = false;
+	      state.loaded = true;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_DELETE, function (_ref6, _ref7) {
+	      var url = _ref6.url,
+	          data = _ref6.data;
+	      var row = _ref7.row;
 	
-	    data.splice(data.indexOf(row), 1);
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_TOTAL_SET, function (state, _ref8) {
-	    var total = _ref8.total;
+	      data.splice(data.indexOf(row), 1);
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.DATA_TOTAL_SET, function (state, _ref8) {
+	      var total = _ref8.total;
 	
-	    state.total = total;
-	  }), _mutations),
-	  actions: {
-	    delete: function _delete(_ref9, _ref10) {
-	      var commit = _ref9.commit,
-	          getters = _ref9.getters;
-	      var row = _ref10.row;
-	      var url = getters.url,
-	          side = getters.side;
+	      state.total = total;
+	    }), _mutations),
+	    actions: {
+	      delete: function _delete(_ref9, _ref10) {
+	        var commit = _ref9.commit,
+	            getters = _ref9.getters;
+	        var row = _ref10.row;
+	        var url = getters.url,
+	            side = getters.side;
 	
 	
-	      return _vue2.default.http.delete(url + row.id).then(function () {
-	        commit(_types2.default.DATA_DELETE, { row: row });
-	        commit(_types2.default.SELECT_UNSELECT_ROW, { row: row });
+	        return _vue2.default.http.delete(url + row.id).then(function () {
+	          commit(_types2.default.DATA_DELETE, { row: row });
+	          commit(_types2.default.SELECT_UNSELECT_ROW, { row: row });
+	
+	          if (side === 'server') {
+	            commit('DATA_LOAD');
+	          }
+	        });
+	      },
+	      setSide: function setSide(_ref11, _ref12) {
+	        var commit = _ref11.commit;
+	        var side = _ref12.side;
+	
+	        commit(_types2.default.DATA_SIDE_SET, { side: side });
+	      },
+	      setData: function setData(_ref13, _ref14) {
+	        var commit = _ref13.commit;
+	        var data = _ref14.data;
+	
+	        commit(_types2.default.DATA_DATA_SET, { data: data });
+	      },
+	      setURL: function setURL(_ref15, _ref16) {
+	        var commit = _ref15.commit;
+	        var url = _ref16.url;
+	
+	        commit(_types2.default.DATA_URL_SET, { url: url });
+	      },
+	      sync: function sync(_ref17, _ref18) {
+	        var state = _ref17.state,
+	            rootState = _ref17.rootState,
+	            dispatch = _ref17.dispatch;
+	        var row = _ref18.row;
+	        var data = state.data,
+	            url = state.url;
+	        var selected = rootState.selectModule.selected;
+	
+	        var id = (0, _isInteger2.default)(row) ? row : Number(row.id);
+	        var found = data.find(function (row_) {
+	          return Number(row_.id) === id;
+	        });
+	
+	        return new _promise2.default(function (resolve, reject) {
+	          _vue2.default.http.get(url + id).then(function (response) {
+	            if (found) {
+	              data.splice(data.indexOf(found), 1, response.data);
+	              resolve({ state: 'updated', row: found });
+	            } else {
+	              data.push(response.data);
+	              resolve({ state: 'created', row: response.data });
+	            }
+	          }, function (_ref19) {
+	            var status = _ref19.status;
+	
+	            if (status === 404 && found) {
+	              data.splice(data.indexOf(found), 1);
+	              if (selected.indexOf(row) !== -1) {
+	                dispatch('toggleSelect', { row: row });
+	              }
+	              resolve({ state: 'deleted', row: row });
+	            }
+	            reject({ state: 'error', row: row });
+	          });
+	        });
+	      },
+	      loadData: function loadData(_ref20) {
+	        var commit = _ref20.commit,
+	            getters = _ref20.getters;
+	        var loading = getters.loading,
+	            side = getters.side,
+	            source = getters.source,
+	            url = getters.url,
+	            page = getters.page,
+	            limit = getters.limit,
+	            sort = getters.sort,
+	            search = getters.search;
+	
+	
+	        if (source) {
+	          return;
+	        }
+	
+	        if (!side) {
+	          console.log('No data provided.');
+	          return;
+	        }
+	
+	        if (side && !url) {
+	          console.log('No url for data defined.');
+	          return;
+	        }
+	
+	        if (loading) {
+	          return;
+	        }
+	
+	        commit(_types2.default.DATA_LOADING);
+	
+	        if (source) {
+	          commit(_types2.default.DATA_LOADED, { data: source });
+	          return;
+	        }
 	
 	        if (side === 'server') {
-	          commit('DATA_LOAD');
+	          var params = {
+	            _page: page,
+	            _limit: limit
+	          };
+	
+	          if (sort.name) {
+	            params._sort = sort.name;
+	            params._order = sort.order.toUpperCase();
+	          }
+	
+	          if (search.enabled && search.text) {
+	            params.q = search.text;
+	            params._page = 1;
+	            commit(_types2.default.PAGE_SET, { page: 1 });
+	          }
+	
+	          _vue2.default.http.get(url, { params: params }).then(function (_ref21) {
+	            var data = _ref21.data,
+	                headers = _ref21.headers;
+	
+	            var total = Number(headers['x-total-count']);
+	            commit(_types2.default.DATA_TOTAL_SET, { total: total });
+	            commit(_types2.default.DATA_LOADED, { data: data });
+	          });
+	          return;
 	        }
-	      });
-	    },
-	    setSide: function setSide(_ref11, _ref12) {
-	      var commit = _ref11.commit;
-	      var side = _ref12.side;
 	
-	      commit(_types2.default.DATA_SIDE_SET, { side: side });
-	    },
-	    setData: function setData(_ref13, _ref14) {
-	      var commit = _ref13.commit;
-	      var data = _ref14.data;
+	        _vue2.default.http.get(url).then(function (_ref22) {
+	          var data = _ref22.data,
+	              ok = _ref22.ok,
+	              status = _ref22.status,
+	              statusText = _ref22.statusText;
 	
-	      commit(_types2.default.DATA_DATA_SET, { data: data });
-	    },
-	    setURL: function setURL(_ref15, _ref16) {
-	      var commit = _ref15.commit;
-	      var url = _ref16.url;
-	
-	      commit(_types2.default.DATA_URL_SET, { url: url });
-	    },
-	    sync: function sync(_ref17, _ref18) {
-	      var state = _ref17.state,
-	          rootState = _ref17.rootState,
-	          dispatch = _ref17.dispatch;
-	      var row = _ref18.row;
-	      var data = state.data,
-	          url = state.url;
-	      var selected = rootState.selectModule.selected;
-	
-	      var id = (0, _isInteger2.default)(row) ? row : Number(row.id);
-	      var found = data.find(function (row_) {
-	        return Number(row_.id) === id;
-	      });
-	
-	      return new _promise2.default(function (resolve, reject) {
-	        _vue2.default.http.get(url + id).then(function (response) {
-	          if (found) {
-	            data.splice(data.indexOf(found), 1, response.data);
-	            resolve({ state: 'updated', row: found });
+	          if (status === 200) {
+	            commit(_types2.default.DATA_LOADED, { data: data });
 	          } else {
-	            data.push(response.data);
-	            resolve({ state: 'created', row: response.data });
+	            commit(_types2.default.DATA_LOADING_ERROR, {
+	              ok: ok,
+	              status: status,
+	              text: statusText
+	            });
 	          }
-	        }, function (_ref19) {
-	          var status = _ref19.status;
+	        }, function (_ref23) {
+	          var ok = _ref23.ok,
+	              status = _ref23.status,
+	              statusText = _ref23.statusText;
 	
-	          if (status === 404 && found) {
-	            data.splice(data.indexOf(found), 1);
-	            if (selected.indexOf(row) !== -1) {
-	              dispatch('toggleSelect', { row: row });
-	            }
-	            resolve({ state: 'deleted', row: row });
-	          }
-	          reject({ state: 'error', row: row });
-	        });
-	      });
-	    },
-	    loadData: function loadData(_ref20) {
-	      var commit = _ref20.commit,
-	          getters = _ref20.getters;
-	      var loading = getters.loading,
-	          side = getters.side,
-	          source = getters.source,
-	          url = getters.url,
-	          page = getters.page,
-	          limit = getters.limit,
-	          sort = getters.sort,
-	          search = getters.search;
-	
-	
-	      if (source) {
-	        return;
-	      }
-	
-	      if (!side) {
-	        console.log('No data provided.');
-	        return;
-	      }
-	
-	      if (side && !url) {
-	        console.log('No url for data defined.');
-	        return;
-	      }
-	
-	      if (loading) {
-	        return;
-	      }
-	
-	      commit(_types2.default.DATA_LOADING);
-	
-	      if (source) {
-	        commit(_types2.default.DATA_LOADED, { data: source });
-	        return;
-	      }
-	
-	      if (side === 'server') {
-	        var params = {
-	          _page: page,
-	          _limit: limit
-	        };
-	
-	        if (sort.name) {
-	          params._sort = sort.name;
-	          params._order = sort.order.toUpperCase();
-	        }
-	
-	        if (search.enabled && search.text) {
-	          params.q = search.text;
-	          params._page = 1;
-	          commit(_types2.default.PAGE_SET, { page: 1 });
-	        }
-	
-	        _vue2.default.http.get(url, { params: params }).then(function (_ref21) {
-	          var data = _ref21.data,
-	              headers = _ref21.headers;
-	
-	          var total = Number(headers['x-total-count']);
-	          commit(_types2.default.DATA_TOTAL_SET, { total: total });
-	          commit(_types2.default.DATA_LOADED, { data: data });
-	        });
-	        return;
-	      }
-	
-	      _vue2.default.http.get(url).then(function (_ref22) {
-	        var data = _ref22.data,
-	            ok = _ref22.ok,
-	            status = _ref22.status,
-	            statusText = _ref22.statusText;
-	
-	        if (status === 200) {
-	          commit(_types2.default.DATA_LOADED, { data: data });
-	        } else {
 	          commit(_types2.default.DATA_LOADING_ERROR, {
 	            ok: ok,
 	            status: status,
 	            text: statusText
 	          });
-	        }
-	      }, function (_ref23) {
-	        var ok = _ref23.ok,
-	            status = _ref23.status,
-	            statusText = _ref23.statusText;
-	
-	        commit(_types2.default.DATA_LOADING_ERROR, {
-	          ok: ok,
-	          status: status,
-	          text: statusText
 	        });
-	      });
+	      }
 	    }
-	  }
+	  };
 	};
 
 /***/ },
@@ -3871,32 +3882,34 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  state: {
-	    slots: {
-	      named: {},
-	      scoped: {}
-	    }
-	  },
-	  getters: {
-	    slots: function slots(s) {
-	      return s.slots;
-	    }
-	  },
-	  mutations: (0, _defineProperty3.default)({}, _types2.default.SLOTS_INIT, function (_ref, _ref2) {
-	    var slots = _ref.slots;
-	    var named = _ref2.named,
-	        scoped = _ref2.scoped;
+	exports.default = function () {
+	  return {
+	    state: {
+	      slots: {
+	        named: {},
+	        scoped: {}
+	      }
+	    },
+	    getters: {
+	      slots: function slots(s) {
+	        return s.slots;
+	      }
+	    },
+	    mutations: (0, _defineProperty3.default)({}, _types2.default.SLOTS_INIT, function (_ref, _ref2) {
+	      var slots = _ref.slots;
+	      var named = _ref2.named,
+	          scoped = _ref2.scoped;
 	
-	    (0, _ownKeys2.default)(named).forEach(function (key) {
-	      _vue2.default.set(slots.named, key, named[key]);
-	    });
+	      (0, _ownKeys2.default)(named).forEach(function (key) {
+	        _vue2.default.set(slots.named, key, named[key]);
+	      });
 	
-	    (0, _ownKeys2.default)(scoped).forEach(function (key) {
-	      _vue2.default.set(slots.scoped, key, scoped[key]);
-	      slots.scoped[key] = scoped[key];
-	    });
-	  })
+	      (0, _ownKeys2.default)(scoped).forEach(function (key) {
+	        _vue2.default.set(slots.scoped, key, scoped[key]);
+	        slots.scoped[key] = scoped[key];
+	      });
+	    })
+	  };
 	};
 
 /***/ },
@@ -3913,132 +3926,134 @@ module.exports =
 	
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 	
-	var _mutations;
-	
 	var _types = __webpack_require__(63);
 	
 	var _types2 = _interopRequireDefault(_types);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  state: {
-	    pageSize: 10,
-	    pageSizes: [{
-	      value: 10,
-	      name: 10
-	    }, {
-	      value: 20,
-	      name: 20
-	    }, {
-	      value: 30,
-	      name: 30
-	    }, {
-	      value: 50,
-	      name: 50
-	    }, {
-	      value: 100,
-	      name: 100
-	    }, {
-	      value: 0,
-	      name: 'No limit'
-	    }],
-	    page: 1
-	  },
-	  getters: {
-	    page: function page(s) {
-	      return s.page;
-	    },
-	    pages: function pages(state, _ref) {
-	      var pageSize = _ref.pageSize,
-	          parsedTotal = _ref.parsedTotal;
+	exports.default = function () {
+	  var _mutations;
 	
-	      return pageSize ? Math.max(Math.ceil(parsedTotal / pageSize), 1) : 1;
+	  return {
+	    state: {
+	      pageSize: 10,
+	      pageSizes: [{
+	        value: 10,
+	        name: 10
+	      }, {
+	        value: 20,
+	        name: 20
+	      }, {
+	        value: 30,
+	        name: 30
+	      }, {
+	        value: 50,
+	        name: 50
+	      }, {
+	        value: 100,
+	        name: 100
+	      }, {
+	        value: 0,
+	        name: 'No limit'
+	      }],
+	      page: 1
 	    },
+	    getters: {
+	      page: function page(s) {
+	        return s.page;
+	      },
+	      pages: function pages(state, _ref) {
+	        var pageSize = _ref.pageSize,
+	            parsedTotal = _ref.parsedTotal;
 	
-	    pageSize: function pageSize(s) {
-	      return s.pageSize;
-	    },
-	    pageOffset: function pageOffset(state, _ref2) {
-	      var page = _ref2.page,
-	          pageSize = _ref2.pageSize;
+	        return pageSize ? Math.max(Math.ceil(parsedTotal / pageSize), 1) : 1;
+	      },
 	
-	      return pageSize ? (page - 1) * pageSize : 0;
-	    },
+	      pageSize: function pageSize(s) {
+	        return s.pageSize;
+	      },
+	      pageOffset: function pageOffset(state, _ref2) {
+	        var page = _ref2.page,
+	            pageSize = _ref2.pageSize;
 	
-	    pageSizes: function pageSizes(s) {
-	      return s.pageSizes;
+	        return pageSize ? (page - 1) * pageSize : 0;
+	      },
+	
+	      pageSizes: function pageSizes(s) {
+	        return s.pageSizes;
+	      },
+	      isFirstPage: function isFirstPage(s) {
+	        return s.page <= 1;
+	      },
+	      isLastPage: function isLastPage(s) {
+	        return s.page >= s.pages;
+	      }
 	    },
-	    isFirstPage: function isFirstPage(s) {
-	      return s.page <= 1;
-	    },
-	    isLastPage: function isLastPage(s) {
-	      return s.page >= s.pages;
+	    mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.PAGINATOR_SET_PAGE, function (state, _ref3) {
+	      var page = _ref3.page;
+	
+	      state.page = page;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.PAGINATOR_SET_PAGE_SIZE, function (state, _ref4) {
+	      var pageSize = _ref4.pageSize;
+	
+	      state.pageSize = pageSize;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.PAGINATOR_SET_PAGE_SIZES, function (state, _ref5) {
+	      var pageSizes = _ref5.pageSizes;
+	
+	      state.pageSizes = pageSizes;
+	    }), _mutations),
+	    actions: {
+	      paginatorSetPageSize: function paginatorSetPageSize(_ref6, _ref7) {
+	        var commit = _ref6.commit,
+	            dispatch = _ref6.dispatch;
+	        var pageSize = _ref7.pageSize;
+	
+	        commit(_types2.default.PAGINATOR_SET_PAGE_SIZE, { pageSize: pageSize });
+	        dispatch('paginatorSetPage', { page: 1 });
+	      },
+	      paginatorSetPageSizes: function paginatorSetPageSizes(_ref8, _ref9) {
+	        var commit = _ref8.commit,
+	            dispatch = _ref8.dispatch;
+	        var pageSizes = _ref9.pageSizes;
+	
+	        commit(_types2.default.PAGINATOR_SET_PAGE_SIZES, { pageSizes: pageSizes });
+	        dispatch('paginatorSetPage', { page: 1 });
+	      },
+	      paginatorNextPage: function paginatorNextPage(_ref10) {
+	        var commit = _ref10.commit,
+	            state = _ref10.state,
+	            getters = _ref10.getters;
+	
+	        var page = Math.min(getters.pages, state.page + 1);
+	        commit(_types2.default.PAGINATOR_SET_PAGE, { page: page });
+	      },
+	      paginatorPreviousPage: function paginatorPreviousPage(_ref11) {
+	        var commit = _ref11.commit,
+	            state = _ref11.state;
+	
+	        var page = Math.max(1, state.page - 1);
+	        commit(_types2.default.PAGINATOR_SET_PAGE, { page: page });
+	      },
+	      paginatorFirstPage: function paginatorFirstPage(_ref12) {
+	        var commit = _ref12.commit;
+	
+	        commit(_types2.default.PAGINATOR_SET_PAGE, { page: 1 });
+	      },
+	      paginatorLastPage: function paginatorLastPage(_ref13) {
+	        var commit = _ref13.commit,
+	            getters = _ref13.getters;
+	
+	        commit(_types2.default.PAGINATOR_SET_PAGE, { page: getters.pages });
+	      },
+	      paginatorSetPage: function paginatorSetPage(_ref14, _ref15) {
+	        var commit = _ref14.commit;
+	        var page = _ref15.page;
+	
+	        commit(_types2.default.PAGINATOR_SET_PAGE, { page: page });
+	      }
 	    }
-	  },
-	  mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.PAGINATOR_SET_PAGE, function (state, _ref3) {
-	    var page = _ref3.page;
-	
-	    state.page = page;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.PAGINATOR_SET_PAGE_SIZE, function (state, _ref4) {
-	    var pageSize = _ref4.pageSize;
-	
-	    state.pageSize = pageSize;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.PAGINATOR_SET_PAGE_SIZES, function (state, _ref5) {
-	    var pageSizes = _ref5.pageSizes;
-	
-	    state.pageSizes = pageSizes;
-	  }), _mutations),
-	  actions: {
-	    paginatorSetPageSize: function paginatorSetPageSize(_ref6, _ref7) {
-	      var commit = _ref6.commit,
-	          dispatch = _ref6.dispatch;
-	      var pageSize = _ref7.pageSize;
-	
-	      commit(_types2.default.PAGINATOR_SET_PAGE_SIZE, { pageSize: pageSize });
-	      dispatch('paginatorSetPage', { page: 1 });
-	    },
-	    paginatorSetPageSizes: function paginatorSetPageSizes(_ref8, _ref9) {
-	      var commit = _ref8.commit,
-	          dispatch = _ref8.dispatch;
-	      var pageSizes = _ref9.pageSizes;
-	
-	      commit(_types2.default.PAGINATOR_SET_PAGE_SIZES, { pageSizes: pageSizes });
-	      dispatch('paginatorSetPage', { page: 1 });
-	    },
-	    paginatorNextPage: function paginatorNextPage(_ref10) {
-	      var commit = _ref10.commit,
-	          state = _ref10.state,
-	          getters = _ref10.getters;
-	
-	      var page = Math.min(getters.pages, state.page + 1);
-	      commit(_types2.default.PAGINATOR_SET_PAGE, { page: page });
-	    },
-	    paginatorPreviousPage: function paginatorPreviousPage(_ref11) {
-	      var commit = _ref11.commit,
-	          state = _ref11.state;
-	
-	      var page = Math.max(1, state.page - 1);
-	      commit(_types2.default.PAGINATOR_SET_PAGE, { page: page });
-	    },
-	    paginatorFirstPage: function paginatorFirstPage(_ref12) {
-	      var commit = _ref12.commit;
-	
-	      commit(_types2.default.PAGINATOR_SET_PAGE, { page: 1 });
-	    },
-	    paginatorLastPage: function paginatorLastPage(_ref13) {
-	      var commit = _ref13.commit,
-	          getters = _ref13.getters;
-	
-	      commit(_types2.default.PAGINATOR_SET_PAGE, { page: getters.pages });
-	    },
-	    paginatorSetPage: function paginatorSetPage(_ref14, _ref15) {
-	      var commit = _ref14.commit;
-	      var page = _ref15.page;
-	
-	      commit(_types2.default.PAGINATOR_SET_PAGE, { page: page });
-	    }
-	  }
+	  };
 	};
 
 /***/ },
@@ -4055,74 +4070,76 @@ module.exports =
 	
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 	
-	var _mutations;
-	
 	var _types = __webpack_require__(63);
 	
 	var _types2 = _interopRequireDefault(_types);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  state: {
-	    multiSelect: true,
-	    selected: []
-	  },
-	  getters: {
-	    selected: function selected(s) {
-	      return s.selected;
+	exports.default = function () {
+	  var _mutations;
+	
+	  return {
+	    state: {
+	      multiSelect: true,
+	      selected: []
 	    },
-	    multiSelect: function multiSelect(s) {
-	      return s.multiSelect;
-	    }
-	  },
-	  mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.SELECT_SELECT_ROW, function (_ref, _ref2) {
-	    var selected = _ref.selected;
-	    var row = _ref2.row;
-	
-	    if (selected.indexOf(row) === -1) {
-	      selected.push(row);
-	    }
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.SELECT_UNSELECT_ROW, function (_ref3, _ref4) {
-	    var selected = _ref3.selected;
-	    var row = _ref4.row;
-	
-	    var index = selected.indexOf(row);
-	
-	    if (index !== -1) {
-	      selected.splice(index, 1);
-	    }
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.SELECT_SET_MULTISELECT, function (state, _ref5) {
-	    var multiSelect = _ref5.multiSelect;
-	
-	    state.multiSelect = multiSelect;
-	  }), _mutations),
-	  actions: {
-	    toggleSelect: function toggleSelect(_ref6, _ref7) {
-	      var commit = _ref6.commit,
-	          dispatch = _ref6.dispatch,
-	          state = _ref6.state;
-	      var row = _ref7.row;
-	      var selected = state.selected;
-	      var SELECT_SELECT_ROW = _types2.default.SELECT_SELECT_ROW,
-	          SELECT_UNSELECT_ROW = _types2.default.SELECT_UNSELECT_ROW;
-	
-	
-	      commit(selected.indexOf(row) === -1 ? SELECT_SELECT_ROW : SELECT_UNSELECT_ROW, { row: row });
+	    getters: {
+	      selected: function selected(s) {
+	        return s.selected;
+	      },
+	      multiSelect: function multiSelect(s) {
+	        return s.multiSelect;
+	      }
 	    },
-	    isSelected: function isSelected(_ref8, _ref9) {
-	      var getters = _ref8.getters;
-	      var row = _ref9.row;
+	    mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.SELECT_SELECT_ROW, function (_ref, _ref2) {
+	      var selected = _ref.selected;
+	      var row = _ref2.row;
 	
-	      return getters.selected.indexOf(row) !== -1;
-	    },
-	    selectSetMultiSelect: function selectSetMultiSelect(_ref10, _ref11) {
-	      var commit = _ref10.commit;
-	      var multiSelect = _ref11.multiSelect;
+	      if (selected.indexOf(row) === -1) {
+	        selected.push(row);
+	      }
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SELECT_UNSELECT_ROW, function (_ref3, _ref4) {
+	      var selected = _ref3.selected;
+	      var row = _ref4.row;
 	
-	      commit(_types2.default.SELECT_SET_MULTISELECT, { multiSelect: multiSelect });
+	      var index = selected.indexOf(row);
+	
+	      if (index !== -1) {
+	        selected.splice(index, 1);
+	      }
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SELECT_SET_MULTISELECT, function (state, _ref5) {
+	      var multiSelect = _ref5.multiSelect;
+	
+	      state.multiSelect = multiSelect;
+	    }), _mutations),
+	    actions: {
+	      toggleSelect: function toggleSelect(_ref6, _ref7) {
+	        var commit = _ref6.commit,
+	            dispatch = _ref6.dispatch,
+	            state = _ref6.state;
+	        var row = _ref7.row;
+	        var selected = state.selected;
+	        var SELECT_SELECT_ROW = _types2.default.SELECT_SELECT_ROW,
+	            SELECT_UNSELECT_ROW = _types2.default.SELECT_UNSELECT_ROW;
+	
+	
+	        commit(selected.indexOf(row) === -1 ? SELECT_SELECT_ROW : SELECT_UNSELECT_ROW, { row: row });
+	      },
+	      isSelected: function isSelected(_ref8, _ref9) {
+	        var getters = _ref8.getters;
+	        var row = _ref9.row;
+	
+	        return getters.selected.indexOf(row) !== -1;
+	      },
+	      selectSetMultiSelect: function selectSetMultiSelect(_ref10, _ref11) {
+	        var commit = _ref10.commit;
+	        var multiSelect = _ref11.multiSelect;
+	
+	        commit(_types2.default.SELECT_SET_MULTISELECT, { multiSelect: multiSelect });
+	      }
 	    }
-	  }
+	  };
 	};
 
 /***/ },
@@ -4145,23 +4162,25 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  state: {
-	    rowsHeight: null
-	  },
-	  mutations: (0, _defineProperty3.default)({}, _types2.default.GRID_ROWSHEIGHT_SET, function (state, _ref) {
-	    var rowsHeight = _ref.rowsHeight;
+	exports.default = function () {
+	  return {
+	    state: {
+	      rowsHeight: null
+	    },
+	    mutations: (0, _defineProperty3.default)({}, _types2.default.GRID_ROWSHEIGHT_SET, function (state, _ref) {
+	      var rowsHeight = _ref.rowsHeight;
 	
-	    state.rowsHeight = rowsHeight;
-	  }),
-	  actions: {
-	    setRowsHeight: function setRowsHeight(_ref2, _ref3) {
-	      var commit = _ref2.commit;
-	      var rowsHeight = _ref3.rowsHeight;
+	      state.rowsHeight = rowsHeight;
+	    }),
+	    actions: {
+	      setRowsHeight: function setRowsHeight(_ref2, _ref3) {
+	        var commit = _ref2.commit;
+	        var rowsHeight = _ref3.rowsHeight;
 	
-	      commit(_types2.default.GRID_ROWSHEIGHT_SET, { rowsHeight: rowsHeight });
+	        commit(_types2.default.GRID_ROWSHEIGHT_SET, { rowsHeight: rowsHeight });
+	      }
 	    }
-	  }
+	  };
 	};
 
 /***/ },
@@ -4194,170 +4213,172 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  namespaced: true,
-	  state: {
-	    multiple: true,
-	    stack: [],
-	    value: null
-	  },
-	  getters: {
-	    rows: function rows(s) {
-	      return s.rows;
+	exports.default = function () {
+	  return {
+	    namespaced: true,
+	    state: {
+	      multiple: true,
+	      stack: [],
+	      value: null
 	    },
-	    value: function value(s) {
-	      return s.value;
-	    },
-	    stack: function stack(s) {
-	      return s.stack;
-	    },
-	    status: function status(_ref, _ref2) {
-	      var stack = _ref.stack,
-	          value = _ref.value;
-	      var filtered = _ref2.filtered;
+	    getters: {
+	      rows: function rows(s) {
+	        return s.rows;
+	      },
+	      value: function value(s) {
+	        return s.value;
+	      },
+	      stack: function stack(s) {
+	        return s.stack;
+	      },
+	      status: function status(_ref, _ref2) {
+	        var stack = _ref.stack,
+	            value = _ref.value;
+	        var filtered = _ref2.filtered;
 	
-	      var status = {
-	        filters: {},
-	        filtered: filtered,
-	        value: value
-	      };
-	      stack.forEach(function (_ref3) {
-	        var name = _ref3.name,
-	            value = _ref3.value,
-	            filterBy = _ref3.filterBy;
-	
-	        status.filters[name] = {
-	          value: value,
-	          filterBy: filterBy
+	        var status = {
+	          filters: {},
+	          filtered: filtered,
+	          value: value
 	        };
-	      });
-	      return status;
-	    },
-	    filtered: function filtered(_ref4, _ref5, _ref6, rootGetters) {
-	      var stack = _ref4.stack;
-	      var value = _ref5.value;
-	      var dataModule = _ref6.dataModule;
+	        stack.forEach(function (_ref3) {
+	          var name = _ref3.name,
+	              value = _ref3.value,
+	              filterBy = _ref3.filterBy;
 	
-	      var columns = [];
-	      var data = dataModule.data;
+	          status.filters[name] = {
+	            value: value,
+	            filterBy: filterBy
+	          };
+	        });
+	        return status;
+	      },
+	      filtered: function filtered(_ref4, _ref5, _ref6, rootGetters) {
+	        var stack = _ref4.stack;
+	        var value = _ref5.value;
+	        var dataModule = _ref6.dataModule;
+	
+	        var columns = [];
+	        var data = dataModule.data;
 	
 	
-	      value = value ? String(value).toLowerCase() : '';
-	
-	      stack.forEach(function (_ref7) {
-	        var name = _ref7.name,
-	            value = _ref7.value,
-	            filterBy = _ref7.filterBy;
-	
-	        var path = typeof filterBy === 'string' ? filterBy.split('.') : null;
-	        var func = typeof filterBy === 'function' ? filterBy : null;
 	        value = value ? String(value).toLowerCase() : '';
 	
-	        data = data.filter(function (row) {
-	          if (func) {
-	            return func(row);
-	          } else if (path) {
-	            return String((0, _getDeep2.default)(row, path)).toLowerCase() === value;
-	          } else {
-	            return String(row[name]).toLowerCase() === value;
+	        stack.forEach(function (_ref7) {
+	          var name = _ref7.name,
+	              value = _ref7.value,
+	              filterBy = _ref7.filterBy;
+	
+	          var path = typeof filterBy === 'string' ? filterBy.split('.') : null;
+	          var func = typeof filterBy === 'function' ? filterBy : null;
+	          value = value ? String(value).toLowerCase() : '';
+	
+	          data = data.filter(function (row) {
+	            if (func) {
+	              return func(row);
+	            } else if (path) {
+	              return String((0, _getDeep2.default)(row, path)).toLowerCase() === value;
+	            } else {
+	              return String(row[name]).toLowerCase() === value;
+	            }
+	          });
+	        });
+	
+	        rootGetters['columns'].forEach(function (_ref8) {
+	          var name = _ref8.name,
+	              filterable = _ref8.filterable,
+	              filterBy = _ref8.filterBy;
+	
+	          if (name && filterable !== false) {
+	            columns.push({
+	              name: name,
+	              path: typeof filterBy === 'string' ? filterBy.split('.') : null,
+	              func: typeof filterBy === 'function' ? filterBy : null
+	            });
 	          }
 	        });
-	      });
 	
-	      rootGetters['columns'].forEach(function (_ref8) {
-	        var name = _ref8.name,
-	            filterable = _ref8.filterable,
-	            filterBy = _ref8.filterBy;
+	        if (value) {
+	          var _ret = function () {
+	            var index = 0;
+	            var result = false;
+	            var column = null;
 	
-	        if (name && filterable !== false) {
-	          columns.push({
-	            name: name,
-	            path: typeof filterBy === 'string' ? filterBy.split('.') : null,
-	            func: typeof filterBy === 'function' ? filterBy : null
-	          });
-	        }
-	      });
+	            return {
+	              v: data.filter(function (row) {
+	                index = 0;
+	                result = false;
 	
-	      if (value) {
-	        var _ret = function () {
-	          var index = 0;
-	          var result = false;
-	          var column = null;
+	                while (result === false && index < columns.length) {
+	                  column = columns[index++];
 	
-	          return {
-	            v: data.filter(function (row) {
-	              index = 0;
-	              result = false;
-	
-	              while (result === false && index < columns.length) {
-	                column = columns[index++];
-	
-	                if (column.func) {
-	                  result = column.func(value, row[column.name], row);
-	                } else if (column.path) {
-	                  result = String((0, _getDeep2.default)(row, column.path)).toLowerCase().indexOf(value) !== -1;
-	                } else {
-	                  result = String(row[column.name]).toLowerCase().indexOf(value) !== -1;
+	                  if (column.func) {
+	                    result = column.func(value, row[column.name], row);
+	                  } else if (column.path) {
+	                    result = String((0, _getDeep2.default)(row, column.path)).toLowerCase().indexOf(value) !== -1;
+	                  } else {
+	                    result = String(row[column.name]).toLowerCase().indexOf(value) !== -1;
+	                  }
 	                }
-	              }
 	
-	              return result;
-	            })
-	          };
-	        }();
+	                return result;
+	              })
+	            };
+	          }();
 	
-	        if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+	          if ((typeof _ret === 'undefined' ? 'undefined' : (0, _typeof3.default)(_ret)) === "object") return _ret.v;
+	        }
+	
+	        return data;
 	      }
-	
-	      return data;
-	    }
-	  },
-	  mutations: (0, _defineProperty3.default)({}, _types2.default.FILTER, function (state, _ref9) {
-	    var name = _ref9.name,
-	        value = _ref9.value,
-	        filterBy = _ref9.filterBy;
-	    var multiple = state.multiple,
-	        stack = state.stack;
+	    },
+	    mutations: (0, _defineProperty3.default)({}, _types2.default.FILTER, function (state, _ref9) {
+	      var name = _ref9.name,
+	          value = _ref9.value,
+	          filterBy = _ref9.filterBy;
+	      var multiple = state.multiple,
+	          stack = state.stack;
 	
 	
-	    if (!name && !filterBy) {
-	      state.value = value;
-	      return;
-	    }
-	
-	    if ((0, _stack.has)({ stack: stack }, name) === true) {
-	      var item = (0, _stack.get)({ stack: stack }, name);
-	      if (value === false) {
-	        (0, _stack.remove)({ stack: stack }, name);
-	      } else {
-	        item.value = value || null;
-	        item.filterBy = filterBy || null;
-	      }
-	    } else {
-	      if (!value && !filterBy) {
+	      if (!name && !filterBy) {
+	        state.value = value;
 	        return;
 	      }
 	
-	      (0, _stack.push)({ multiple: multiple, stack: stack }, {
-	        name: name,
-	        value: value || null,
-	        filterBy: filterBy || null
-	      });
-	    }
-	  }),
-	  actions: {
-	    filter: function filter(_ref10) {
-	      var commit = _ref10.commit,
-	          rootGetters = _ref10.rootGetters;
+	      if ((0, _stack.has)({ stack: stack }, name) === true) {
+	        var item = (0, _stack.get)({ stack: stack }, name);
+	        if (value === false) {
+	          (0, _stack.remove)({ stack: stack }, name);
+	        } else {
+	          item.value = value || null;
+	          item.filterBy = filterBy || null;
+	        }
+	      } else {
+	        if (!value && !filterBy) {
+	          return;
+	        }
 	
-	      var _ref11 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-	          name = _ref11.name,
-	          value = _ref11.value,
-	          filterBy = _ref11.filterBy;
+	        (0, _stack.push)({ multiple: multiple, stack: stack }, {
+	          name: name,
+	          value: value || null,
+	          filterBy: filterBy || null
+	        });
+	      }
+	    }),
+	    actions: {
+	      filter: function filter(_ref10) {
+	        var commit = _ref10.commit,
+	            rootGetters = _ref10.rootGetters;
 	
-	      commit(_types2.default.FILTER, { name: name, value: value, filterBy: filterBy });
+	        var _ref11 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	            name = _ref11.name,
+	            value = _ref11.value,
+	            filterBy = _ref11.filterBy;
+	
+	        commit(_types2.default.FILTER, { name: name, value: value, filterBy: filterBy });
+	      }
 	    }
-	  }
+	  };
 	};
 
 /***/ },
@@ -4865,8 +4886,6 @@ module.exports =
 	
 	var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 	
-	var _mutations;
-	
 	var _stack = __webpack_require__(138);
 	
 	var _getDeep = __webpack_require__(139);
@@ -4879,176 +4898,180 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = {
-	  namespaced: true,
-	  state: {
-	    multiple: true,
-	    stack: []
-	  },
-	  getters: {
-	    multiple: function multiple(s) {
-	      return s.multiple;
+	exports.default = function () {
+	  var _mutations;
+	
+	  return {
+	    namespaced: true,
+	    state: {
+	      multiple: true,
+	      stack: []
 	    },
-	    stack: function stack(s) {
-	      return s.stack;
-	    },
-	    status: function status(_ref) {
-	      var stack = _ref.stack;
+	    getters: {
+	      multiple: function multiple(s) {
+	        return s.multiple;
+	      },
+	      stack: function stack(s) {
+	        return s.stack;
+	      },
+	      status: function status(_ref) {
+	        var stack = _ref.stack;
 	
-	      var status = {};
-	      stack.forEach(function (_ref2) {
-	        var name = _ref2.name,
-	            order = _ref2.order,
-	            sortBy = _ref2.sortBy;
+	        var status = {};
+	        stack.forEach(function (_ref2) {
+	          var name = _ref2.name,
+	              order = _ref2.order,
+	              sortBy = _ref2.sortBy;
 	
-	        status[name] = {
-	          order: order,
-	          sortBy: sortBy
-	        };
-	      });
-	      return status;
-	    },
-	    sorted: function sorted(_ref3, getters, rootState, rootGetters) {
-	      var stack = _ref3.stack;
-	
-	      var filtered = rootGetters['filter/filtered'];
-	      var sorters = [];
-	
-	      if (!stack.length) {
-	        return filtered;
-	      }
-	
-	      stack.forEach(function (_ref4) {
-	        var name = _ref4.name,
-	            order = _ref4.order,
-	            sortBy = _ref4.sortBy;
-	
-	        sorters.push({
-	          name: name,
-	          func: typeof sortBy === 'function' ? sortBy : null,
-	          path: typeof sortBy === 'string' ? sortBy.split('.') : null,
-	          negator: 1 * (order === 'asc' ? 1 : -1)
+	          status[name] = {
+	            order: order,
+	            sortBy: sortBy
+	          };
 	        });
-	      });
+	        return status;
+	      },
+	      sorted: function sorted(_ref3, getters, rootState, rootGetters) {
+	        var stack = _ref3.stack;
 	
-	      var index = 0;
-	      var result = 0;
-	      var sorter = null;
+	        var filtered = rootGetters['filter/filtered'];
+	        var sorters = [];
 	
-	      return filtered.sort(function (prev, next) {
-	        index = 0;
-	        result = 0;
+	        if (!stack.length) {
+	          return filtered;
+	        }
 	
-	        while (result === 0 && index < sorters.length) {
-	          sorter = sorters[index++];
+	        stack.forEach(function (_ref4) {
+	          var name = _ref4.name,
+	              order = _ref4.order,
+	              sortBy = _ref4.sortBy;
 	
-	          if (sorter.func) {
-	            result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
-	          } else if (sorter.path) {
-	            if ((0, _getDeep2.default)(prev, sorter.path) < (0, _getDeep2.default)(next, sorter.path)) {
+	          sorters.push({
+	            name: name,
+	            func: typeof sortBy === 'function' ? sortBy : null,
+	            path: typeof sortBy === 'string' ? sortBy.split('.') : null,
+	            negator: 1 * (order === 'asc' ? 1 : -1)
+	          });
+	        });
+	
+	        var index = 0;
+	        var result = 0;
+	        var sorter = null;
+	
+	        return filtered.sort(function (prev, next) {
+	          index = 0;
+	          result = 0;
+	
+	          while (result === 0 && index < sorters.length) {
+	            sorter = sorters[index++];
+	
+	            if (sorter.func) {
+	              result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
+	            } else if (sorter.path) {
+	              if ((0, _getDeep2.default)(prev, sorter.path) < (0, _getDeep2.default)(next, sorter.path)) {
+	                result = sorter.negator;
+	              } else if ((0, _getDeep2.default)(prev, sorter.path) > (0, _getDeep2.default)(next, sorter.path)) {
+	                result = -sorter.negator;
+	              } else {
+	                result = 0;
+	              }
+	            } else if (prev[sorter.name] < next[sorter.name]) {
 	              result = sorter.negator;
-	            } else if ((0, _getDeep2.default)(prev, sorter.path) > (0, _getDeep2.default)(next, sorter.path)) {
+	            } else if (prev[sorter.name] > next[sorter.name]) {
 	              result = -sorter.negator;
 	            } else {
 	              result = 0;
 	            }
-	          } else if (prev[sorter.name] < next[sorter.name]) {
-	            result = sorter.negator;
-	          } else if (prev[sorter.name] > next[sorter.name]) {
-	            result = -sorter.negator;
-	          } else {
-	            result = 0;
 	          }
-	        }
 	
-	        return result;
-	      });
-	    }
-	  },
-	  mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.SORT_SET_MULTIPLE, function (state, _ref5) {
-	    var multiple = _ref5.multiple;
-	
-	    state.multiple = multiple;
-	  }), (0, _defineProperty3.default)(_mutations, _types2.default.SORT, function (_ref6, _ref7) {
-	    var multiple = _ref6.multiple,
-	        stack = _ref6.stack;
-	    var column = _ref7.column,
-	        order = _ref7.order,
-	        sortBy = _ref7.sortBy;
-	    var name = column.name;
-	
-	
-	    if (order === false) {
-	      if ((0, _stack.has)({ stack: stack }, name)) {
-	        (0, _stack.remove)({ stack: stack }, name);
-	      }
-	      return;
-	    }
-	
-	    if ((0, _stack.has)({ stack: stack }, name) === true) {
-	      var item = (0, _stack.get)({ stack: stack }, name);
-	
-	      if (sortBy) {
-	        item.sortBy = sortBy || column.sortBy || null;
-	      }
-	
-	      if (order) {
-	        item.order = order;
-	      } else if (item.order === 'asc') {
-	        item.order = 'desc';
-	      } else if (item.order === 'desc') {
-	        (0, _stack.remove)({ stack: stack }, name);
-	      }
-	    } else {
-	      (0, _stack.push)({ multiple: multiple, stack: stack }, {
-	        name: name,
-	        order: order || 'asc',
-	        sortBy: sortBy || column.sortBy || null
-	      });
-	    }
-	  }), _mutations),
-	  actions: {
-	    sort: function sort(_ref8) {
-	      var commit = _ref8.commit,
-	          state = _ref8.state,
-	          getters = _ref8.getters,
-	          rootState = _ref8.rootState,
-	          rootGetters = _ref8.rootGetters;
-	
-	      var _ref9 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-	          name = _ref9.name,
-	          order = _ref9.order,
-	          sortBy = _ref9.sortBy;
-	
-	      var columns = rootGetters.columns;
-	
-	      var column = columns.find(function (column) {
-	        return column.name === name;
-	      });
-	
-	      if (!name || !column) {
-	        return;
-	      }
-	
-	      if (column.sortable === false) {
-	        return;
-	      }
-	
-	      commit(_types2.default.SORT, { column: column, order: order, sortBy: sortBy });
-	
-	      if (state.side === 'server') {
-	        commit('DATA_LOAD');
+	          return result;
+	        });
 	      }
 	    },
-	    setMultiple: function setMultiple(_ref10) {
-	      var commit = _ref10.commit;
+	    mutations: (_mutations = {}, (0, _defineProperty3.default)(_mutations, _types2.default.SORT_SET_MULTIPLE, function (state, _ref5) {
+	      var multiple = _ref5.multiple;
 	
-	      var _ref11 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-	          multiple = _ref11.multiple;
+	      state.multiple = multiple;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SORT, function (_ref6, _ref7) {
+	      var multiple = _ref6.multiple,
+	          stack = _ref6.stack;
+	      var column = _ref7.column,
+	          order = _ref7.order,
+	          sortBy = _ref7.sortBy;
+	      var name = column.name;
 	
-	      commit(_types2.default.SORT_SET_MULTIPLE, { multiple: multiple });
+	
+	      if (order === false) {
+	        if ((0, _stack.has)({ stack: stack }, name)) {
+	          (0, _stack.remove)({ stack: stack }, name);
+	        }
+	        return;
+	      }
+	
+	      if ((0, _stack.has)({ stack: stack }, name) === true) {
+	        var item = (0, _stack.get)({ stack: stack }, name);
+	
+	        if (sortBy) {
+	          item.sortBy = sortBy || column.sortBy || null;
+	        }
+	
+	        if (order) {
+	          item.order = order;
+	        } else if (item.order === 'asc') {
+	          item.order = 'desc';
+	        } else if (item.order === 'desc') {
+	          (0, _stack.remove)({ stack: stack }, name);
+	        }
+	      } else {
+	        (0, _stack.push)({ multiple: multiple, stack: stack }, {
+	          name: name,
+	          order: order || 'asc',
+	          sortBy: sortBy || column.sortBy || null
+	        });
+	      }
+	    }), _mutations),
+	    actions: {
+	      sort: function sort(_ref8) {
+	        var commit = _ref8.commit,
+	            state = _ref8.state,
+	            getters = _ref8.getters,
+	            rootState = _ref8.rootState,
+	            rootGetters = _ref8.rootGetters;
+	
+	        var _ref9 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	            name = _ref9.name,
+	            order = _ref9.order,
+	            sortBy = _ref9.sortBy;
+	
+	        var columns = rootGetters.columns;
+	
+	        var column = columns.find(function (column) {
+	          return column.name === name;
+	        });
+	
+	        if (!name || !column) {
+	          return;
+	        }
+	
+	        if (column.sortable === false) {
+	          return;
+	        }
+	
+	        commit(_types2.default.SORT, { column: column, order: order, sortBy: sortBy });
+	
+	        if (state.side === 'server') {
+	          commit('DATA_LOAD');
+	        }
+	      },
+	      setMultiple: function setMultiple(_ref10) {
+	        var commit = _ref10.commit;
+	
+	        var _ref11 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	            multiple = _ref11.multiple;
+	
+	        commit(_types2.default.SORT_SET_MULTIPLE, { multiple: multiple });
+	      }
 	    }
-	  }
+	  };
 	};
 
 /***/ },
