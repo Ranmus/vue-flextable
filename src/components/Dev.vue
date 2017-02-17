@@ -82,6 +82,18 @@
 
         template(slot="nodata") No users loaded
         template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
+
+      flextable(
+        :config="config",
+        :columns="columns",
+        url="http://localhost:8090/users/",
+        side="client",
+        ref="flextable",
+        v-on:rendered="rendered"
+        v-on:selected="selected"
+        v-on:sorted="sorted"
+        v-on:filtered="filtered"
+        )
 </template>
 
 <style lang="sass">

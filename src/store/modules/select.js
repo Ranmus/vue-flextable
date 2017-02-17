@@ -1,6 +1,6 @@
 import types from './../types';
 
-export default {
+export default () => ({
   state: {
     multiSelect: true,
     selected: [],
@@ -40,4 +40,4 @@ export default {
       commit(types.SELECT_SET_MULTISELECT, { multiSelect });
     },
   },
-};
+});

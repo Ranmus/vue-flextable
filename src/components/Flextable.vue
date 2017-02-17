@@ -93,9 +93,10 @@ export default {
       selected: 'selected',
     }),
   },
-  created() {
+  beforeCreate() {
     this.$store = Store();
-
+  },
+  created() {
     /* events */
     this.$store.watch((state, getters) => getters.rowsToRender, (rows) => {
       this.$emit('rendered', { rows });

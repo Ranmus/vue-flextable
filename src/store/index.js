@@ -18,7 +18,7 @@ const createState = () => ({
 });
 
 /* eslint-disable */
-const getters = {
+const createGetters = () => ({
   config: s => s.config,
   columns: s => s.columns,
   parsedData(state, getters, rootState, rootGetters) {
@@ -40,15 +40,15 @@ const getters = {
 
     return parsedData;
   },
-};
+});
 
-const mutations = {
+const createMutations = () => ({
   [types.COLUMNS_SET](state, { columns }) {
     state.columns = columns;
   },
-};
+});
 
-const actions = {
+const createActions = () => ({
   initialize({ commit, dispatch, state }, { columns, config, data, side, slots, url }) {
     commit(types.SLOTS_INIT, slots);
     commit(types.DEVICE_DETECT);
@@ -90,22 +90,24 @@ const actions = {
   setMultiSort({ dispatch }, { multiSort }) {
     dispatch('sort/setMultiple', { multiple: multiSort });
   }
-};
+});
 
 /* eslint-disable no-undef */
-export default () => new Vuex.Store({
-  state: createState(),
-  getters,
-  mutations,
-  actions,
-  modules: {
-    slotsModule,
-    dataModule,
-    deviceModule,
-    paginatorModule,
-    selectModule,
-    gridModule,
-    filter,
-    sort,
-  },
-});
+export default () => {
+  return new Vuex.Store({
+    state: createState(),
+    getters: createGetters(),
+    mutations: createMutations(),
+    actions: createActions(),
+    modules: {
+      slotsModule: slotsModule(),
+      dataModule: dataModule(),
+      deviceModule: deviceModule(),
+      paginatorModule: paginatorModule(),
+      selectModule: selectModule(),
+      gridModule: gridModule(),
+      filter: filter(),
+      sort: sort(),
+    },
+  });
+}
