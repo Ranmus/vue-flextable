@@ -1,8 +1,8 @@
 {
   "name": "vue-flextable",
-  "version": "0.7.7",
+  "version": "0.7.9",
   "description": "Flexible table vue component",
-  "author": "Łukasz Strzyżowski <l.strzyzowski@bkf.pl>",
+  "author": "Łukasz Strzyżowski <lukaszstr@gmail.com>",
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
@@ -15,7 +15,7 @@
   "registry": "github",
   "repository": {
     "type": "git",
-    "url": "https://github.com/EBKF/vue-flextable.git"
+    "url": "https://github.com/Ranmus/vue-flextable.git"
   },
   "main": "dist/flextable.common.js",
   "dependencies": {
