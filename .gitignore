@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+.history
 /nbproject/*
 node_modules/
 npm-debug.log

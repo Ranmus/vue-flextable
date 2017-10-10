@@ -1093,6 +1093,13 @@ module.exports =
 	    device: 'device',
 	    selected: 'selected'
 	  })),
+	  watch: {
+	    data: function data(_data) {
+	      if (_data) {
+	        this.$store.dispatch('setData', { data: _data });
+	      }
+	    }
+	  },
 	  beforeCreate: function beforeCreate() {
 	    this.$store = (0, _store2.default)();
 	  },

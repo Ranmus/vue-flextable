@@ -93,6 +93,13 @@ export default {
       selected: 'selected',
     }),
   },
+  watch: {
+    data(data) {
+      if (data) {
+        this.$store.dispatch('setData', { data });
+      }
+    },
+  },
   beforeCreate() {
     this.$store = Store();
   },

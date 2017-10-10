@@ -3,19 +3,34 @@
     .header
       h1 Flextable example
         =" "
-        a(href="http://localhost:8090/users/").source + random data rest server
+        a(href="http://localhost:8090/users/").source.
+         + random data rest server
     .example
+
+      // Simple table
+      flextable(
+        :config="simple.config",
+        :columns="simple.columns",
+        :data="simple.data"
+      )
+        ft-header
+          ft-title Simple table
+            =" "
+            button(@click="replaceData").
+              Replace data
+        ft-grid
       // Usage example
+      br
       flextable(
         :config="config",
         :columns="columns",
         url="http://localhost:8090/users/",
         side="client",
         ref="flextable",
-        v-on:rendered="rendered"
-        v-on:selected="selected"
-        v-on:sorted="sorted"
-        v-on:filtered="filtered"
+        @rendered="rendered"
+        @selected="selected"
+        @sorted="sorted"
+        @filtered="filtered"
         )
         //- Custom layouting
         template(scope="p")
@@ -89,10 +104,10 @@
         url="http://localhost:8090/users/",
         side="client",
         ref="flextable",
-        v-on:rendered="rendered"
-        v-on:selected="selected"
-        v-on:sorted="sorted"
-        v-on:filtered="filtered"
+        @rendered="rendered"
+        @selected="selected"
+        @sorted="sorted"
+        @filtered="filtered"
         )
 </template>
 
@@ -169,6 +184,24 @@
           filterable: false,
           sortable: false,
         }],
+        simple: {
+          columns: [{
+            name: 'name',
+            label: 'Name',
+          }],
+          config: {
+            multiSelect: false,
+          },
+          data: [{
+            name: 'Lucas',
+          }, {
+            name: 'Maria',
+          }, {
+            name: 'John',
+          }, {
+            name: 'Annabelle',
+          }],
+        },
       };
     },
     watch: {
@@ -219,6 +252,15 @@
         this.$refs.flextable.delete(row).then(() => {
           console.log(`row with id ${row.id} deleted`);
         });
+      },
+      replaceData() {
+        this.simple.data = [
+          { name: 'Jessica' },
+          { name: 'Brian' },
+          { name: 'Eric' },
+          { name: 'Julianna' },
+        ];
+        console.log('data replacing...');
       },
     },
   };
