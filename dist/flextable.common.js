@@ -1186,6 +1186,9 @@ module.exports =
 	
 	      this.$store.dispatch('sort/sort', { name: name, order: order, sortBy: sortBy });
 	    },
+	    setSortCaseSensitive: function setSortCaseSensitive(caseSensitive) {
+	      this.$store.dispatch('sort/setCaseSensitive', { caseSensitive: caseSensitive });
+	    },
 	    delete: function _delete(row) {
 	      return this.$store.dispatch('delete', { row: row });
 	    },
@@ -1509,6 +1512,12 @@ module.exports =
 	      var multiSort = _ref15.multiSort;
 	
 	      dispatch('sort/setMultiple', { multiple: multiSort });
+	    },
+	    setSortCaseSensitive: function setSortCaseSensitive(_ref16, _ref17) {
+	      var dispatch = _ref16.dispatch;
+	      var sortCaseSensitive = _ref17.sortCaseSensitive;
+	
+	      dispatch('sort/setCaseSensitive', { caseSensitive: sortCaseSensitive });
 	    }
 	  };
 	};
@@ -1712,6 +1721,7 @@ module.exports =
 	
 	  SORT: 'SORT',
 	  SORT_SET_MULTIPLE: 'SORT_SET_MULTIPLE',
+	  SORT_SET_CASE_SENSITIVE: 'SORT_SET_CASE_SENSITIVE',
 	
 	  COLUMNS_SET: 'COLUMNS_SET'
 	};
@@ -4911,10 +4921,14 @@ module.exports =
 	  return {
 	    namespaced: true,
 	    state: {
+	      caseSensitive: true,
 	      multiple: true,
 	      stack: []
 	    },
 	    getters: {
+	      caseSensitive: function caseSensitive(s) {
+	        return s.caseSensitive;
+	      },
 	      multiple: function multiple(s) {
 	        return s.multiple;
 	      },
@@ -4940,6 +4954,7 @@ module.exports =
 	      sorted: function sorted(_ref3, getters, rootState, rootGetters) {
 	        var stack = _ref3.stack;
 	
+	        var caseSensitive = getters.caseSensitive;
 	        var filtered = rootGetters['filter/filtered'];
 	        var sorters = [];
 	
@@ -4974,19 +4989,26 @@ module.exports =
 	            if (sorter.func) {
 	              result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
 	            } else if (sorter.path) {
-	              if ((0, _getDeep2.default)(prev, sorter.path) < (0, _getDeep2.default)(next, sorter.path)) {
+	              var p = caseSensitive ? (0, _getDeep2.default)(prev, sorter.path) : String((0, _getDeep2.default)(prev, sorter.path)).toLowerCase();
+	              var n = caseSensitive ? (0, _getDeep2.default)(next, sorter.path) : String((0, _getDeep2.default)(next, sorter.path)).toLowerCase();
+	              if (p < n) {
 	                result = sorter.negator;
-	              } else if ((0, _getDeep2.default)(prev, sorter.path) > (0, _getDeep2.default)(next, sorter.path)) {
+	              } else if (p > n) {
 	                result = -sorter.negator;
 	              } else {
 	                result = 0;
 	              }
-	            } else if (prev[sorter.name] < next[sorter.name]) {
-	              result = sorter.negator;
-	            } else if (prev[sorter.name] > next[sorter.name]) {
-	              result = -sorter.negator;
 	            } else {
-	              result = 0;
+	              var _p = caseSensitive ? prev[sorter.name] : String(prev[sorter.name]).toLowerCase();
+	              var _n = caseSensitive ? next[sorter.name] : String(next[sorter.name]).toLowerCase();
+	
+	              if (_p < _n) {
+	                result = sorter.negator;
+	              } else if (_p > _n) {
+	                result = -sorter.negator;
+	              } else {
+	                result = 0;
+	              }
 	            }
 	          }
 	
@@ -4998,12 +5020,16 @@ module.exports =
 	      var multiple = _ref5.multiple;
 	
 	      state.multiple = multiple;
-	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SORT, function (_ref6, _ref7) {
-	      var multiple = _ref6.multiple,
-	          stack = _ref6.stack;
-	      var column = _ref7.column,
-	          order = _ref7.order,
-	          sortBy = _ref7.sortBy;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SORT_SET_CASE_SENSITIVE, function (state, _ref6) {
+	      var caseSensitive = _ref6.caseSensitive;
+	
+	      state.caseSensitive = caseSensitive;
+	    }), (0, _defineProperty3.default)(_mutations, _types2.default.SORT, function (_ref7, _ref8) {
+	      var multiple = _ref7.multiple,
+	          stack = _ref7.stack;
+	      var column = _ref8.column,
+	          order = _ref8.order,
+	          sortBy = _ref8.sortBy;
 	      var name = column.name;
 	
 	
@@ -5037,17 +5063,17 @@ module.exports =
 	      }
 	    }), _mutations),
 	    actions: {
-	      sort: function sort(_ref8) {
-	        var commit = _ref8.commit,
-	            state = _ref8.state,
-	            getters = _ref8.getters,
-	            rootState = _ref8.rootState,
-	            rootGetters = _ref8.rootGetters;
+	      sort: function sort(_ref9) {
+	        var commit = _ref9.commit,
+	            state = _ref9.state,
+	            getters = _ref9.getters,
+	            rootState = _ref9.rootState,
+	            rootGetters = _ref9.rootGetters;
 	
-	        var _ref9 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-	            name = _ref9.name,
-	            order = _ref9.order,
-	            sortBy = _ref9.sortBy;
+	        var _ref10 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	            name = _ref10.name,
+	            order = _ref10.order,
+	            sortBy = _ref10.sortBy;
 	
 	        var columns = rootGetters.columns;
 	
@@ -5069,13 +5095,21 @@ module.exports =
 	          commit('DATA_LOAD');
 	        }
 	      },
-	      setMultiple: function setMultiple(_ref10) {
-	        var commit = _ref10.commit;
+	      setMultiple: function setMultiple(_ref11) {
+	        var commit = _ref11.commit;
 	
-	        var _ref11 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-	            multiple = _ref11.multiple;
+	        var _ref12 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	            multiple = _ref12.multiple;
 	
 	        commit(_types2.default.SORT_SET_MULTIPLE, { multiple: multiple });
+	      },
+	      setCaseSensitive: function setCaseSensitive(_ref13) {
+	        var commit = _ref13.commit;
+	
+	        var _ref14 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	            caseSensitive = _ref14.caseSensitive;
+	
+	        commit(_types2.default.SORT_SET_CASE_SENSITIVE, { caseSensitive: caseSensitive });
 	      }
 	    }
 	  };
