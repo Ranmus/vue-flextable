@@ -191,6 +191,7 @@
           }],
           config: {
             multiSelect: false,
+            sortCaseSensitive: false,
           },
           data: [{
             name: 'Lucas',
@@ -258,7 +259,8 @@
           { name: 'Jessica' },
           { name: 'Brian' },
           { name: 'Eric' },
-          { name: 'Julianna' },
+          { name: 'julianna' },
+          { name: 'Sebastian' },
         ];
         console.log('data replacing...');
       },

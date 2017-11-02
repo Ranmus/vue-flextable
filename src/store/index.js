@@ -89,7 +89,10 @@ const createActions = () => ({
   },
   setMultiSort({ dispatch }, { multiSort }) {
     dispatch('sort/setMultiple', { multiple: multiSort });
-  }
+  },
+  setSortCaseSensitive({ dispatch }, { sortCaseSensitive }) {
+    dispatch('sort/setCaseSensitive', { caseSensitive: sortCaseSensitive });
+  },
 });
 
 /* eslint-disable no-undef */

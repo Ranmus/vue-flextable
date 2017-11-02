@@ -8,6 +8,7 @@ sortBy (string/function) - Sort definition. By path string like 'json.leaf.suble
 
 # Options
 multiSort (bool) - enable/disable sorting by multiple columns
+sortCaseSensitive (bool) - set case sensitivity in internal sorting
 url - url for data source
 source - plain data source
 side - server or client side

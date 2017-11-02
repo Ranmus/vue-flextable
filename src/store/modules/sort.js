@@ -6,10 +6,12 @@ import types from '../types';
 export default () => ({
   namespaced: true,
   state: {
+    caseSensitive: true,
     multiple: true,
     stack: [],
   },
   getters: {
+    caseSensitive: s => s.caseSensitive,
     multiple: s => s.multiple,
     stack: s => s.stack,
     status({ stack }) {
@@ -23,6 +25,7 @@ export default () => ({
       return status;
     },
     sorted({ stack }, getters, rootState, rootGetters) {
+      const caseSensitive = getters.caseSensitive;
       const filtered = rootGetters['filter/filtered'];
       const sorters = [];
 
@@ -53,19 +56,28 @@ export default () => ({
           if (sorter.func) {
             result = sorter.func(prev[sorter.name], next[sorter.name], prev, next) * sorter.negator;
           } else if (sorter.path) {
-            if (getDeep(prev, sorter.path) < getDeep(next, sorter.path)) {
+            const p = caseSensitive ? getDeep(prev, sorter.path)
+              : String(getDeep(prev, sorter.path)).toLowerCase();
+            const n = caseSensitive ? getDeep(next, sorter.path)
+              : String(getDeep(next, sorter.path)).toLowerCase();
+            if (p < n) {
               result = sorter.negator;
-            } else if (getDeep(prev, sorter.path) > getDeep(next, sorter.path)) {
+            } else if (p > n) {
               result = -sorter.negator;
             } else {
               result = 0;
             }
-          } else if (prev[sorter.name] < next[sorter.name]) {
-            result = sorter.negator;
-          } else if (prev[sorter.name] > next[sorter.name]) {
-            result = -sorter.negator;
           } else {
-            result = 0;
+            const p = caseSensitive ? prev[sorter.name] : String(prev[sorter.name]).toLowerCase();
+            const n = caseSensitive ? next[sorter.name] : String(next[sorter.name]).toLowerCase();
+
+            if (p < n) {
+              result = sorter.negator;
+            } else if (p > n) {
+              result = -sorter.negator;
+            } else {
+              result = 0;
+            }
           }
         }
 
@@ -76,6 +88,9 @@ export default () => ({
   mutations: {
     [types.SORT_SET_MULTIPLE](state, { multiple }) {
       state.multiple = multiple;
+    },
+    [types.SORT_SET_CASE_SENSITIVE](state, { caseSensitive }) {
+      state.caseSensitive = caseSensitive;
     },
     [types.SORT]: ({ multiple, stack }, { column, order, sortBy }) => {
       const { name } = column;
@@ -131,6 +146,9 @@ export default () => ({
     },
     setMultiple({ commit }, { multiple } = {}) {
       commit(types.SORT_SET_MULTIPLE, { multiple });
+    },
+    setCaseSensitive({ commit }, { caseSensitive } = {}) {
+      commit(types.SORT_SET_CASE_SENSITIVE, { caseSensitive });
     },
   },
 });

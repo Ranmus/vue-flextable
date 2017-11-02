@@ -175,6 +175,9 @@ export default {
     sort({ name, order, sortBy }) {
       this.$store.dispatch('sort/sort', { name, order, sortBy });
     },
+    setSortCaseSensitive(caseSensitive) {
+      this.$store.dispatch('sort/setCaseSensitive', { caseSensitive });
+    },
     delete(row) {
       return this.$store.dispatch('delete', { row });
     },

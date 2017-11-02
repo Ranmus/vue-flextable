@@ -28,6 +28,7 @@ export default {
   // sort module
   SORT: 'SORT',
   SORT_SET_MULTIPLE: 'SORT_SET_MULTIPLE',
+  SORT_SET_CASE_SENSITIVE: 'SORT_SET_CASE_SENSITIVE',
   // main module
   COLUMNS_SET: 'COLUMNS_SET',
 };
