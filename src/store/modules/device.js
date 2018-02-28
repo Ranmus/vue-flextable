@@ -1,4 +1,4 @@
-import MediaQuery from 'utils/MediaQuery';
+import MediaQuery from '../../utils/MediaQuery';
 import types from './../types';
 
 const isMobile = require('ismobilejs');

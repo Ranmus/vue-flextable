@@ -1,6 +1,5 @@
-/* eslint-disable */
-import { push, get, has, remove } from 'utils/stack';
-import getDeep from 'utils/getDeep';
+import { push, get, has, remove } from '../../utils/stack';
+import getDeep from '../../utils/getDeep';
 import types from '../types';
 
 export default () => ({

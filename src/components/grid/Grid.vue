@@ -2,7 +2,7 @@
 .ft-grid
   slot
     ft-heading
-    ft-row(v-for="row in rowsToRender", :row="row")
+    ft-row(v-for="row in rowsToRender", :row="row", :key="row.name")
 </template>
 
 <script lang="babel">

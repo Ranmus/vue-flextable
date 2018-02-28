@@ -4,10 +4,7 @@
     template {{ value }}
 </template>
 
-<style lang="sass">
-</style>
-
-<script lang="babel">
+<script>
 export default {
   props: {
     column: {

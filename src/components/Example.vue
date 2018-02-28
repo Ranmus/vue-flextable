@@ -33,7 +33,7 @@
         @filtered="filtered"
         )
         //- Custom layouting
-        template(scope="p")
+        template(slot-scope="p")
           //- Header component
           ft-header
             //- Title component
@@ -46,7 +46,7 @@
                   option(value="10000") Less than 10000
                 select(v-model.number="addressId")
                   option(value="0") All addresses
-                  option(v-for="n in 10", :value="n") {{ n }}
+                  option(v-for="n in 10", :value="n", :key="n") {{ n }}
             //- Filter component
             ft-filter
               //- span(v-if="p.filterText") Rows found: {{ p.filteredTotal }}
@@ -59,11 +59,11 @@
               ft-heading-row
                 //- //- Grid heading cell component
                 ft-heading-cell(:column="{sortable: false, filterable: false}")
-                ft-heading-cell(v-for="column in p.columns", :column="column")
+                ft-heading-cell(v-for="column in p.columns", :column="column", :key="column.name")
                   template(slot="asc-icon") &#8593;
                   template(slot="desc-icon") &#8595;
             //- Grid row component for rows rendering
-            ft-row(v-for="row in p.rowsToRender", :row="row")
+            ft-row(v-for="row in p.rowsToRender", :row="row", :key="row.name")
               //- Cell component for custom value rendering by using named slots
               //- (names are same like column names)
               ft-cell(slot="multiSelect")
@@ -88,7 +88,7 @@
             ft-paginator
               span Rows per page:
               select(@change="p.setPageSize(Number($event.target.value))")
-                option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value") {{ value || 'No limit' }}
+                option(v-for="value in [1,5,10,0]", :selected="p.pageSize == value", :key="value") {{ value || 'No limit' }}
               span Page {{ p.page }} of {{ p.pages }}
               button(@click="p.firstPage()") First
               button(@click="p.previousPage()") Previous
@@ -96,7 +96,7 @@
               button(@click="p.lastPage()") Last
 
         template(slot="nodata") No users loaded
-        template(slot="selected" scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
+        template(slot="selected" slot-scope="p") {{ p.selected.length }} {{ p.selected.length === 1 ? 'item' : 'items' }} selected
 
       flextable(
         :config="config",
@@ -111,8 +111,30 @@
         )
 </template>
 
-<style lang="sass">
-@import '~assets/example.sass'
+<style lang="stylus">
+body
+  background: #e8e8e8
+  padding: 0
+  margin: 0
+  font:
+    family: Roboto, Helvetica, Arial, sans-serif
+    size: 13px
+
+.header
+  color: white
+  position: relative
+  padding: 10px 10% 10px 10%
+  background: #305
+  .source
+    color: rgba(white, 0.5)
+    margin-bottom: 10px
+    text-decoration: none
+
+.example
+  margin: 50px 10% 50px 10%
+
+img
+  border-radius: 32px
 
 .example-blue
   color: blue !important

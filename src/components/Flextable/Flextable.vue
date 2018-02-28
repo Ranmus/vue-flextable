@@ -27,17 +27,16 @@
     ft-footer
 </template>
 
-<style lang="sass">
-@import ~assets/flextable.sass
+<style lang="stylus" src="./Flextable.styl">
 </style>
 
-<script lang="babel">
+<script>
 import { mapActions, mapGetters } from 'vuex';
-import Store from 'src/store';
-import ftHeader from 'components/header/Header';
-import ftFooter from 'components/footer/Footer';
-import ftGrid from 'components/grid/Grid';
-import ftState from 'components/state/State';
+import Store from '../../store';
+import ftHeader from '../header/Header';
+import ftFooter from '../footer/Footer';
+import ftGrid from '../grid/Grid';
+import ftState from '../state/State';
 
 export default {
   components: {

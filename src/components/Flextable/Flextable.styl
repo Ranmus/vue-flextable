@@ -1,16 +1,41 @@
-@import helpers/definitions
-@import helpers/mixins
-@import helpers/helpers
-@import responsive/responsive.sass
-@import components/spinner
+$vertical-padding = 20px
+$horizontal-padding = 16px
+$cell-padding = 16px
+
+$primary-color = #009
+$secondary-color = #000
+$border-color = rgba(0,0,0,0.15)
+$outline-color = rgba(0,0,0,0.5)
+$background-color = #fff
+$sorted-color = #000
+
+default-padding()
+  padding: $vertical-padding $horizontal-padding
+
+shadow()
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12)
+
+border()
+  border: 1px solid rgba(0,0,0,.12)
+
+user-select($state)
+  user-select: $state
+  -webkit-user-select: $state
+  -khtml-user-select: $state
+  -moz-user-select: $state
+  -ms-user-select: $state
+// @import helpers/mixins
+// @import helpers/helpers
+// @import responsive/responsive.sass
+// @import components/spinner
 
 .flextable
-  @include border
-  @include shadow
+  border
+  shadow
   background: $background-color
 
 .ft-no-data
-  @include default-padding
+  default-padding
   width: 100%
   text-align: center
   font-size: 2.0em
@@ -22,7 +47,7 @@
   padding: 20px
 
 .ft-header
-  @include default-padding
+  default-padding
   display: flex
   justify-content: space-between
 
@@ -33,7 +58,7 @@
     weight: bold
 
 .ft-footer
-  @include default-padding
+  default-padding
   display: flex
   justify-content: flex-end
 
@@ -65,7 +90,7 @@
   padding: $cell-padding
   color: $outline-color
   font-weight: bold
-  @include user-select(none)
+  user-select(none)
 
 .ft-heading-cell-sorted
   color: $sorted-color
@@ -76,7 +101,7 @@
   cursor: pointer
 
 .ft-accordion
-  @include default-padding
+  default-padding
   width: 100%
   height: 30px
   position: absolute
@@ -93,4 +118,17 @@
 .ft-accordion:checked + .ft-accordion-title + .ft-accordion-panel
   opacity: 1
   max-height: 300px
-  @include default-padding
+  default-padding
+
+.ft-align-left
+  flex-direction: row
+  text-align: left
+
+.ft-align-center
+  flex-direction: row
+  justify-content: center
+  text-align: center
+
+.ft-align-right
+  flex-direction: row-reverse
+  text-align: right

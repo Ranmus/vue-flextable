@@ -2,7 +2,7 @@
 .ft-heading-row
   slot
     ft-heading-cell(v-if="multiSelect !== false", :column="{sortable:false, filterable: false}")
-    ft-heading-cell(v-for="column in columns", :column="column")
+    ft-heading-cell(v-for="column in columns", :column="column", :key="column.name")
 </template>
 
 <script lang="babel">
