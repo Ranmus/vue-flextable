@@ -4,8 +4,8 @@
   "description": "Flexible table vue component",
   "author": "Łukasz Strzyżowski <lukaszstr@gmail.com>",
   "scripts": {
-    "dev": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production"
+    "dev": "webpack-dev-server --progress --mode development --env.development --open",
+    "build": "webpack --progress --mode production --env.production "
   },
   "license": "GPL",
   "registry": "github",

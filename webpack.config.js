@@ -1,7 +1,12 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const restServer = require('./api/server');
 
-module.exports = function(env, argv) {
+module.exports = env => {
+  if (env.development) {
+    restServer();
+  }
+
   return {
     resolve: {
       alias: {

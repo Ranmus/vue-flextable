@@ -1,9 +1,14 @@
-$size: 64px
-$weight: 10px
-$radius: 50%
-$color: #2196F3
-$alpha: 0.2
-$speed: 1s
+<template lang="pug">
+.ft-spinner
+</template>
+
+<style lang="stylus">
+$size = 64px
+$weight = 10px
+$radius = 50%
+$color = #2196F3
+$alpha = 0.2
+$speed = 1s
 
 .ft-spinner
   width: $size
@@ -21,3 +26,4 @@ $speed: 1s
     transform: rotate(90deg)
   100%
     transform: rotate(450deg)
+</style>
